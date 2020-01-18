@@ -1,5 +1,8 @@
 package;
 
+import flixel.text.FlxText;
+import flixel.FlxCamera.FlxCameraFollowStyle;
+import flixel.FlxG;
 import flixel.tile.FlxTilemap;
 import flixel.FlxState;
 import flixel.FlxObject;
@@ -12,6 +15,7 @@ class PlayState extends FlxState
 {
 	var level:FlxTilemap = new FlxTilemap();
 	var player:Player;
+	var debug:FlxText;
 
 	override public function create():Void
 	{
@@ -19,11 +23,36 @@ class PlayState extends FlxState
 		level.load_tilemap(ogmo, 'assets/data/');
 		add(level);
 
+		ogmo.level.get_entity_layer('entities').load_entities(entity_loader);
+
+		FlxG.camera.follow(player, FlxCameraFollowStyle.PLATFORMER, 0.9);
+		FlxG.worldBounds.set(0, 0, level.width, level.height);
+		FlxG.camera.minScrollX = FlxG.camera.minScrollY = 0;
+
+		FlxG.mouse.visible = false;
+
+		debug = new FlxText(10, 10, 0, "", 16);
+		debug.scrollFactor.set(0, 0);
+		add(debug);
+
 		super.create();
+	}
+
+	function entity_loader(e:EntityData) 
+	{
+		trace(e.name);
+		switch(e.name)
+		{
+			case "player": add(player = new Player(e.x, e.y));
+		}
 	}
 
 	override public function update(elapsed:Float):Void
 	{
+		FlxG.watch.addMouse();
+		debug.text = "Velocity " + player.velocity.x; 
+		
 		super.update(elapsed);
+		FlxG.collide(level, player);
 	}
 }
