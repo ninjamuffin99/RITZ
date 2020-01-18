@@ -20,7 +20,7 @@ class Player extends FlxSprite
         makeGraphic(32, 32);
 
         drag.x = 700;
-        maxVelocity.x = 1100;
+        maxVelocity.x = 1000;
     }
 
     override public function update(e:Float):Void
@@ -45,7 +45,7 @@ class Player extends FlxSprite
         if (left && right)
             left = right = false;
 
-        if (left || right)
+        if ((left || right) && !hovering)
         {
             if (left)
             {
@@ -82,6 +82,8 @@ class Player extends FlxSprite
             if (jumpP && !doubleJumped)
             {
                 velocity.y = 0;
+                if ((velocity.x > 0 && left) || (velocity.x < 0 && right))
+                    velocity.x *= -0.05;
                 velocity.y -= 500;
                 
                 doubleJumped = true;
@@ -100,7 +102,7 @@ class Player extends FlxSprite
         if (hovering)
         {
             velocity.y = 100;
-            drag.x = 1700;
+            drag.x = 0;
         }
         else
         {
