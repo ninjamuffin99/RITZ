@@ -1,5 +1,7 @@
 package;
 
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
 import flixel.FlxCamera.FlxCameraFollowStyle;
 import flixel.FlxG;
@@ -17,6 +19,8 @@ class PlayState extends FlxState
 	var player:Player;
 	var debug:FlxText;
 
+	private var grpCheese:FlxTypedGroup<Cheese>;
+
 	override public function create():Void
 	{
 		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, AssetPaths.dumbassLevel__json);
@@ -31,6 +35,9 @@ class PlayState extends FlxState
 
 		FlxG.mouse.visible = false;
 
+		grpCheese = new FlxTypedGroup<Cheese>();
+		add(grpCheese);
+
 		debug = new FlxText(10, 10, 0, "", 16);
 		debug.scrollFactor.set(0, 0);
 		add(debug);
@@ -44,6 +51,9 @@ class PlayState extends FlxState
 		switch(e.name)
 		{
 			case "player": add(player = new Player(e.x, e.y));
+			case "coin":
+				var daCoin:Cheese = new Cheese(e.x, e.y);
+				grpCheese.add(daCoin);
 		}
 	}
 
@@ -55,5 +65,11 @@ class PlayState extends FlxState
 		
 		super.update(elapsed);
 		FlxG.collide(level, player);
+
+		FlxG.overlap(player, grpCheese, function(p, cheese)
+		{
+			cheese.kill();
+		});
+
 	}
 }
