@@ -1,5 +1,7 @@
 package;
 
+import flixel.math.FlxPoint;
+import flixel.util.FlxPath;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
@@ -20,6 +22,7 @@ class PlayState extends FlxState
 	var debug:FlxText;
 
 	private var grpCheese:FlxTypedGroup<Cheese>;
+	private var grpMovingPlatforms:FlxTypedGroup<MovingPlatform>;
 	private var coinCount:Int = 0;
 
 	override public function create():Void
@@ -30,6 +33,9 @@ class PlayState extends FlxState
 
 		grpCheese = new FlxTypedGroup<Cheese>();
 		add(grpCheese);
+
+		grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
+		add(grpMovingPlatforms);
 
 		ogmo.level.get_entity_layer('entities').load_entities(entity_loader);
 
@@ -50,14 +56,32 @@ class PlayState extends FlxState
 
 	function entity_loader(e:EntityData) 
 	{
-		trace(e.name);
 		switch(e.name)
 		{
 			case "player": add(player = new Player(e.x, e.y));
 			case "coins":
 				var daCoin:Cheese = new Cheese(e.x, e.y);
 				grpCheese.add(daCoin);
+			case "movingPlatform":
+				var platform:MovingPlatform = new MovingPlatform(e.x, e.y, getPathData(e));
+				platform.makeGraphic(e.width, e.height);
+				platform.updateHitbox();
+				platform.path.setProperties(e.values.speed, FlxPath.LOOP_FORWARD);
+				grpMovingPlatforms.add(platform);
+
 		}
+	}
+
+	private function getPathData(o:EntityData):FlxPath
+	{
+		var daPath:Array<FlxPoint> = [new FlxPoint(o.x, o.y)];
+
+		for (point in o.nodes)
+		{
+			daPath.push(new FlxPoint(point.x, point.y));
+		}
+
+		return new FlxPath(daPath);
 	}
 
 	override public function update(elapsed:Float):Void
@@ -66,7 +90,9 @@ class PlayState extends FlxState
 		debug.text = "Cheese: " + coinCount;
 		
 		super.update(elapsed);
+		FlxG.collide(grpMovingPlatforms, player);
 		FlxG.collide(level, player);
+		
 
 		FlxG.overlap(player, grpCheese, function(p, cheese)
 		{
