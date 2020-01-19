@@ -3,3 +3,4 @@ mouse with jetpack
 collecting game
 mousetrap obstacles
 SNES
+laser trap stay in one place
