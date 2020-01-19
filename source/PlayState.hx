@@ -27,7 +27,7 @@ class PlayState extends FlxState
 
 		FlxG.camera.follow(player, FlxCameraFollowStyle.PLATFORMER, 0.9);
 		FlxG.worldBounds.set(0, 0, level.width, level.height);
-		FlxG.camera.minScrollX = FlxG.camera.minScrollY = 0;
+		FlxG.camera.setScrollBounds(0, level.width, 0, level.height);
 
 		FlxG.mouse.visible = false;
 
@@ -50,7 +50,8 @@ class PlayState extends FlxState
 	override public function update(elapsed:Float):Void
 	{
 		FlxG.watch.addMouse();
-		debug.text = "Velocity " + player.velocity.x; 
+		debug.text = "Velocity " + player.velocity.y;
+		debug.text += "\nTochinWall " + player.isTouching(FlxObject.WALL);
 		
 		super.update(elapsed);
 		FlxG.collide(level, player);

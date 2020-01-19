@@ -12,6 +12,7 @@ class Player extends FlxSprite
     private var jumped:Bool = false;
     private var coyoteTime:Float = 0;
     private var hovering:Bool = false;
+    private var wallClimbing:Bool = false;
 
     public function new(x:Float, y:Float):Void
     {
@@ -21,14 +22,30 @@ class Player extends FlxSprite
 
         drag.x = 700;
         maxVelocity.x = 1000;
+        maxVelocity.y = 1000;
     }
 
     override public function update(e:Float):Void
     {
+
+        if (!wallClimbing)
+        {
+            acceleration.y = 900;
+            drag.y = 0;
+        }
+        else
+        {
+            if (velocity.y > 0)
+                drag.y = 700;
+            else
+                drag.y = 1000;
+        }
+            
+
         movement();
         super.update(e);
 
-        acceleration.y = 900;
+        
 
         
 
@@ -42,18 +59,28 @@ class Player extends FlxSprite
         var jump:Bool = FlxG.keys.anyPressed(['SPACE', 'W', 'UP']);
         var jumpP:Bool = FlxG.keys.anyJustPressed(['SPACE', "W", 'UP', 'Z']);
 
+        var down:Bool = FlxG.keys.anyPressed(['S', 'DOWN']);
+
         if (left && right)
             left = right = false;
 
-        if ((left || right) && !hovering)
+        if ((left || right))
         {
+            var hoverMulti:Float = 1;
+
+            if (!isTouching(FlxObject.FLOOR) && doubleJumped && velocity.y > 0)
+                hoverMulti = 0.3;
+
+            if (hovering)
+                hoverMulti = 0.6;
+            
             if (left)
             {
-                acceleration.x = -speed;
+                acceleration.x = -speed * hoverMulti;
             }
             if (right)
             {
-                acceleration.x = speed;
+                acceleration.x = speed * hoverMulti;
             }
         }
         else
@@ -63,6 +90,7 @@ class Player extends FlxSprite
         {
             doubleJumped = false;
             jumped = false;
+            hovering = false;
             coyoteTime = 0;
 
             if (jump)
@@ -72,6 +100,38 @@ class Player extends FlxSprite
             }   
         }
 
+        if (isTouching(FlxObject.WALL))
+        {
+            
+            if (jump && down)
+                jump = down = false;
+            
+            if (jump || down)
+            {
+                if (jump)
+                {
+                    acceleration.y = -speed;
+                }
+
+                if (down)
+                {
+                    acceleration.y = 900;
+                }
+            }
+            else
+            {
+                acceleration.y = 0;
+            }
+            
+
+
+            wallClimbing = true;
+        }
+        else
+        {
+            wallClimbing = false;
+        }
+
 
 
         if (!isTouching(FlxObject.FLOOR))
@@ -79,11 +139,15 @@ class Player extends FlxSprite
             if (!jumped)
                 coyoteTime += FlxG.elapsed;
 
-            if (jumpP && !doubleJumped)
+            if (jumpP && !doubleJumped && !wallClimbing)
             {
                 velocity.y = 0;
                 if ((velocity.x > 0 && left) || (velocity.x < 0 && right))
-                    velocity.x *= -0.05;
+                {
+                    velocity.y -= 200;
+                    velocity.x *= -0.1;
+                }
+                    
                 velocity.y -= 500;
                 
                 doubleJumped = true;
@@ -91,22 +155,38 @@ class Player extends FlxSprite
             
         }
 
-        if (jump && doubleJumped && velocity.y > 0)
+        if (doubleJumped && velocity.y > 0)
         {
-            hovering = true;
+            drag.x = 200;
+
+            if (jump)
+            {
+                hovering = true;
+            }
+            else
+            {
+                hovering = false;
+            }
         }
-        else
+
+        if (wallClimbing)
+        {
+            doubleJumped = false;
             hovering = false;
+        }
+            
 
 
         if (hovering)
         {
             velocity.y = 100;
-            drag.x = 0;
+            drag.x = 150;
         }
         else
         {
             drag.x = 700;
         }
+        
+        
     }
 }
