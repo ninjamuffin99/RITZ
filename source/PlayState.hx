@@ -1,5 +1,7 @@
 package;
 
+import flixel.util.FlxColor;
+import flixel.math.FlxRect;
 import flixel.math.FlxPoint;
 import flixel.util.FlxPath;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -27,6 +29,8 @@ class PlayState extends FlxState
 
 	override public function create():Void
 	{
+		bgColor = FlxColor.WHITE;
+
 		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, AssetPaths.dumbassLevel__json);
 		level.load_tilemap(ogmo, 'assets/data/');
 		add(level);
@@ -39,7 +43,10 @@ class PlayState extends FlxState
 
 		ogmo.level.get_entity_layer('entities').load_entities(entity_loader);
 
-		FlxG.camera.follow(player, FlxCameraFollowStyle.PLATFORMER, 0.9);
+		FlxG.camera.follow(player, FlxCameraFollowStyle.PLATFORMER, 0.3);
+		FlxG.camera.followLead.set(1.7, 1.2);
+
+		
 		FlxG.worldBounds.set(0, 0, level.width, level.height);
 		FlxG.camera.setScrollBounds(0, level.width, 0, level.height);
 
@@ -49,6 +56,7 @@ class PlayState extends FlxState
 
 		debug = new FlxText(10, 10, 0, "", 16);
 		debug.scrollFactor.set(0, 0);
+		debug.color = FlxColor.BLACK;
 		add(debug);
 
 		super.create();
@@ -88,11 +96,16 @@ class PlayState extends FlxState
 	{
 		FlxG.watch.addMouse();
 		debug.text = "Cheese: " + coinCount;
+		debug.text += "\nCamera: " + FlxG.camera.zoom;
 		
 		super.update(elapsed);
 		FlxG.collide(grpMovingPlatforms, player);
 		FlxG.collide(level, player);
 		
+		if (FlxG.keys.justPressed.Q)
+			FlxG.camera.zoom *= 0.7;
+		if (FlxG.keys.justPressed.E)
+			FlxG.camera.zoom *= 1.3;
 
 		FlxG.overlap(player, grpCheese, function(p, cheese)
 		{

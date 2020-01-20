@@ -18,7 +18,10 @@ class Player extends FlxSprite
     {
         super(x, y);
 
-        makeGraphic(32, 32);
+        loadGraphic(AssetPaths.mousePlaceholder__png);
+
+        setFacingFlip(FlxObject.LEFT, false, false);
+        setFacingFlip(FlxObject.RIGHT, true, false);
 
         drag.x = 700;
         maxVelocity.x = 1000;
@@ -76,10 +79,12 @@ class Player extends FlxSprite
             
             if (left)
             {
+                facing = FlxObject.LEFT;
                 acceleration.x = -speed * hoverMulti;
             }
             if (right)
             {
+                facing = FlxObject.RIGHT;
                 acceleration.x = speed * hoverMulti;
             }
         }
