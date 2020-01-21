@@ -25,11 +25,24 @@ class PlayState extends FlxState
 
 	private var grpCheese:FlxTypedGroup<Cheese>;
 	private var grpMovingPlatforms:FlxTypedGroup<MovingPlatform>;
+
+	private var grpObstacles:FlxTypedGroup<Obstacle>;
 	private var coinCount:Int = 0;
+	private var curCheckpoint:FlxPoint = new FlxPoint();
+	private var grpCheckpoint:FlxTypedGroup<Checkpoint>;
 
 	override public function create():Void
 	{
 		bgColor = FlxColor.WHITE;
+
+		grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
+		add(grpMovingPlatforms);
+
+		grpObstacles = new FlxTypedGroup<Obstacle>();
+		add(grpObstacles);
+
+		grpCheckpoint = new FlxTypedGroup<Checkpoint>();
+		add(grpCheckpoint);
 
 		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, AssetPaths.dumbassLevel__json);
 		level.load_tilemap(ogmo, 'assets/data/');
@@ -38,17 +51,14 @@ class PlayState extends FlxState
 		grpCheese = new FlxTypedGroup<Cheese>();
 		add(grpCheese);
 
-		grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
-		add(grpMovingPlatforms);
+		
 
 		ogmo.level.get_entity_layer('entities').load_entities(entity_loader);
 
-		FlxG.camera.follow(player, FlxCameraFollowStyle.PLATFORMER, 0.3);
-		FlxG.camera.followLead.set(1.7, 1.2);
-
+		FlxG.camera.follow(player, FlxCameraFollowStyle.SCREEN_BY_SCREEN);
 		
 		FlxG.worldBounds.set(0, 0, level.width, level.height);
-		level.follow(FlxG.camera, 2);
+		level.follow(FlxG.camera);
 
 		FlxG.mouse.visible = false;
 
@@ -66,7 +76,9 @@ class PlayState extends FlxState
 	{
 		switch(e.name)
 		{
-			case "player": add(player = new Player(e.x, e.y));
+			case "player": 
+				add(player = new Player(e.x, e.y));
+				curCheckpoint.set(e.x, e.y);
 			case "coins":
 				var daCoin:Cheese = new Cheese(e.x, e.y);
 				grpCheese.add(daCoin);
@@ -76,6 +88,15 @@ class PlayState extends FlxState
 				platform.updateHitbox();
 				platform.path.setProperties(e.values.speed, FlxPath.LOOP_FORWARD);
 				grpMovingPlatforms.add(platform);
+			case "spike":
+				var spikeAmount = Std.int(e.width / 32);
+				for (i in 0...spikeAmount)
+				{
+					var daSpike:SpikeObstacle = new SpikeObstacle(e.x + (i * 32), e.y);
+					grpObstacles.add(daSpike);
+				}
+			case "checkpoint":
+				grpCheckpoint.add(new Checkpoint(e.x, e.y));
 
 		}
 	}
@@ -101,6 +122,18 @@ class PlayState extends FlxState
 		super.update(elapsed);
 		FlxG.collide(grpMovingPlatforms, player);
 		FlxG.collide(level, player);
+
+		if (FlxG.overlap(grpObstacles, player))
+		{
+			player.setPosition(curCheckpoint.x, curCheckpoint.y);
+			player.velocity.set();
+		}
+
+		FlxG.overlap(grpCheckpoint, player, function(c:Checkpoint, p:Player)
+		{
+			if (c.x != curCheckpoint.x && c.y != curCheckpoint.y)
+				curCheckpoint.set(c.x, c.y);
+		});
 		
 		if (FlxG.keys.justPressed.Q)
 			FlxG.camera.zoom *= 0.7;
