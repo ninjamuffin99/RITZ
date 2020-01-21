@@ -14,6 +14,12 @@ class Player extends FlxSprite
     private var hovering:Bool = false;
     private var wallClimbing:Bool = false;
 
+    var left:Bool;
+    var right:Bool;
+    var jump:Bool;
+    var jumpP:Bool;
+    var down:Bool;
+
     public function new(x:Float, y:Float):Void
     {
         super(x, y);
@@ -24,8 +30,8 @@ class Player extends FlxSprite
         setFacingFlip(FlxObject.RIGHT, true, false);
 
         drag.x = 700;
-        maxVelocity.x = 1000;
-        maxVelocity.y = 1000;
+        maxVelocity.x = 350;
+        maxVelocity.y = 520;
     }
 
     override public function update(e:Float):Void
@@ -56,13 +62,11 @@ class Player extends FlxSprite
 
     private function movement():Void
     {
-        var left:Bool = FlxG.keys.anyPressed(['LEFT', 'A']);
-        var right:Bool = FlxG.keys.anyPressed(['RIGHT', 'D']);
-
-        var jump:Bool = FlxG.keys.anyPressed(['SPACE', 'W', 'UP']);
-        var jumpP:Bool = FlxG.keys.anyJustPressed(['SPACE', "W", 'UP', 'Z']);
-
-        var down:Bool = FlxG.keys.anyPressed(['S', 'DOWN']);
+        left = FlxG.keys.anyPressed(['LEFT', 'A']);
+        right = FlxG.keys.anyPressed(['RIGHT', 'D']);
+        jump = FlxG.keys.anyPressed(['SPACE', 'W', 'UP']);
+        jumpP = FlxG.keys.anyJustPressed(['SPACE', "W", 'UP', 'Z']);
+        down = FlxG.keys.anyPressed(['S', 'DOWN']);
 
         if (left && right)
             left = right = false;
@@ -100,42 +104,14 @@ class Player extends FlxSprite
 
             if (jump)
             {
-                velocity.y -= 600;
+                velocity.y -= 480;
                 jumped = true;
             }   
         }
 
-        if (isTouching(FlxObject.WALL))
-        {
-            
-            if (jump && down)
-                jump = down = false;
-            
-            if (jump || down)
-            {
-                if (jump)
-                {
-                    acceleration.y = -speed;
-                }
+        wallJumping();
 
-                if (down)
-                {
-                    acceleration.y = 900;
-                }
-            }
-            else
-            {
-                acceleration.y = 0;
-            }
-            
-
-
-            wallClimbing = true;
-        }
-        else
-        {
-            wallClimbing = false;
-        }
+        
 
 
 
@@ -153,7 +129,7 @@ class Player extends FlxSprite
                     velocity.x *= -0.1;
                 }
                     
-                velocity.y -= 500;
+                velocity.y -= 300;
                 
                 doubleJumped = true;
             }
@@ -189,9 +165,45 @@ class Player extends FlxSprite
         }
         else
         {
-            drag.x = 700;
+            drag.x = 1700;
         }
         
         
+    }
+
+    private function wallJumping():Void
+    {
+        if (isTouching(FlxObject.WALL))
+        {
+            
+            if (jump && down)
+                jump = down = false;
+            
+            if (jump || down)
+            {
+                if (jump)
+                {
+                    acceleration.y = -speed;
+                }
+    
+                if (down)
+                {
+                    acceleration.y = 900;
+                }
+            }
+            else
+            {
+                acceleration.y = 0;
+            }
+            
+    
+    
+            wallClimbing = true;
+        }
+        else
+        {
+            wallClimbing = false;
+        }
+
     }
 }

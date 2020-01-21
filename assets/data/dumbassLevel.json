@@ -36,10 +36,11 @@
         {"name": "coins", "id": 9, "_eid": "46479631", "x": 880, "y": 3184, "originX": 0, "originY": 0},
         {"name": "coins", "id": 10, "_eid": "46479631", "x": 680, "y": 2488, "originX": 0, "originY": 0},
         {"name": "coins", "id": 11, "_eid": "46479631", "x": 760, "y": 3080, "originX": 0, "originY": 0},
-        {"name": "spike", "id": 12, "_eid": "62782057", "x": 416, "y": 3104, "width": 224, "height": 32, "originX": 0, "originY": 0},
+        {"name": "spike", "id": 12, "_eid": "62782057", "x": 512, "y": 3104, "width": 160, "height": 32, "originX": 0, "originY": 0},
         {"name": "checkpoint", "id": 13, "_eid": "62845470", "x": 264, "y": 3104, "originX": 0, "originY": 0},
         {"name": "spike", "id": 14, "_eid": "62782057", "x": 288, "y": 2848, "width": 192, "height": 32, "originX": 0, "originY": 0},
-        {"name": "checkpoint", "id": 15, "_eid": "62845470", "x": 224, "y": 2808, "originX": 0, "originY": 0}
+        {"name": "checkpoint", "id": 15, "_eid": "62845470", "x": 224, "y": 2808, "originX": 0, "originY": 0},
+        {"name": "checkpoint", "id": 16, "_eid": "62845470", "x": 760, "y": 3096, "originX": 0, "originY": 0}
       ]
     },
     {
