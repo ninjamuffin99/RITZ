@@ -48,7 +48,7 @@ class PlayState extends FlxState
 
 		
 		FlxG.worldBounds.set(0, 0, level.width, level.height);
-		FlxG.camera.setScrollBounds(0, level.width, 0, level.height);
+		level.follow(FlxG.camera, 2);
 
 		FlxG.mouse.visible = false;
 
