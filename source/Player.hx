@@ -1,5 +1,6 @@
 package;
 
+import flixel.math.FlxMath;
 import flixel.FlxObject;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -8,6 +9,14 @@ class Player extends FlxSprite
 {
 
     private var speed:Float = 1400;
+    private var baseJumpStrength:Float = 120;
+    private var apexReached:Bool = true;
+    private var canJump:Bool = false;
+
+    // Not a boost per se, simply a counter for the cos wave thing
+    private var jumpBoost:Int = 0;
+
+
     private var doubleJumped:Bool = false;
     private var jumped:Bool = false;
     private var coyoteTime:Float = 0;
@@ -26,7 +35,7 @@ class Player extends FlxSprite
 
         loadGraphic(AssetPaths.ritz__png, true, 32, 32);
         animation.add('idle', [0]);
-        animation.add('walk', [0, 1, 2, 2], 12);
+        animation.add('walk', [1, 2, 2, 0], 12);
         animation.add('jumping', [2]);
 
         animation.play("idle");
@@ -39,7 +48,7 @@ class Player extends FlxSprite
         setFacingFlip(FlxObject.RIGHT, true, false);
 
         drag.x = 700;
-        maxVelocity.x = 150;
+        maxVelocity.x = 230;
         maxVelocity.y = 520;
     }
 
@@ -48,8 +57,8 @@ class Player extends FlxSprite
 
         if (!wallClimbing)
         {
-            acceleration.y = 900;
-            drag.y = 0;
+            acceleration.y = 2500;
+            drag.y = 2000;
         }
         else
         {
@@ -62,11 +71,6 @@ class Player extends FlxSprite
 
         movement();
         super.update(e);
-
-        
-
-        
-
     }
 
     private function movement():Void
@@ -76,6 +80,31 @@ class Player extends FlxSprite
         jump = FlxG.keys.anyPressed(['SPACE', 'W', 'UP']);
         jumpP = FlxG.keys.anyJustPressed(['SPACE', "W", 'UP', 'Z']);
         down = FlxG.keys.anyPressed(['S', 'DOWN']);
+
+
+        // THESE VARIABLES HAVE UNDERSCORES SIMPLY BECAUSE I COPY PASTED IT FROM CITYHOPPIN LMAOOO
+        // https://github.com/ninjamuffin99/cityhoppin/blob/master/source/player/Player4Keys.hx
+        var _upR:Bool = false;
+		var _downR:Bool = false;
+		var _leftR:Bool = false;
+		var _rightR:Bool = false;
+		
+		_upR = FlxG.keys.anyJustReleased([UP, W, SPACE]);
+		_downR = FlxG.keys.anyJustReleased([DOWN, S]);
+		_leftR = FlxG.keys.anyJustReleased([LEFT, A]);
+        _rightR = FlxG.keys.anyJustReleased([RIGHT, D]);
+        
+
+		var _downP:Bool = false;
+		var _leftP:Bool = false;
+		var _rightP:Bool = false;
+		
+		_downP = FlxG.keys.anyJustPressed([DOWN, S]);
+		_leftP = FlxG.keys.anyJustPressed([LEFT, A]);
+        _rightP = FlxG.keys.anyJustPressed([RIGHT, D]);
+        
+
+
 
         if (left && right)
             left = right = false;
@@ -116,25 +145,44 @@ class Player extends FlxSprite
             doubleJumped = false;
             jumped = false;
             hovering = false;
+            apexReached = false;
+            canJump = true;
+            jumpBoost = 0;
             coyoteTime = 0;
 
-            if (jump)
+            if (jumpP)
             {
-                velocity.y -= 480;
+                //velocity.y -= 480;
+                velocity.y -= baseJumpStrength * 2;
                 jumped = true;
                 FlxG.sound.play(AssetPaths.jump__mp3, 0.5);
             }   
         }
-
-        wallJumping();
-
-        
-
-
-
-        if (!isTouching(FlxObject.FLOOR))
+        else
         {
             animation.play('jumping');
+
+            if (isTouching(FlxObject.CEILING))  
+                apexReached = true;
+
+            if (jump && !apexReached && canJump)
+            {
+                jumpBoost++;
+
+                var C = FlxMath.fastCos(10.7 * jumpBoost * FlxG.elapsed);
+                FlxG.watch.addQuick('Cos', C);
+                if (C < 0)
+                {
+                    apexReached = true;
+                }
+                else
+                {
+                    velocity.y -= C * (baseJumpStrength * 1.6) * 2;
+                }
+            }
+
+            if (_upR)
+                apexReached = true;
 
             if (!jumped)
                 coyoteTime += FlxG.elapsed;
@@ -144,16 +192,17 @@ class Player extends FlxSprite
                 velocity.y = 0;
                 if ((velocity.x > 0 && left) || (velocity.x < 0 && right))
                 {
-                    velocity.y -= 200;
-                    velocity.x *= -0.1;
+                    //velocity.y -= 200;
+                    //velocity.x *= -0.1;
                 }
                     
-                velocity.y -= 300;
+                velocity.y -= 600;
                 doubleJumped = true;
-                FlxG.sound.play(AssetPaths.doubleJump__mp3, 0.5);
+                FlxG.sound.play(AssetPaths.doubleJump__mp3, 0.75);
             }
-            
         }
+
+        wallJumping();
         
         /* 
         if (doubleJumped && velocity.y > 0)
@@ -170,7 +219,7 @@ class Player extends FlxSprite
             }
         }
         */
-        
+
         if (wallClimbing)
         {
             doubleJumped = false;

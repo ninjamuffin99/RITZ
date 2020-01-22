@@ -137,7 +137,11 @@ class PlayState extends FlxState
 		FlxG.overlap(grpCheckpoint, player, function(c:Checkpoint, p:Player)
 		{
 			if (c.x != curCheckpoint.x && c.y != curCheckpoint.y)
+			{
 				curCheckpoint.set(c.x, c.y);
+				FlxG.sound.play(AssetPaths.checkpoint__mp3, 0.8);
+			}
+				
 		});
 		
 		if (FlxG.keys.justPressed.Q)
