@@ -16,6 +16,8 @@ class Player extends FlxSprite
     // Not a boost per se, simply a counter for the cos wave thing
     private var jumpBoost:Int = 0;
 
+    public var gettingHurt:Bool = false;
+
 
     private var doubleJumped:Bool = false;
     private var jumped:Bool = false;
@@ -33,10 +35,11 @@ class Player extends FlxSprite
     {
         super(x, y);
 
-        loadGraphic(AssetPaths.ritz__png, true, 32, 32);
+        loadGraphic(AssetPaths.ritz_spritesheet__png, true, 32, 32);
         animation.add('idle', [0]);
         animation.add('walk', [1, 2, 2, 0], 12);
         animation.add('jumping', [2]);
+        animation.add('fucking died lmao', [7, 8, 9, 10, 11], 12);
 
         animation.play("idle");
 
@@ -67,9 +70,16 @@ class Player extends FlxSprite
             else
                 drag.y = 1200;
         }
-            
 
-        movement();
+        if (gettingHurt)
+        {
+            velocity.set();
+            acceleration.set();
+        }
+        else
+        {
+            movement();
+        }
         super.update(e);
     }
 

@@ -1,5 +1,7 @@
 package;
 
+import flixel.util.FlxTimer;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.math.FlxRect;
 import flixel.math.FlxPoint;
@@ -15,6 +17,7 @@ import flixel.FlxObject;
 
 using zero.utilities.OgmoUtils;
 using zero.flixel.utilities.FlxOgmoUtils;
+using StringTools;
 
 
 class PlayState extends FlxState
@@ -32,6 +35,9 @@ class PlayState extends FlxState
 	private var curCheckpoint:FlxPoint = new FlxPoint();
 	private var grpCheckpoint:FlxTypedGroup<Checkpoint>;
 
+	private var grpMusicTriggers:FlxTypedGroup<MusicTrigger>;
+	private var musicQueue:String = "";
+
 	override public function create():Void
 	{
 		bgColor = FlxColor.WHITE;
@@ -45,6 +51,9 @@ class PlayState extends FlxState
 		grpCheckpoint = new FlxTypedGroup<Checkpoint>();
 		add(grpCheckpoint);
 
+		grpMusicTriggers = new FlxTypedGroup<MusicTrigger>();
+		add(grpMusicTriggers);
+
 		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, AssetPaths.dumbassLevel__json);
 		level.load_tilemap(ogmo, 'assets/data/');
 		add(level);
@@ -52,8 +61,8 @@ class PlayState extends FlxState
 		grpCheese = new FlxTypedGroup<Cheese>();
 		add(grpCheese);
 
-		FlxG.sound.playMusic(AssetPaths.pillow__mp3, 0.7);
-		FlxG.sound.music.loopTime = 4450;
+		//FlxG.sound.playMusic(AssetPaths.pillow__mp3, 0.7);
+		//FlxG.sound.music.loopTime = 4450;
 
 		
 
@@ -92,7 +101,37 @@ class PlayState extends FlxState
 				platform.makeGraphic(e.width, e.height);
 				platform.updateHitbox();
 				platform.path.setProperties(e.values.speed, FlxPath.LOOP_FORWARD);
+				
+				/* ALL THIS SHIT IS BUSTED FOR WAHTEVER DUMBASS REASON LMAO
+				var moveType:String = Std.string(e.values.TYPE).trim();
+				trace(moveType);
+				switch(moveType)
+				{
+					case "LOOP_FORWARD":
+						platform.path.setProperties(e.values.speed, FlxPath.LOOP_FORWARD);
+						trace('cur type: ' + moveType);
+					case "LOOP_BACKWARD":
+						platform.path.setProperties(e.values.speed, FlxPath.LOOP_BACKWARD);
+						trace('cur type: ' + moveType);
+					case "FORWARD":
+						platform.path.setProperties(e.values.speed, FlxPath.FORWARD);
+						trace('cur type: ' + moveType);
+					case "BACKWARD":
+						platform.path.setProperties(e.values.speed, FlxPath.BACKWARD);
+						trace('cur type: ' + moveType);
+					case "YOYO":
+						platform.path.setProperties(e.values.speed, FlxPath.YOYO);
+						trace('cur type: ' + moveType);
+					default:
+						platform.path.setProperties(e.values.speed, FlxPath.LOOP_FORWARD);
+						trace('cur type: ');
+				}
+ 				*/
+				
 				grpMovingPlatforms.add(platform);
+
+				//switch(Std.string(e.values.TYPE).trim());
+
 			case "spike":
 				var spikeAmount = Std.int(e.width / 32);
 				for (i in 0...spikeAmount)
@@ -102,6 +141,8 @@ class PlayState extends FlxState
 				}
 			case "checkpoint":
 				grpCheckpoint.add(new Checkpoint(e.x, e.y));
+			case "musicTrigger":
+				grpMusicTriggers.add(new MusicTrigger(e.x, e.y, e.width, e.height, e.values.song, e.values.fadetime));
 
 		}
 	}
@@ -128,12 +169,44 @@ class PlayState extends FlxState
 		FlxG.collide(grpMovingPlatforms, player);
 		FlxG.collide(level, player);
 
+		FlxG.overlap(player, grpMusicTriggers, function(p:Player, mT:MusicTrigger)
+			{
+				if (musicQueue != mT.daSong)
+				{
+					musicQueue = mT.daSong;
+
+					if (FlxG.sound.music != null)
+					{
+						FlxG.sound.music.fadeOut(3, 0, function(t:FlxTween)
+						{
+							musicHandling();
+						});
+					}
+					else
+						musicHandling();
+
+					
+				}
+
+			});
+
 		if (FlxG.overlap(grpObstacles, player))
 		{
-			player.setPosition(curCheckpoint.x, curCheckpoint.y - 16);
-			player.velocity.set();
+			
 
-			FlxG.sound.play(AssetPaths.damageTaken__mp3, 0.6);
+			if (!player.gettingHurt)
+			{
+				player.gettingHurt = true;
+				player.animation.play('fucking died lmao');
+				FlxG.sound.play(AssetPaths.damageTaken__mp3, 0.6);
+
+				new FlxTimer().start(0.5, function (tmr:FlxTimer)
+				{
+					player.setPosition(curCheckpoint.x, curCheckpoint.y - 16);
+					player.velocity.set();
+					player.gettingHurt = false;
+				});
+			}
 		}
 
 		FlxG.overlap(grpCheckpoint, player, function(c:Checkpoint, p:Player)
@@ -158,5 +231,17 @@ class PlayState extends FlxState
 			coinCount += 1;
 		});
 
+	}
+
+	private function musicHandling():Void
+	{
+		FlxG.sound.playMusic('assets/music/' + musicQueue + ".mp3", 0.7);
+		switch (musicQueue)
+		{
+			case "pillow":
+				FlxG.sound.music.loopTime = 4450;
+			case "ritz":
+				FlxG.sound.music.loopTime = 0;
+		}
 	}
 }
