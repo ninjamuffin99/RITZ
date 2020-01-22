@@ -63,9 +63,9 @@ class Player extends FlxSprite
         else
         {
             if (velocity.y > 0)
-                drag.y = 700;
-            else
                 drag.y = 1000;
+            else
+                drag.y = 1200;
         }
             
 
@@ -138,7 +138,8 @@ class Player extends FlxSprite
             acceleration.x = 0;
             animation.play('idle');
         }
-            
+
+        wallJumping();      
         
         if (isTouching(FlxObject.FLOOR))
         {
@@ -202,7 +203,7 @@ class Player extends FlxSprite
             }
         }
 
-        wallJumping();
+        
         
         /* 
         if (doubleJumped && velocity.y > 0)
@@ -253,7 +254,7 @@ class Player extends FlxSprite
             {
                 if (jump)
                 {
-                    acceleration.y = -speed;
+                    acceleration.y = -speed * 0.8;
                 }
     
                 if (down)
