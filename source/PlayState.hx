@@ -51,6 +51,9 @@ class PlayState extends FlxState
 		grpCheese = new FlxTypedGroup<Cheese>();
 		add(grpCheese);
 
+		FlxG.sound.playMusic(AssetPaths.pillow__mp3, 0.7);
+		FlxG.sound.music.loopTime = 4450;
+
 		
 
 		ogmo.level.get_entity_layer('entities').load_entities(entity_loader);
@@ -127,6 +130,8 @@ class PlayState extends FlxState
 		{
 			player.setPosition(curCheckpoint.x, curCheckpoint.y);
 			player.velocity.set();
+
+			FlxG.sound.play(AssetPaths.damageTaken__mp3, 0.6);
 		}
 
 		FlxG.overlap(grpCheckpoint, player, function(c:Checkpoint, p:Player)
@@ -143,6 +148,7 @@ class PlayState extends FlxState
 		FlxG.overlap(player, grpCheese, function(p, cheese)
 		{
 			cheese.kill();
+			FlxG.sound.play(AssetPaths.collectCheese__mp3, 0.6);
 			coinCount += 1;
 		});
 

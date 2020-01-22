@@ -122,6 +122,7 @@ class Player extends FlxSprite
             {
                 velocity.y -= 480;
                 jumped = true;
+                FlxG.sound.play(AssetPaths.jump__mp3, 0.5);
             }   
         }
 
@@ -148,12 +149,13 @@ class Player extends FlxSprite
                 }
                     
                 velocity.y -= 300;
-                
                 doubleJumped = true;
+                FlxG.sound.play(AssetPaths.doubleJump__mp3, 0.5);
             }
             
         }
-
+        
+        /* 
         if (doubleJumped && velocity.y > 0)
         {
             drag.x = 200;
@@ -167,7 +169,8 @@ class Player extends FlxSprite
                 hovering = false;
             }
         }
-
+        */
+        
         if (wallClimbing)
         {
             doubleJumped = false;
