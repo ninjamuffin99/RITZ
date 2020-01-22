@@ -24,13 +24,22 @@ class Player extends FlxSprite
     {
         super(x, y);
 
-        loadGraphic(AssetPaths.mousePlaceholder__png);
+        loadGraphic(AssetPaths.ritz__png, true, 32, 32);
+        animation.add('idle', [0]);
+        animation.add('walk', [0, 1, 2, 2], 12);
+        animation.add('jumping', [2]);
+
+        animation.play("idle");
+
+        height -= 2;
+        width -= 12;
+        offset.x = 6;
 
         setFacingFlip(FlxObject.LEFT, false, false);
         setFacingFlip(FlxObject.RIGHT, true, false);
 
         drag.x = 700;
-        maxVelocity.x = 350;
+        maxVelocity.x = 150;
         maxVelocity.y = 520;
     }
 
@@ -73,6 +82,9 @@ class Player extends FlxSprite
 
         if ((left || right))
         {
+            if (velocity.x != 0)
+                animation.play('walk');
+
             var hoverMulti:Float = 1;
 
             if (!isTouching(FlxObject.FLOOR) && doubleJumped && velocity.y > 0)
@@ -93,7 +105,11 @@ class Player extends FlxSprite
             }
         }
         else
+        {
             acceleration.x = 0;
+            animation.play('idle');
+        }
+            
         
         if (isTouching(FlxObject.FLOOR))
         {
@@ -117,6 +133,8 @@ class Player extends FlxSprite
 
         if (!isTouching(FlxObject.FLOOR))
         {
+            animation.play('jumping');
+
             if (!jumped)
                 coyoteTime += FlxG.elapsed;
 
