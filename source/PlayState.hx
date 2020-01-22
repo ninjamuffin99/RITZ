@@ -1,5 +1,9 @@
 package;
 
+import flixel.util.FlxColor;
+import flixel.math.FlxRect;
+import flixel.math.FlxPoint;
+import flixel.util.FlxPath;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
@@ -20,10 +24,26 @@ class PlayState extends FlxState
 	var debug:FlxText;
 
 	private var grpCheese:FlxTypedGroup<Cheese>;
+	private var grpMovingPlatforms:FlxTypedGroup<MovingPlatform>;
+
+	private var grpObstacles:FlxTypedGroup<Obstacle>;
 	private var coinCount:Int = 0;
+	private var curCheckpoint:FlxPoint = new FlxPoint();
+	private var grpCheckpoint:FlxTypedGroup<Checkpoint>;
 
 	override public function create():Void
 	{
+		bgColor = FlxColor.WHITE;
+
+		grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
+		add(grpMovingPlatforms);
+
+		grpObstacles = new FlxTypedGroup<Obstacle>();
+		add(grpObstacles);
+
+		grpCheckpoint = new FlxTypedGroup<Checkpoint>();
+		add(grpCheckpoint);
+
 		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, AssetPaths.dumbassLevel__json);
 		level.load_tilemap(ogmo, 'assets/data/');
 		add(level);
@@ -31,11 +51,14 @@ class PlayState extends FlxState
 		grpCheese = new FlxTypedGroup<Cheese>();
 		add(grpCheese);
 
+		
+
 		ogmo.level.get_entity_layer('entities').load_entities(entity_loader);
 
-		FlxG.camera.follow(player, FlxCameraFollowStyle.PLATFORMER, 0.9);
+		FlxG.camera.follow(player, FlxCameraFollowStyle.SCREEN_BY_SCREEN);
+		
 		FlxG.worldBounds.set(0, 0, level.width, level.height);
-		FlxG.camera.setScrollBounds(0, level.width, 0, level.height);
+		level.follow(FlxG.camera);
 
 		FlxG.mouse.visible = false;
 
@@ -43,6 +66,7 @@ class PlayState extends FlxState
 
 		debug = new FlxText(10, 10, 0, "", 16);
 		debug.scrollFactor.set(0, 0);
+		debug.color = FlxColor.BLACK;
 		add(debug);
 
 		super.create();
@@ -50,23 +74,71 @@ class PlayState extends FlxState
 
 	function entity_loader(e:EntityData) 
 	{
-		trace(e.name);
 		switch(e.name)
 		{
-			case "player": add(player = new Player(e.x, e.y));
+			case "player": 
+				add(player = new Player(e.x, e.y));
+				curCheckpoint.set(e.x, e.y);
 			case "coins":
 				var daCoin:Cheese = new Cheese(e.x, e.y);
 				grpCheese.add(daCoin);
+			case "movingPlatform":
+				var platform:MovingPlatform = new MovingPlatform(e.x, e.y, getPathData(e));
+				platform.makeGraphic(e.width, e.height);
+				platform.updateHitbox();
+				platform.path.setProperties(e.values.speed, FlxPath.LOOP_FORWARD);
+				grpMovingPlatforms.add(platform);
+			case "spike":
+				var spikeAmount = Std.int(e.width / 32);
+				for (i in 0...spikeAmount)
+				{
+					var daSpike:SpikeObstacle = new SpikeObstacle(e.x + (i * 32), e.y);
+					grpObstacles.add(daSpike);
+				}
+			case "checkpoint":
+				grpCheckpoint.add(new Checkpoint(e.x, e.y));
+
 		}
+	}
+
+	private function getPathData(o:EntityData):FlxPath
+	{
+		var daPath:Array<FlxPoint> = [new FlxPoint(o.x, o.y)];
+
+		for (point in o.nodes)
+		{
+			daPath.push(new FlxPoint(point.x, point.y));
+		}
+
+		return new FlxPath(daPath);
 	}
 
 	override public function update(elapsed:Float):Void
 	{
 		FlxG.watch.addMouse();
 		debug.text = "Cheese: " + coinCount;
+		debug.text += "\nCamera: " + FlxG.camera.zoom;
 		
 		super.update(elapsed);
+		FlxG.collide(grpMovingPlatforms, player);
 		FlxG.collide(level, player);
+
+		if (FlxG.overlap(grpObstacles, player))
+		{
+			player.setPosition(curCheckpoint.x, curCheckpoint.y);
+			player.velocity.set();
+		}
+
+		FlxG.overlap(grpCheckpoint, player, function(c:Checkpoint, p:Player)
+		{
+			if (c.x != curCheckpoint.x && c.y != curCheckpoint.y)
+				curCheckpoint.set(c.x, c.y);
+		});
+		
+		if (FlxG.keys.justPressed.Q)
+			FlxG.camera.zoom *= 0.7;
+		if (FlxG.keys.justPressed.E)
+			FlxG.camera.zoom *= 1.3;
 
 		FlxG.overlap(player, grpCheese, function(p, cheese)
 		{

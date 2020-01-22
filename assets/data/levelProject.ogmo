@@ -31,6 +31,15 @@
       "exportID": "29930198",
       "requiredTags": [],
       "excludedTags": []
+    },
+    {
+      "definition": "tile",
+      "name": "cameraView",
+      "gridSize": {"x": 480, "y": 288},
+      "exportID": "62908765",
+      "exportMode": 0,
+      "arrayMode": 0,
+      "defaultTileset": "testTiles"
     }
   ],
   "entities": [
@@ -105,9 +114,163 @@
       "nodeGhost": true,
       "tags": [],
       "values": []
+    },
+    {
+      "exportID": "47158608",
+      "name": "movingPlatform",
+      "limit": -1,
+      "size": {"x": 16, "y": 16},
+      "origin": {"x": 0, "y": 0},
+      "originAnchored": true,
+      "shape": {
+        "label": "Rectangle",
+        "points": [
+          {"x": -1, "y": -1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": 1}
+        ]
+      },
+      "color": "#ff00f5ff",
+      "tileX": false,
+      "tileY": false,
+      "tileSize": {"x": 16, "y": 16},
+      "resizeableX": true,
+      "resizeableY": true,
+      "rotatable": false,
+      "rotationDegrees": 360,
+      "canFlipX": false,
+      "canFlipY": false,
+      "canSetColor": false,
+      "hasNodes": true,
+      "nodeLimit": 0,
+      "nodeDisplay": 0,
+      "nodeGhost": true,
+      "tags": [],
+      "values": [
+        {"name": "speed", "definition": "Float", "defaults": 70, "bounded": false, "min": 0, "max": 1},
+        {"name": "holdPerNode", "definition": "Float", "defaults": 0, "bounded": false, "min": 0, "max": 100},
+        {
+          "name": "TYPE",
+          "definition": "Enum",
+          "choices": ["LOOP_FORWARD", "LOOP_BACKWARD", "FORWARD", "BACKWARD", "YOYO"],
+          "defaults": 0
+        }
+      ]
+    },
+    {
+      "exportID": "62782057",
+      "name": "spike",
+      "limit": -1,
+      "size": {"x": 32, "y": 32},
+      "origin": {"x": 0, "y": 0},
+      "originAnchored": true,
+      "shape": {
+        "label": "Rectangle",
+        "points": [
+          {"x": -1, "y": -1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": 1}
+        ]
+      },
+      "color": "#ff0000ff",
+      "tileX": false,
+      "tileY": false,
+      "tileSize": {"x": 16, "y": 16},
+      "resizeableX": true,
+      "resizeableY": true,
+      "rotatable": false,
+      "rotationDegrees": 360,
+      "canFlipX": false,
+      "canFlipY": false,
+      "canSetColor": false,
+      "hasNodes": false,
+      "nodeLimit": 0,
+      "nodeDisplay": 0,
+      "nodeGhost": true,
+      "tags": [],
+      "values": []
+    },
+    {
+      "exportID": "62795623",
+      "name": "water",
+      "limit": -1,
+      "size": {"x": 32, "y": 16},
+      "origin": {"x": 0, "y": 0},
+      "originAnchored": true,
+      "shape": {
+        "label": "Rectangle",
+        "points": [
+          {"x": -1, "y": -1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": 1}
+        ]
+      },
+      "color": "#6fa1e8ff",
+      "tileX": false,
+      "tileY": false,
+      "tileSize": {"x": 16, "y": 16},
+      "resizeableX": true,
+      "resizeableY": false,
+      "rotatable": false,
+      "rotationDegrees": 360,
+      "canFlipX": false,
+      "canFlipY": false,
+      "canSetColor": false,
+      "hasNodes": false,
+      "nodeLimit": 0,
+      "nodeDisplay": 0,
+      "nodeGhost": true,
+      "tags": [],
+      "values": []
+    },
+    {
+      "exportID": "62845470",
+      "name": "checkpoint",
+      "limit": -1,
+      "size": {"x": 8, "y": 8},
+      "origin": {"x": 0, "y": 0},
+      "originAnchored": true,
+      "shape": {
+        "label": "Rectangle",
+        "points": [
+          {"x": -1, "y": -1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": 1}
+        ]
+      },
+      "color": "#48ff00ff",
+      "tileX": false,
+      "tileY": false,
+      "tileSize": {"x": 16, "y": 16},
+      "resizeableX": false,
+      "resizeableY": false,
+      "rotatable": false,
+      "rotationDegrees": 360,
+      "canFlipX": false,
+      "canFlipY": false,
+      "canSetColor": false,
+      "hasNodes": false,
+      "nodeLimit": 0,
+      "nodeDisplay": 0,
+      "nodeGhost": true,
+      "tags": [],
+      "values": []
     }
   ],
   "tilesets": [
-    {"label": "testTiles", "path": "tileset.png", "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAdklEQVRoQ+2SQREAMAyDtnmsfymdDHgQA+QS7oGzM0tWeCTcwG4Awwtkhwwg1zewM8DwAtkhA8j1DewMMLxAdsgAcn0DOwMML5AdMoBc38DOAMMLZIcMINc3sDPA8ALZIQPI9Q3sDDC8QHbIAHJ9AzsDDC+QHT4jpALorH5K2AAAAABJRU5ErkJggg==", "tileWidth": 32, "tileHeight": 32, "tileSeparationX": 0, "tileSeparationY": 0}
+    {"label": "testTiles", "path": "tileset.png", "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAdklEQVRoQ+2SQREAMAyDtnmsfymdDHgQA+QS7oGzM0tWeCTcwG4Awwtkhwwg1zewM8DwAtkhA8j1DewMMLxAdsgAcn0DOwMML5AdMoBc38DOAMMLZIcMINc3sDPA8ALZIQPI9Q3sDDC8QHbIAHJ9AzsDDC+QHT4jpALorH5K2AAAAABJRU5ErkJggg==", "tileWidth": 32, "tileHeight": 32, "tileSeparationX": 0, "tileSeparationY": 0},
+    {"label": "placeholder", "path": "placeholderTileset.png", "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAABACAYAAABMbHjfAAAETklEQVR4nO2dy2sTURTGT19JW4vVtFJfRUEqilgKuhN0Y2w3IoiYZTYu3NS1i/4BghQX3YmbIAouWrAIVroSQRBchIBuaqFVqSLV4oMmRW1dlNghnczcycyd7yb3+22yyMz5buB8M/d50iRg7lw9syEikh3NbvsuN5Grel/l9V7XetGVGavpvqiYb22G6t+6NNwEbQCYVnQDyqgmsDPxa036Sq5dHokkTlDuTc1AdJ2MX7+woSv24vK6HOrVb/AwOsYYQJWokt7J63d/I4/pR74wG7umG6ld3dpiLy6vaI0fhQ7cAFF1ZcKSL8zK0GA68HdBr1ONFRd93Z0ao69ojh9eB24Aka2kz45mXccCldf54RWjkskvm59eSamasCrXmZT8IiKJZHtdxw+rAzeAM6n9Br1u/f9qya5qFtQgeGgwbUw3yGbgBlClMuF1DIaJfdSNAZjweuhoq+/4YXWwk9ABcCZ9uTsUpK9PiBvGvgFU+vZOE/CtQGrBOAPU2tWJYvaI2AfcALq2QDiv8zJHeRqU2AncACoJrHpP0GtE8HuBCBa4AZyYsipM7AFugLiTvlKPXSC7gRsgrqd8tcE1u0B2AzdAJbXM7Uc5JrCNR8/n6zp+WB24AYLOAqnEYLKrc+xgAt0EKHADRJGs1RbHoorfyPTv7UE3AQrcAFHjZgaaoDqpnl50E6A0nAGc5CZy3C7hw1qpiG4ClIY2gIj7YRsaYYs3cwvoJkCBVwT49uLu/0PZcSTm9nWAftgprXxhFl4VYvX+bag+GrgBvMqi+OG3jULFUF2ZMasNsOfpOFRfJL7qEW4Y0wWK8unPvr86cVRt8COu6hFuwN8Azi6QKlFtkxZhF+js24dQ/USyXaZfzsvIqQMQffgbQPfT2S++7Vsh4qra4AeqHXADqBC28gOpTlxndv1AtaMuDOCW6NXOBNMUJAh1YQA3gphC5V5iJ3ADBJ3+9Ere8uxPEE2eB7AbuAGc1PpkDrIb1M0grNBmL/BpUNu5+fiZtvLkKlx8P4WUF5HNvfyZc0cg2nVTGIsQHdAAxGpoAGI1Rg2CbeT7z1Woflxndv1AtYMGANO2hj2QwjPBBMrSJ+xCRJpnggmS/fknUP3U8EmoPhoaAEwGnIA8E0ygHD86ANV/MDkN1UdDA4DJFwpQ/bmlP1B9NDQAmFKpBNXv6tD3J+G/ii1a44ehWTZ3oNAAYGZefYTq7+zQuxWpnGimQgOAQVVD2ELfOsCP4rrs3mH2OgMNAMaEqgy6QFZ7UIUGANPX3YlugkZWjP59iWQ7DYDGlKoMujD999EABoCszFD8LZJs0TcVqjN2FKBHYNaDLktieoLqhgYgVkMDEKuhAYjV0ADEamgAYjU0ALEaGoBYDSvDgblx5bzZ2yUbHK4Eg0mf3gfV//D5K1QfDQ0AxvY/qkZDA4BBH0q33YA0ABj0H1WfGDgM1UdDA4DBH0pfAOtj+QciG2xz1Iot6wAAAABJRU5ErkJggg==", "tileWidth": 32, "tileHeight": 32, "tileSeparationX": 0, "tileSeparationY": 0}
   ]
 }
