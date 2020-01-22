@@ -22,6 +22,7 @@ class PlayState extends FlxState
 	var level:FlxTilemap = new FlxTilemap();
 	var player:Player;
 	var debug:FlxText;
+	private var totalCheese:Int = 0;
 
 	private var grpCheese:FlxTypedGroup<Cheese>;
 	private var grpMovingPlatforms:FlxTypedGroup<MovingPlatform>;
@@ -85,6 +86,7 @@ class PlayState extends FlxState
 			case "coins":
 				var daCoin:Cheese = new Cheese(e.x, e.y);
 				grpCheese.add(daCoin);
+				totalCheese += 1;
 			case "movingPlatform":
 				var platform:MovingPlatform = new MovingPlatform(e.x, e.y, getPathData(e));
 				platform.makeGraphic(e.width, e.height);
@@ -119,7 +121,7 @@ class PlayState extends FlxState
 	override public function update(elapsed:Float):Void
 	{
 		FlxG.watch.addMouse();
-		debug.text = "Cheese: " + coinCount;
+		debug.text = "Cheese: " + coinCount + "/" + totalCheese;
 		debug.text += "\nCamera: " + FlxG.camera.zoom;
 		
 		super.update(elapsed);
@@ -128,7 +130,7 @@ class PlayState extends FlxState
 
 		if (FlxG.overlap(grpObstacles, player))
 		{
-			player.setPosition(curCheckpoint.x, curCheckpoint.y);
+			player.setPosition(curCheckpoint.x, curCheckpoint.y - 16);
 			player.velocity.set();
 
 			FlxG.sound.play(AssetPaths.damageTaken__mp3, 0.6);
@@ -136,7 +138,7 @@ class PlayState extends FlxState
 
 		FlxG.overlap(grpCheckpoint, player, function(c:Checkpoint, p:Player)
 		{
-			if (c.x != curCheckpoint.x && c.y != curCheckpoint.y)
+			if (c.x != curCheckpoint.x || c.y != curCheckpoint.y)
 			{
 				curCheckpoint.set(c.x, c.y);
 				FlxG.sound.play(AssetPaths.checkpoint__mp3, 0.8);

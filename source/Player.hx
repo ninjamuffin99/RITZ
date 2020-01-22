@@ -139,7 +139,7 @@ class Player extends FlxSprite
             animation.play('idle');
         }
 
-        wallJumping();      
+        //wallJumping();      
         
         if (isTouching(FlxObject.FLOOR))
         {
@@ -193,6 +193,7 @@ class Player extends FlxSprite
                 velocity.y = 0;
                 if ((velocity.x > 0 && left) || (velocity.x < 0 && right))
                 {
+                    // sorta sidejump style boost thingie
                     //velocity.y -= 200;
                     //velocity.x *= -0.1;
                 }
