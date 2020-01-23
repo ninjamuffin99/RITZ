@@ -105,6 +105,10 @@ class PlayState extends FlxState
 			case "player": 
 				add(player = new Player(e.x, e.y));
 				curCheckpoint.set(e.x, e.y);
+			case "spider":
+				var spider:Enemy = new Enemy(e.x, e.y, getPathData(e), e.values.speed);
+				add(spider);
+				trace('spider added');
 			case "coins":
 				var daCoin:Cheese = new Cheese(e.x, e.y);
 				grpCheese.add(daCoin);
@@ -120,40 +124,8 @@ class PlayState extends FlxState
 					platform.allowCollisions = FlxObject.UP;
 				}
 				
-				/* ALL THIS SHIT IS BUSTED FOR WAHTEVER DUMBASS REASON LMAO
-				var moveType:String = Std.string(e.values.TYPE).trim();
-				trace(moveType);
-				switch(moveType)
-				{
-					case "LOOP_FORWARD":
-						platform.path.setProperties(e.values.speed, FlxPath.LOOP_FORWARD);
-						trace('cur type: ' + moveType);
-					case "LOOP_BACKWARD":
-						platform.path.setProperties(e.values.speed, FlxPath.LOOP_BACKWARD);
-						trace('cur type: ' + moveType);
-					case "FORWARD":
-						platform.path.setProperties(e.values.speed, FlxPath.FORWARD);
-						trace('cur type: ' + moveType);
-					case "BACKWARD":
-						platform.path.setProperties(e.values.speed, FlxPath.BACKWARD);
-						trace('cur type: ' + moveType);
-					case "YOYO":
-						platform.path.setProperties(e.values.speed, FlxPath.YOYO);
-						trace('cur type: ' + moveType);
-					default:
-						platform.path.setProperties(e.values.speed, FlxPath.LOOP_FORWARD);
-						trace('cur type: ');
-				}
-				*/
-
-				trace(e.values.color);
-				
 				var lastStringbit:String = Std.string(e.values.color).substring(1, 7);
-				trace(lastStringbit);
-
 				var firstStringbit:String = Std.string(e.values.color).substring(7, 10);
-				trace(firstStringbit);
-
 
 				platform.color = FlxColor.fromString(Std.string("#" + firstStringbit + lastStringbit).toUpperCase());
 				

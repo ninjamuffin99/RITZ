@@ -223,16 +223,29 @@
           "id": 57,
           "_eid": "47158608",
           "x": 264,
-          "y": 3336,
+          "y": 3328,
           "width": 16,
           "height": 16,
           "originX": 0,
           "originY": 0,
           "nodes": [
-            {"x": 352, "y": 3336},
-            {"x": 304, "y": 3392}
+            {"x": 352, "y": 3328},
+            {"x": 304, "y": 3384}
           ],
           "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#00ffffff", "graphic": "none", "onewayplatform": false}
+        },
+        {
+          "name": "spider",
+          "id": 58,
+          "_eid": "75028337",
+          "x": 400,
+          "y": 3360,
+          "originX": 0,
+          "originY": 0,
+          "nodes": [
+            {"x": 536, "y": 3360}
+          ],
+          "values": {"speed": 50}
         }
       ]
     },
