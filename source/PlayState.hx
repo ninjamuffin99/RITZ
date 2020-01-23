@@ -35,7 +35,7 @@ class PlayState extends FlxState
 
 	private var grpObstacles:FlxTypedGroup<Obstacle>;
 	private var coinCount:Int = 0;
-	private var curCheckpoint:FlxPoint = new FlxPoint();
+	private var curCheckpoint:Checkpoint;
 	private var grpCheckpoint:FlxTypedGroup<Checkpoint>;
 
 	private var grpMusicTriggers:FlxTypedGroup<MusicTrigger>;
@@ -45,8 +45,12 @@ class PlayState extends FlxState
 	private var curTalking:Bool = false;
 	private var dialogueText:FlxTypeText;
 
+	private var cheeseHolding:Array<Dynamic> = [];
+
 	override public function create():Void
 	{
+		FlxG.camera.fade(FlxColor.BLACK, 2, true);
+
 		var bg:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.dumbbg__png);
 		bg.scrollFactor.set(0.045, 0.045);
 		bg.alpha = 0.75;
@@ -86,7 +90,7 @@ class PlayState extends FlxState
 
 		ogmo.level.get_entity_layer('entities').load_entities(entity_loader);
 
-		FlxG.camera.follow(player, FlxCameraFollowStyle.PLATFORMER);
+		FlxG.camera.follow(player, FlxCameraFollowStyle.LOCKON, 0.15);
 		FlxG.worldBounds.set(0, 0, level.width, level.height);
 		level.follow(FlxG.camera);
 
@@ -115,7 +119,7 @@ class PlayState extends FlxState
 		{
 			case "player": 
 				add(player = new Player(e.x, e.y));
-				curCheckpoint.set(e.x, e.y);
+				curCheckpoint = new Checkpoint(e.x, e.y);
 			case "spider":
 				var spider:Enemy = new Enemy(e.x, e.y, getPathData(e), e.values.speed);
 				add(spider);
@@ -150,6 +154,7 @@ class PlayState extends FlxState
 				for (i in 0...spikeAmount)
 				{
 					var daSpike:SpikeObstacle = new SpikeObstacle(e.x + (i * 32), e.y);
+					daSpike.angle = e.values.angle;
 					grpObstacles.add(daSpike);
 				}
 			case "checkpoint":
@@ -178,7 +183,6 @@ class PlayState extends FlxState
 	{
 		FlxG.watch.addMouse();
 		debug.text = "Cheese: " + coinCount + "/" + totalCheese;
-		debug.text += "\nCamera: " + FlxG.camera.zoom;
 		
 		super.update(elapsed);
 		FlxG.collide(grpMovingPlatforms, player, function(platform:MovingPlatform, p:Player)
@@ -234,10 +238,14 @@ class PlayState extends FlxState
 
 		if (FlxG.overlap(grpObstacles, player))
 		{
-			
-
 			if (!player.gettingHurt)
 			{
+				for (ch in 0...cheeseHolding.length)
+				{
+					grpCheese.add(cheeseHolding[ch]);
+				}
+				cheeseHolding = [];
+
 				player.gettingHurt = true;
 				player.animation.play('fucking died lmao');
 				FlxG.sound.play(AssetPaths.damageTaken__mp3, 0.6);
@@ -253,10 +261,13 @@ class PlayState extends FlxState
 
 		FlxG.overlap(grpCheckpoint, player, function(c:Checkpoint, p:Player)
 		{
-			if (c.x != curCheckpoint.x || c.y != curCheckpoint.y)
+			if (c != curCheckpoint)
 			{
-				curCheckpoint.set(c.x, c.y);
+				curCheckpoint = c;
 				FlxG.sound.play(AssetPaths.checkpoint__mp3, 0.8);
+
+				coinCount += cheeseHolding.length;
+				cheeseHolding = [];
 			}
 				
 		});
@@ -266,11 +277,13 @@ class PlayState extends FlxState
 		if (FlxG.keys.justPressed.E)
 			FlxG.camera.zoom *= 1.3;
 
-		FlxG.overlap(player, grpCheese, function(p, cheese)
+		FlxG.overlap(player, grpCheese, function(p, daCheese)
 		{
-			cheese.kill();
+			
 			FlxG.sound.play(AssetPaths.collectCheese__mp3, 0.6);
-			coinCount += 1;
+			cheeseHolding.push(daCheese);
+			grpCheese.remove(daCheese, true);
+			//coinCount += 1;
 		});
 
 	}

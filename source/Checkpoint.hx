@@ -7,6 +7,7 @@ class Checkpoint extends FlxSprite
 {
     public function new(x:Float, y:Float) {
         super(x, y);
-        makeGraphic(8, 8, FlxColor.GREEN);
+        loadGraphic(AssetPaths.checkpoint_rat__PNG, true, 32, 32);
+        
     }
 }

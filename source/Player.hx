@@ -43,7 +43,8 @@ class Player extends FlxSprite
 
         animation.play("idle");
 
-        height -= 2;
+        height -= 12;
+        offset.y = 10;
         width -= 12;
         offset.x = 6;
 

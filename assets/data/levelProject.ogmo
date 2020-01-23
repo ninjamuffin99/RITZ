@@ -212,7 +212,7 @@
       "tileSize": {"x": 32, "y": 32},
       "resizeableX": true,
       "resizeableY": true,
-      "rotatable": true,
+      "rotatable": false,
       "rotationDegrees": 360,
       "canFlipX": false,
       "canFlipY": false,
@@ -222,7 +222,9 @@
       "nodeDisplay": 0,
       "nodeGhost": true,
       "tags": [],
-      "values": [],
+      "values": [
+        {"name": "angle", "definition": "Float", "defaults": 0, "bounded": false, "min": 0, "max": 100}
+      ],
       "texture": "Untitled.png",
       "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAMklEQVRYhe3OQQEAMAjEsGOS0I1HJoNPaqCp6d4c9i7nAAAAAAAAAAAAAAAAAAAASfIBQmsCT2OOtXcAAAAASUVORK5CYII="
     },
@@ -266,7 +268,7 @@
       "exportID": "62845470",
       "name": "checkpoint",
       "limit": -1,
-      "size": {"x": 8, "y": 8},
+      "size": {"x": 32, "y": 32},
       "origin": {"x": 0, "y": 0},
       "originAnchored": true,
       "shape": {
