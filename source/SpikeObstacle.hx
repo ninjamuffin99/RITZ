@@ -14,7 +14,7 @@ class SpikeObstacle extends Obstacle
         offset.x = 13;
         width -= (offset.x * 2) + 1;
 
-        this.y += 6;
+        this.y += 5;
         this.x += 13;
         
     }
