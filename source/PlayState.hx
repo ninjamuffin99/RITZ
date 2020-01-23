@@ -101,6 +101,11 @@ class PlayState extends FlxState
 				platform.makeGraphic(e.width, e.height);
 				platform.updateHitbox();
 				platform.path.setProperties(e.values.speed, FlxPath.LOOP_FORWARD);
+
+				if (e.values.onewayplatform)
+				{
+					platform.allowCollisions = FlxObject.UP;
+				}
 				
 				/* ALL THIS SHIT IS BUSTED FOR WAHTEVER DUMBASS REASON LMAO
 				var moveType:String = Std.string(e.values.TYPE).trim();
@@ -126,11 +131,20 @@ class PlayState extends FlxState
 						platform.path.setProperties(e.values.speed, FlxPath.LOOP_FORWARD);
 						trace('cur type: ');
 				}
- 				*/
+				*/
+
+				trace(e.values.color);
+				
+				var lastStringbit:String = Std.string(e.values.color).substring(1, 7);
+				trace(lastStringbit);
+
+				var firstStringbit:String = Std.string(e.values.color).substring(7, 10);
+				trace(firstStringbit);
+
+
+				platform.color = FlxColor.fromString(Std.string("#" + firstStringbit + lastStringbit).toUpperCase());
 				
 				grpMovingPlatforms.add(platform);
-
-				//switch(Std.string(e.values.TYPE).trim());
 
 			case "spike":
 				var spikeAmount = Std.int(e.width / 32);
