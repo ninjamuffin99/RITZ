@@ -181,7 +181,8 @@
           "defaults": 0
         },
         {"name": "color", "definition": "Color", "defaults": "#ffffffff", "includeAlpha": false},
-        {"name": "graphic", "definition": "String", "defaults": "none", "maxLength": 0, "trimWhitespace": true}
+        {"name": "graphic", "definition": "String", "defaults": "none", "maxLength": 0, "trimWhitespace": true},
+        {"name": "onewayplatform", "definition": "Boolean", "defaults": true}
       ]
     },
     {
