@@ -333,6 +333,44 @@
         {"name": "song", "definition": "String", "defaults": "pillow", "maxLength": 0, "trimWhitespace": true},
         {"name": "fadetime", "definition": "Float", "defaults": 4, "bounded": false, "min": 0, "max": 100}
       ]
+    },
+    {
+      "exportID": "75028337",
+      "name": "spider",
+      "limit": -1,
+      "size": {"x": 32, "y": 32},
+      "origin": {"x": 0, "y": 0},
+      "originAnchored": true,
+      "shape": {
+        "label": "Rectangle",
+        "points": [
+          {"x": -1, "y": -1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": 1}
+        ]
+      },
+      "color": "#8fb840ff",
+      "tileX": false,
+      "tileY": false,
+      "tileSize": {"x": 32, "y": 32},
+      "resizeableX": false,
+      "resizeableY": false,
+      "rotatable": false,
+      "rotationDegrees": 360,
+      "canFlipX": false,
+      "canFlipY": false,
+      "canSetColor": false,
+      "hasNodes": true,
+      "nodeLimit": 0,
+      "nodeDisplay": 0,
+      "nodeGhost": true,
+      "tags": [],
+      "values": [
+        {"name": "speed", "definition": "Float", "defaults": 50, "bounded": false, "min": 0, "max": 100}
+      ]
     }
   ],
   "tilesets": [
