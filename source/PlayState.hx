@@ -65,9 +65,11 @@ class PlayState extends FlxState
 		
 
 		level.load_tilemap(ogmo, 'assets/data/');
+		
+		add(ogmo.level.get_decal_layer('decalbg').get_decal_group('assets'));
 		add(level);
-
 		add(ogmo.level.get_decal_layer('decals').get_decal_group('assets'));
+		
 
 		grpCheese = new FlxTypedGroup<Cheese>();
 		add(grpCheese);

@@ -17,23 +17,6 @@
   "layers": [
     {
       "definition": "tile",
-      "name": "tiles",
-      "gridSize": {"x": 32, "y": 32},
-      "exportID": "29938530",
-      "exportMode": 0,
-      "arrayMode": 0,
-      "defaultTileset": "testTiles"
-    },
-    {
-      "definition": "entity",
-      "name": "entities",
-      "gridSize": {"x": 8, "y": 8},
-      "exportID": "29930198",
-      "requiredTags": [],
-      "excludedTags": []
-    },
-    {
-      "definition": "tile",
       "name": "cameraView",
       "gridSize": {"x": 480, "y": 288},
       "exportID": "62908765",
@@ -46,6 +29,34 @@
       "name": "decals",
       "gridSize": {"x": 32, "y": 32},
       "exportID": "74736684",
+      "folder": "..",
+      "includeImageSequence": true,
+      "scaleable": true,
+      "rotatable": true,
+      "values": []
+    },
+    {
+      "definition": "entity",
+      "name": "entities",
+      "gridSize": {"x": 8, "y": 8},
+      "exportID": "29930198",
+      "requiredTags": [],
+      "excludedTags": []
+    },
+    {
+      "definition": "tile",
+      "name": "tiles",
+      "gridSize": {"x": 32, "y": 32},
+      "exportID": "29938530",
+      "exportMode": 0,
+      "arrayMode": 0,
+      "defaultTileset": "testTiles"
+    },
+    {
+      "definition": "decal",
+      "name": "decalbg",
+      "gridSize": {"x": 32, "y": 32},
+      "exportID": "74834713",
       "folder": "..",
       "includeImageSequence": true,
       "scaleable": true,
