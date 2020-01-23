@@ -216,7 +216,7 @@
             {"x": 928, "y": 2816},
             {"x": 800, "y": 2816}
           ],
-          "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_BACKWARD", "color": "#ffffffff", "graphic": "none", "onewayplatform": false, "disintigrate": false, "disintigrateSeconds": 1}
+          "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_BACKWARD", "color": "#ffffffff", "graphic": "none", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1}
         },
         {
           "name": "movingPlatform",
