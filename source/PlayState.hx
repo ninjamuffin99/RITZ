@@ -146,8 +146,8 @@ class PlayState extends FlxState
 			case "musicTrigger":
 				grpMusicTriggers.add(new MusicTrigger(e.x, e.y, e.width, e.height, e.values.song, e.values.fadetime));
 			case "secretTrigger":
-				var trig = new SecretTrigger(e.x, e.y, e.width, e.height);
-				grpSecretTriggers.add(trig);
+				trace('ADDED SECRET');
+				grpSecretTriggers.add(new SecretTrigger(e.x, e.y, e.width, e.height));
 		}
 	}
 

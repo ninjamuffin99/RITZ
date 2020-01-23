@@ -227,7 +227,7 @@
         {"name": "spike", "id": 65, "_eid": "62782057", "x": 1216, "y": 2048, "width": 32, "height": 32, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 66, "_eid": "62782057", "x": 1288, "y": 2048, "width": 32, "height": 32, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 67, "_eid": "62782057", "x": 1080, "y": 2048, "width": 32, "height": 32, "originX": 0, "originY": 0, "rotation": 0},
-        {"name": "secretTrigger", "id": 68, "_eid": "75912039", "x": 768, "y": 2432, "height": 160, "originX": 0, "originY": 0, "flippedX": false}
+        {"name": "secretTrigger", "id": 68, "_eid": "75912039", "x": 760, "y": 2432, "width": 16, "height": 160, "originX": 0, "originY": 0}
       ]
     },
     {

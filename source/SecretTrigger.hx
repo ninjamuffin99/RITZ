@@ -10,5 +10,7 @@ class SecretTrigger extends FlxObject
         super(x, y);
         width = w;
         height = h;
+
+        trace('YEP I BEEN ADDED LMAO');
     }
 }
