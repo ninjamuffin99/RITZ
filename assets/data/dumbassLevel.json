@@ -148,19 +148,16 @@
       "arrayMode": 0
     },
     {
-      "name": "decals",
-      "_eid": "74736684",
+      "name": "decal",
+      "_eid": "74649676",
       "offsetX": 0,
       "offsetY": 0,
       "gridCellWidth": 32,
       "gridCellHeight": 32,
       "gridCellsX": 128,
       "gridCellsY": 108,
-      "decals": [
-        {"x": 224, "y": 3328, "scaleX": 1, "scaleY": 1, "rotation": 0, "texture": "images/mousePlaceholder.png"},
-        {"x": 448, "y": 3424, "scaleX": 1, "scaleY": 1, "rotation": -0.7323027872854819, "texture": "images/tac1.png"}
-      ],
-      "folder": ".."
+      "decals": [],
+      "folder": ""
     }
   ]
 }
