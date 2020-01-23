@@ -1,5 +1,6 @@
 package;
 
+import flixel.group.FlxGroup;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -58,9 +59,15 @@ class PlayState extends FlxState
 		grpSecretTriggers = new FlxTypedGroup<SecretTrigger>();
 		add(grpSecretTriggers);
 
+
 		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, AssetPaths.dumbassLevel__json);
+
+		
+
 		level.load_tilemap(ogmo, 'assets/data/');
 		add(level);
+
+		add(ogmo.level.get_decal_layer('decals').get_decal_group('assets'));
 
 		grpCheese = new FlxTypedGroup<Cheese>();
 		add(grpCheese);
