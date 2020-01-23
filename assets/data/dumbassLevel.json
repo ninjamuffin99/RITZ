@@ -218,7 +218,19 @@
         {"name": "spike", "id": 64, "_eid": "62782057", "x": 1152, "y": 2048, "width": 32, "height": 32, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 65, "_eid": "62782057", "x": 1216, "y": 2048, "width": 32, "height": 32, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 66, "_eid": "62782057", "x": 1288, "y": 2048, "width": 32, "height": 32, "originX": 0, "originY": 0, "rotation": 0},
-        {"name": "spike", "id": 67, "_eid": "62782057", "x": 1080, "y": 2048, "width": 32, "height": 32, "originX": 0, "originY": 0, "rotation": 0}
+        {"name": "spike", "id": 67, "_eid": "62782057", "x": 1080, "y": 2048, "width": 32, "height": 32, "originX": 0, "originY": 0, "rotation": 0},
+        {
+          "name": "movingPlatform",
+          "id": 68,
+          "_eid": "47158608",
+          "x": 1192,
+          "y": 520,
+          "width": 64,
+          "height": 16,
+          "originX": 0,
+          "originY": 0,
+          "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "none", "onewayplatform": true}
+        }
       ]
     },
     {
