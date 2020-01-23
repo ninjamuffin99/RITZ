@@ -48,6 +48,11 @@ class PlayState extends FlxState
 		bg.alpha = 0.75;
 		add(bg);
 
+		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, AssetPaths.dumbassLevel__json);
+		level.load_tilemap(ogmo, 'assets/data/');
+		add(ogmo.level.get_decal_layer('decalbg').get_decal_group('assets'));
+
+
 		grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
 		add(grpMovingPlatforms);
 
@@ -62,19 +67,10 @@ class PlayState extends FlxState
 
 		grpSecretTriggers = new FlxTypedGroup<SecretTrigger>();
 		add(grpSecretTriggers);
-
-
-		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, AssetPaths.dumbassLevel__json);
-
 		
 
-		level.load_tilemap(ogmo, 'assets/data/');
-
-
-		add(ogmo.level.get_decal_layer('decalbg').get_decal_group('assets'));
 		add(level);
 		add(ogmo.level.get_decal_layer('decals').get_decal_group('assets'));
-		
 
 		grpCheese = new FlxTypedGroup<Cheese>();
 		add(grpCheese);
@@ -124,6 +120,7 @@ class PlayState extends FlxState
 				platform.makeGraphic(e.width, e.height);
 				platform.updateHitbox();
 				platform.path.setProperties(e.values.speed, FlxPath.LOOP_FORWARD);
+				platform.visible = e.values.visible;
 
 				if (e.values.onewayplatform)
 				{
@@ -149,7 +146,8 @@ class PlayState extends FlxState
 			case "musicTrigger":
 				grpMusicTriggers.add(new MusicTrigger(e.x, e.y, e.width, e.height, e.values.song, e.values.fadetime));
 			case "secretTrigger":
-				grpSecretTriggers.add(new SecretTrigger(e.x, e.y, e.width, e.height));
+				var trig = new SecretTrigger(e.x, e.y, e.width, e.height);
+				grpSecretTriggers.add(trig);
 		}
 	}
 
