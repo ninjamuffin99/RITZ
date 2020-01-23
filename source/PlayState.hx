@@ -81,8 +81,7 @@ class PlayState extends FlxState
 
 		ogmo.level.get_entity_layer('entities').load_entities(entity_loader);
 
-		FlxG.camera.follow(player, FlxCameraFollowStyle.SCREEN_BY_SCREEN);
-		
+		FlxG.camera.follow(player, FlxCameraFollowStyle.PLATFORMER);
 		FlxG.worldBounds.set(0, 0, level.width, level.height);
 		level.follow(FlxG.camera);
 
@@ -115,6 +114,8 @@ class PlayState extends FlxState
 				totalCheese += 1;
 			case "movingPlatform":
 				var platform:MovingPlatform = new MovingPlatform(e.x, e.y, getPathData(e));
+				platform.disintigrating = e.values.disintigrate;
+				platform.disS = e.values.disintigrateSeconds;
 				platform.makeGraphic(e.width, e.height);
 				platform.updateHitbox();
 				platform.path.setProperties(e.values.speed, FlxPath.LOOP_FORWARD);
@@ -166,7 +167,18 @@ class PlayState extends FlxState
 		debug.text += "\nCamera: " + FlxG.camera.zoom;
 		
 		super.update(elapsed);
-		FlxG.collide(grpMovingPlatforms, player);
+		FlxG.collide(grpMovingPlatforms, player, function(platform:MovingPlatform, p:Player)
+		{
+			if (platform.disintigrating && !platform.curDisintigrating)
+			{
+				platform.curDisintigrating = true;
+				new FlxTimer().start(platform.disS, function(t:FlxTimer)
+					{
+						platform.kill();
+					});
+			}
+
+		});
 		FlxG.collide(level, player);
 
 		FlxG.overlap(player, grpMusicTriggers, function(p:Player, mT:MusicTrigger)

@@ -216,7 +216,7 @@
             {"x": 928, "y": 2816},
             {"x": 800, "y": 2816}
           ],
-          "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_BACKWARD", "color": "#ffffffff", "graphic": "none", "onewayplatform": false}
+          "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_BACKWARD", "color": "#ffffffff", "graphic": "none", "onewayplatform": false, "disintigrate": false, "disintigrateSeconds": 1}
         },
         {
           "name": "movingPlatform",
@@ -232,7 +232,20 @@
             {"x": 352, "y": 3328},
             {"x": 304, "y": 3384}
           ],
-          "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#00ffffff", "graphic": "none", "onewayplatform": false}
+          "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#00ffffff", "graphic": "none", "onewayplatform": true, "disintigrate": true, "disintigrateSeconds": 1}
+        },
+        {
+          "name": "spider",
+          "id": 58,
+          "_eid": "75028337",
+          "x": 400,
+          "y": 3360,
+          "originX": 0,
+          "originY": 0,
+          "nodes": [
+            {"x": 536, "y": 3360}
+          ],
+          "values": {"speed": 50}
         }
       ]
     },

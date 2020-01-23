@@ -182,7 +182,9 @@
         },
         {"name": "color", "definition": "Color", "defaults": "#ffffffff", "includeAlpha": false},
         {"name": "graphic", "definition": "String", "defaults": "none", "maxLength": 0, "trimWhitespace": true},
-        {"name": "onewayplatform", "definition": "Boolean", "defaults": true}
+        {"name": "onewayplatform", "definition": "Boolean", "defaults": true},
+        {"name": "disintigrate", "definition": "Boolean", "defaults": false},
+        {"name": "disintigrateSeconds", "definition": "Float", "defaults": 1, "bounded": false, "min": 0, "max": 100}
       ]
     },
     {
