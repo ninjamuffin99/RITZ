@@ -181,7 +181,7 @@
             {"x": 928, "y": 3488},
             {"x": 800, "y": 3488}
           ],
-          "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_BACKWARD", "color": "#ffffffff", "graphic": "none", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": false}
+          "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_BACKWARD", "color": "#ffffffff", "graphic": "none", "onewayplatform": true}
         },
         {
           "name": "movingPlatform",
@@ -197,7 +197,7 @@
             {"x": 352, "y": 3968},
             {"x": 304, "y": 4024}
           ],
-          "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#00ffffff", "graphic": "none", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
+          "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#00ffffff", "graphic": "none", "onewayplatform": true}
         },
         {"name": "spike", "id": 58, "_eid": "62782057", "x": 640, "y": 3776, "width": 32, "height": 32, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 59, "_eid": "62782057", "x": 576, "y": 3776, "width": 32, "height": 32, "originX": 0, "originY": 0, "rotation": 0},
