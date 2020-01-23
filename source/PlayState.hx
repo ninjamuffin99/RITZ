@@ -1,5 +1,6 @@
 package;
 
+import flixel.addons.text.FlxTypeText;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.util.FlxTimer;
@@ -40,6 +41,9 @@ class PlayState extends FlxState
 	private var grpMusicTriggers:FlxTypedGroup<MusicTrigger>;
 	private var grpSecretTriggers:FlxTypedGroup<SecretTrigger>;
 	private var musicQueue:String = "";
+
+	private var curTalking:Bool = false;
+	private var dialogueText:FlxTypeText;
 
 	override public function create():Void
 	{
@@ -94,6 +98,13 @@ class PlayState extends FlxState
 		debug.scrollFactor.set(0, 0);
 		debug.color = FlxColor.BLACK;
 		add(debug);
+
+		dialogueText = new FlxTypeText(0, 0, FlxG.width, "This is default dialogue text. jump over shit!!", 16);
+		dialogueText.scrollFactor.set();
+		//add(dialogueText);
+
+		dialogueText.start();
+		
 
 		super.create();
 	}
