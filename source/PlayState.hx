@@ -36,6 +36,7 @@ class PlayState extends FlxState
 	private var grpCheckpoint:FlxTypedGroup<Checkpoint>;
 
 	private var grpMusicTriggers:FlxTypedGroup<MusicTrigger>;
+	private var grpSecretTriggers:FlxTypedGroup<SecretTrigger>;
 	private var musicQueue:String = "";
 
 	override public function create():Void
@@ -53,6 +54,9 @@ class PlayState extends FlxState
 
 		grpMusicTriggers = new FlxTypedGroup<MusicTrigger>();
 		add(grpMusicTriggers);
+
+		grpSecretTriggers = new FlxTypedGroup<SecretTrigger>();
+		add(grpSecretTriggers);
 
 		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, AssetPaths.dumbassLevel__json);
 		level.load_tilemap(ogmo, 'assets/data/');
@@ -157,7 +161,8 @@ class PlayState extends FlxState
 				grpCheckpoint.add(new Checkpoint(e.x, e.y));
 			case "musicTrigger":
 				grpMusicTriggers.add(new MusicTrigger(e.x, e.y, e.width, e.height, e.values.song, e.values.fadetime));
-
+			case "secretTrigger":
+				grpSecretTriggers.add(new SecretTrigger(e.x, e.y, e.width, e.height));
 		}
 	}
 
@@ -184,25 +189,41 @@ class PlayState extends FlxState
 		FlxG.collide(level, player);
 
 		FlxG.overlap(player, grpMusicTriggers, function(p:Player, mT:MusicTrigger)
+		{
+			if (musicQueue != mT.daSong)
 			{
-				if (musicQueue != mT.daSong)
+				musicQueue = mT.daSong;
+
+				if (FlxG.sound.music != null)
 				{
-					musicQueue = mT.daSong;
-
-					if (FlxG.sound.music != null)
+					FlxG.sound.music.fadeOut(3, 0, function(t:FlxTween)
 					{
-						FlxG.sound.music.fadeOut(3, 0, function(t:FlxTween)
-						{
-							musicHandling();
-						});
-					}
-					else
 						musicHandling();
-
-					
+					});
 				}
+				else
+					musicHandling();
 
-			});
+				
+			}
+
+		});
+
+		FlxG.overlap(player, grpSecretTriggers, function(p:Player, sT:SecretTrigger)
+		{
+			if (!sT.hasTriggered)
+			{
+				sT.hasTriggered = true;
+				var oldVol:Float = FlxG.sound.music.volume;
+				FlxG.sound.music.volume = 0.1;
+				FlxG.sound.play(AssetPaths.discoverysound__mp3, 1, false, null, true, function()
+					{
+						FlxG.sound.music.volume = oldVol;
+					});
+			}
+				
+	
+		});
 
 		if (FlxG.overlap(grpObstacles, player))
 		{
