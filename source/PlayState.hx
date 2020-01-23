@@ -81,8 +81,7 @@ class PlayState extends FlxState
 
 		ogmo.level.get_entity_layer('entities').load_entities(entity_loader);
 
-		FlxG.camera.follow(player, FlxCameraFollowStyle.SCREEN_BY_SCREEN);
-		
+		FlxG.camera.follow(player, FlxCameraFollowStyle.PLATFORMER);
 		FlxG.worldBounds.set(0, 0, level.width, level.height);
 		level.follow(FlxG.camera);
 
