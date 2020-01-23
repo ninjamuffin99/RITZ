@@ -36,7 +36,7 @@
         {"name": "coins", "id": 9, "_eid": "46479631", "x": 880, "y": 3184, "originX": 0, "originY": 0},
         {"name": "coins", "id": 10, "_eid": "46479631", "x": 728, "y": 2536, "originX": 0, "originY": 0},
         {"name": "coins", "id": 11, "_eid": "46479631", "x": 760, "y": 3080, "originX": 0, "originY": 0},
-        {"name": "spike", "id": 12, "_eid": "62782057", "x": 544, "y": 3104, "width": 128, "height": 32, "originX": 0, "originY": 0, "rotation": 0},
+        {"name": "spike", "id": 12, "_eid": "62782057", "x": 560, "y": 3136, "width": 128, "height": 32, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "checkpoint", "id": 13, "_eid": "62845470", "x": 256, "y": 3104, "originX": 0, "originY": 0},
         {"name": "spike", "id": 14, "_eid": "62782057", "x": 288, "y": 2848, "width": 160, "height": 32, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "checkpoint", "id": 15, "_eid": "62845470", "x": 224, "y": 2808, "originX": 0, "originY": 0},
@@ -113,7 +113,7 @@
             {"x": 928, "y": 2816},
             {"x": 800, "y": 2816}
           ],
-          "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_BACKWARD", "color": "#ffffffff", "graphic": "none"}
+          "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_BACKWARD", "color": "#ffffffff", "graphic": "none", "onewayplatform": false}
         },
         {
           "name": "movingPlatform",
