@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxTween;
@@ -42,7 +43,10 @@ class PlayState extends FlxState
 
 	override public function create():Void
 	{
-		bgColor = FlxColor.WHITE;
+		var bg:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.dumbbg__png);
+		bg.scrollFactor.set(0.045, 0.045);
+		bg.alpha = 0.75;
+		add(bg);
 
 		grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
 		add(grpMovingPlatforms);
@@ -65,7 +69,8 @@ class PlayState extends FlxState
 		
 
 		level.load_tilemap(ogmo, 'assets/data/');
-		
+
+
 		add(ogmo.level.get_decal_layer('decalbg').get_decal_group('assets'));
 		add(level);
 		add(ogmo.level.get_decal_layer('decals').get_decal_group('assets'));
