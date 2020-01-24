@@ -43,7 +43,6 @@ class PlayState extends FlxState
 	private var musicQueue:String = "";
 
 	private var curTalking:Bool = false;
-	private var dialogueText:FlxTypeText;
 
 	private var cheeseHolding:Array<Dynamic> = [];
 
@@ -103,11 +102,7 @@ class PlayState extends FlxState
 		debug.color = FlxColor.BLACK;
 		add(debug);
 
-		dialogueText = new FlxTypeText(0, 0, FlxG.width, "This is default dialogue text. jump over shit!!", 16);
-		dialogueText.scrollFactor.set();
-		//add(dialogueText);
-
-		dialogueText.start();
+		
 		
 
 		super.create();
@@ -214,8 +209,6 @@ class PlayState extends FlxState
 				}
 				else
 					musicHandling();
-
-				
 			}
 
 		});
@@ -263,6 +256,12 @@ class PlayState extends FlxState
 		{
 			if (c != curCheckpoint)
 			{
+				grpCheckpoint.forEach(function(c)
+					{
+						c.isCurCheckpoint = false;
+					});
+
+				c.isCurCheckpoint = true;
 				curCheckpoint = c;
 				FlxG.sound.play(AssetPaths.checkpoint__mp3, 0.8);
 
