@@ -478,7 +478,7 @@
           "nodes": [
             {"x": 328, "y": 1536}
           ],
-          "values": {"speed": 120, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "none", "onewayplatform": false, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
+          "values": {"speed": 120, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "movingLong", "onewayplatform": false, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
         },
         {
           "name": "movingPlatform",
@@ -493,7 +493,7 @@
           "nodes": [
             {"x": 488, "y": 1584}
           ],
-          "values": {"speed": 100, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "none", "onewayplatform": false, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
+          "values": {"speed": 100, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "movingLong", "onewayplatform": false, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
         },
         {"name": "coins", "id": 72, "_eid": "46479631", "x": 328, "y": 1520, "originX": 0, "originY": 0},
         {
@@ -502,8 +502,8 @@
           "_eid": "47158608",
           "x": 272,
           "y": 1096,
-          "width": 80,
-          "height": 16,
+          "width": 96,
+          "height": 32,
           "originX": 0,
           "originY": 0,
           "nodes": [
@@ -511,7 +511,7 @@
             {"x": 576, "y": 1040},
             {"x": 680, "y": 1096}
           ],
-          "values": {"speed": 150, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "none", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
+          "values": {"speed": 150, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "movingLongside", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
         },
         {
           "name": "spike",
@@ -550,7 +550,7 @@
           "nodes": [
             {"x": 1040, "y": 832}
           ],
-          "values": {"speed": 120, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "none", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
+          "values": {"speed": 120, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "movingSingle", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
         },
         {
           "name": "spike",
@@ -767,7 +767,7 @@
           "nodes": [
             {"x": 1664, "y": 3112}
           ],
-          "values": {"speed": 100, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "none", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
+          "values": {"speed": 100, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "movingSingle", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
         },
         {
           "name": "spike",
@@ -1351,7 +1351,7 @@
           "nodes": [
             {"x": 2008, "y": 1312}
           ],
-          "values": {"speed": 120, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "none", "onewayplatform": false, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
+          "values": {"speed": 120, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "movingLonger", "onewayplatform": false, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
         },
         {
           "name": "movingPlatform",
@@ -1366,7 +1366,7 @@
           "nodes": [
             {"x": 1824, "y": 1152}
           ],
-          "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "none", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
+          "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "movingSingle", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
         },
         {
           "name": "movingPlatform",
@@ -1375,13 +1375,13 @@
           "x": 1760,
           "y": 1104,
           "width": 64,
-          "height": 16,
+          "height": 32,
           "originX": 0,
           "originY": 0,
           "nodes": [
             {"x": 1576, "y": 1104}
           ],
-          "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "none", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
+          "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "movingShort", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
         },
         {
           "name": "movingPlatform",
@@ -1398,7 +1398,7 @@
             {"x": 1496, "y": 984},
             {"x": 1496, "y": 1144}
           ],
-          "values": {"speed": 200, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "none", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
+          "values": {"speed": 200, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "movingSingle", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
         },
         {"name": "coins", "id": 188, "_eid": "46479631", "x": 1552, "y": 1024, "originX": 0, "originY": 0},
         {

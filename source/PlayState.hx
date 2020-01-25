@@ -140,8 +140,16 @@ class PlayState extends FlxState
 				var platform:MovingPlatform = new MovingPlatform(e.x, e.y, getPathData(e));
 				platform.disintigrating = e.values.disintigrate;
 				platform.disS = e.values.disintigrateSeconds;
-				platform.makeGraphic(e.width, e.height);
-				platform.updateHitbox();
+				if (e.values.graphic != "none")
+				{
+					platform.loadGraphic('assets/images/' + e.values.graphic + '.png');
+				}
+				else
+				{
+					platform.makeGraphic(e.width, e.height);
+					platform.updateHitbox();
+				}
+				
 				platform.path.setProperties(e.values.speed, FlxPath.LOOP_FORWARD);
 				platform.visible = e.values.visible;
 
