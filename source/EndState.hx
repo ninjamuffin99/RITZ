@@ -52,10 +52,10 @@ class EndState extends FlxState
     override function update(elapsed:Float) {
         credsCounter++;
 
-        if (credsCounter >= 5)
+        if (credsCounter >= 2)
         {
             credsCounter = 0;
-            text.y -= 3;
+            text.y -= 1.75;
         }
         
         

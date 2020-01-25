@@ -1,6 +1,5 @@
 package;
 
-import js.html.AbortController;
 import flixel.addons.text.FlxTypeText;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
@@ -29,6 +28,7 @@ class PlayState extends FlxState
 	var level:FlxTilemap = new FlxTilemap();
 	var player:Player;
 	var debug:FlxText;
+	private var cheeseNeeded:Int = 32;
 	private var totalCheese:Int = 0;
 
 	private var grpCheese:FlxTypedGroup<Cheese>;
@@ -181,10 +181,15 @@ class PlayState extends FlxState
 		return new FlxPath(daPath);
 	}
 
+
+	// These are stupid awful and confusing names for these variables
+	// One of them is a ticker (cheeseAdding) and the other is to see if its in the state of adding cheese
+	private var cheeseAdding:Int = 0;
+	private var addingCheese:Bool = false;
 	override public function update(elapsed:Float):Void
 	{
 		FlxG.watch.addMouse();
-		debug.text = "Cheese: " + coinCount + "/" + totalCheese;
+		debug.text = "Cheese: " + coinCount + "/" + cheeseNeeded;
 		
 		super.update(elapsed);
 		FlxG.collide(grpMovingPlatforms, player, function(platform:MovingPlatform, p:Player)
@@ -206,7 +211,7 @@ class PlayState extends FlxState
 		
 		if (FlxG.collide(locked, player))
 		{
-			if (coinCount >= 30)
+			if (coinCount >= cheeseNeeded)
 			{
 				locked.kill();
 				FlxG.sound.play(AssetPaths.allcheesesunlocked__mp3);
@@ -287,20 +292,34 @@ class PlayState extends FlxState
 				c.isCurCheckpoint = true;
 				curCheckpoint = c;
 				FlxG.sound.play(AssetPaths.checkpoint__mp3, 0.8);
-
-				coinCount += cheeseHolding.length;
-				cheeseHolding = [];
 			}
 
 			if (cheeseHolding.length > 0)
 			{
-				coinCount += cheeseHolding.length;
-				cheeseHolding = [];
-			}
 
-			
+				addingCheese = true;
+			}
 				
 		});
+
+		if (addingCheese)
+		{
+			cheeseAdding++;
+
+			if (cheeseAdding >= 10)
+			{
+				coinCount += 1;
+				cheeseHolding.pop();
+				cheeseAdding = 0;
+
+				FlxG.sound.play('assets/sounds/Munchsound' + FlxG.random.int(1, 4) + ".mp3", FlxG.random.float(0.7, 1));
+			}
+
+			if (cheeseHolding.length == 0)
+				addingCheese = false;
+
+			
+		}
 		
 		if (FlxG.keys.justPressed.Q)
 			FlxG.camera.zoom *= 0.7;
