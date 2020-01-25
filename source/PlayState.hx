@@ -1,5 +1,6 @@
 package;
 
+import js.html.AbortController;
 import flixel.addons.text.FlxTypeText;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
@@ -40,15 +41,17 @@ class PlayState extends FlxState
 
 	private var grpMusicTriggers:FlxTypedGroup<MusicTrigger>;
 	private var grpSecretTriggers:FlxTypedGroup<SecretTrigger>;
-	private var musicQueue:String = "";
+	private var musicQueue:String = "pillow";
 
 	private var curTalking:Bool = false;
 
 	private var cheeseHolding:Array<Dynamic> = [];
+	private var locked:FlxSprite;
 
 	override public function create():Void
 	{
 		FlxG.camera.fade(FlxColor.BLACK, 2, true);
+		FlxG.sound.playMusic('assets/music/' + musicQueue + ".mp3", 0.7);
 
 		var bg:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.dumbbg__png);
 		bg.scrollFactor.set(0.045, 0.045);
@@ -159,6 +162,10 @@ class PlayState extends FlxState
 			case "secretTrigger":
 				trace('ADDED SECRET');
 				grpSecretTriggers.add(new SecretTrigger(e.x, e.y, e.width, e.height));
+			case 'locked':
+				locked = new FlxSprite(e.x, e.y).makeGraphic(e.width, e.height);
+				locked.immovable = true;
+				add(locked);
 		}
 	}
 
@@ -193,6 +200,19 @@ class PlayState extends FlxState
 
 		});
 		FlxG.collide(level, player);
+
+		if (player.x > level.width)
+			FlxG.switchState(new EndState());
+		
+		if (FlxG.collide(locked, player))
+		{
+			if (coinCount >= 30)
+			{
+				locked.kill();
+				FlxG.sound.play(AssetPaths.allcheesesunlocked__mp3);
+				FlxG.sound.music.volume = 0;
+			}
+		}
 
 		FlxG.overlap(player, grpMusicTriggers, function(p:Player, mT:MusicTrigger)
 		{
@@ -252,6 +272,9 @@ class PlayState extends FlxState
 			}
 		}
 
+		if (player.justTouched(FlxObject.FLOOR))
+			add(new Dust(player.x, player.y));
+
 		FlxG.overlap(grpCheckpoint, player, function(c:Checkpoint, p:Player)
 		{
 			if (c != curCheckpoint)
@@ -268,6 +291,14 @@ class PlayState extends FlxState
 				coinCount += cheeseHolding.length;
 				cheeseHolding = [];
 			}
+
+			if (cheeseHolding.length > 0)
+			{
+				coinCount += cheeseHolding.length;
+				cheeseHolding = [];
+			}
+
+			
 				
 		});
 		
@@ -278,11 +309,14 @@ class PlayState extends FlxState
 
 		FlxG.overlap(player, grpCheese, function(p, daCheese)
 		{
+			if (!p.gettingHurt)
+			{
+				FlxG.sound.play(AssetPaths.collectCheese__mp3, 0.6);
+				cheeseHolding.push(daCheese);
+				grpCheese.remove(daCheese, true);
+				//coinCount += 1;
+			}
 			
-			FlxG.sound.play(AssetPaths.collectCheese__mp3, 0.6);
-			cheeseHolding.push(daCheese);
-			grpCheese.remove(daCheese, true);
-			//coinCount += 1;
 		});
 
 	}
