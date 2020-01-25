@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxBasic;
 import flixel.addons.text.FlxTypeText;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
@@ -48,6 +49,7 @@ class PlayState extends FlxState
 	private var cheeseHolding:Array<Dynamic> = [];
 	private var locked:FlxSprite;
 	private var dialogueBubble:FlxSprite;
+	private var grpDisplayCheese:FlxGroup;
 
 	override public function create():Void
 	{
@@ -62,8 +64,6 @@ class PlayState extends FlxState
 		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, AssetPaths.dumbassLevel__json);
 		level.load_tilemap(ogmo, 'assets/data/');
 		add(ogmo.level.get_decal_layer('decalbg').get_decal_group('assets'));
-
-		
 
 
 		grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
@@ -97,8 +97,6 @@ class PlayState extends FlxState
 		add(dialogueBubble);
 		dialogueBubble.visible = false;
 
-		
-
 		ogmo.level.get_entity_layer('entities').load_entities(entity_loader);
 
 		FlxG.camera.follow(player, FlxCameraFollowStyle.LOCKON, 0.15);
@@ -106,18 +104,19 @@ class PlayState extends FlxState
 		level.follow(FlxG.camera);
 
 		FlxG.mouse.visible = false;
-		
-		
 
-		
+		var displayCheese:Cheese = new Cheese(10, 10);
+		displayCheese.scrollFactor.set();
+		add(displayCheese);
 
-		debug = new FlxText(10, 10, 0, "", 16);
+		grpDisplayCheese = new FlxGroup();
+		add(grpDisplayCheese);
+
+		debug = new FlxText(40, 12, 0, "", 16);
 		debug.scrollFactor.set(0, 0);
 		debug.color = FlxColor.BLACK;
+		debug.setFormat(null, 16, FlxColor.WHITE, null, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(debug);
-
-		
-		
 
 		super.create();
 	}
@@ -200,8 +199,26 @@ class PlayState extends FlxState
 	override public function update(elapsed:Float):Void
 	{
 		FlxG.watch.addMouse();
-		debug.text = "Cheese: " + coinCount + "/" + cheeseNeeded;
-		
+		debug.text = coinCount + "/" + cheeseNeeded;
+
+		FlxG.watch.addQuick("daCheeses", cheeseHolding.length + " " + cheeseHolding.length);
+			
+
+		/* 
+		if (cheeseHolding.length > grpDisplayCheese.length)
+		{
+			for (i in grpDisplayCheese.length...cheeseHolding.length)
+			{
+				var daCheese:Cheese = cheeseHolding[i];
+				daCheese.scrollFactor.set();
+				daCheese.setGraphicSize(Std.int(daCheese.width / 2));
+				daCheese.updateHitbox();
+				daCheese.setPosition(90 + (10 * (i % 6)), 10 + (10 * Math.floor(i / 6)));
+				grpDisplayCheese.add(daCheese);
+			}
+		}
+		*/
+
 		super.update(elapsed);
 		FlxG.collide(grpMovingPlatforms, player, function(platform:MovingPlatform, p:Player)
 		{
@@ -275,6 +292,8 @@ class PlayState extends FlxState
 				}
 				cheeseHolding = [];
 
+				grpDisplayCheese.members = [];
+
 				player.gettingHurt = true;
 				player.animation.play('fucking died lmao');
 				FlxG.sound.play(AssetPaths.damageTaken__mp3, 0.6);
@@ -342,6 +361,7 @@ class PlayState extends FlxState
 			{
 				coinCount += 1;
 				cheeseHolding.pop();
+				grpDisplayCheese.members.pop();
 				cheeseAdding = 0;
 
 				FlxG.sound.play('assets/sounds/Munchsound' + FlxG.random.int(1, 4) + ".mp3", FlxG.random.float(0.7, 1));
@@ -360,6 +380,13 @@ class PlayState extends FlxState
 				FlxG.sound.play(AssetPaths.collectCheese__mp3, 0.6);
 				cheeseHolding.push(daCheese);
 				grpCheese.remove(daCheese, true);
+
+				var daCheese:Cheese = new Cheese(0, 0);
+				daCheese.scrollFactor.set();
+				daCheese.setGraphicSize(Std.int(daCheese.width / 2));
+				daCheese.updateHitbox();
+				daCheese.setPosition(95 + (10 * ((cheeseHolding.length - 1) % 6)), 10 + (10 * Math.floor((cheeseHolding.length - 1) / 6)));
+				grpDisplayCheese.add(daCheese);
 				//coinCount += 1;
 			}
 			
