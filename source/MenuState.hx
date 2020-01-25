@@ -38,7 +38,26 @@ class MenuState extends FlxState
         
         if (title.animation.curAnim.name != 'ritz')
         {
-            if (FlxG.keys.justPressed.ANY && FlxG.sound.music.volume != 0)
+            var gamepad = FlxG.gamepads.lastActive;
+            if (gamepad != null)
+            {
+                if (gamepad.pressed.ANY && FlxG.sound.music != null)
+                {
+                    FlxFlicker.flicker(pressStart, 1, 0.04, false, true, function(flic:FlxFlicker)
+                    {
+                        FlxG.sound.play(AssetPaths.ritzstartjingle__mp3);
+                        title.animation.play('ritz');
+                    });
+                    
+                    FlxG.sound.play(AssetPaths.startbleep__mp3);
+                    if (FlxG.sound.music != null)
+                    {
+                        FlxG.sound.music.stop();
+                        FlxG.sound.music = null;
+                    }
+                }
+            }
+            if (FlxG.keys.justPressed.ANY && FlxG.sound.music != null)
             {
                 FlxFlicker.flicker(pressStart, 1, 0.04, false, true, function(flic:FlxFlicker)
                 {
@@ -47,8 +66,12 @@ class MenuState extends FlxState
                 });
                 
                 FlxG.sound.play(AssetPaths.startbleep__mp3);
-                FlxG.sound.music.stop();
-                FlxG.sound.music = null;
+                if (FlxG.sound.music != null)
+                {
+                    FlxG.sound.music.stop();
+                    FlxG.sound.music = null;
+                }
+                
             }
         }
         else

@@ -51,7 +51,7 @@ class PlayState extends FlxState
 	override public function create():Void
 	{
 		FlxG.camera.fade(FlxColor.BLACK, 2, true);
-		FlxG.sound.playMusic('assets/music/' + musicQueue + ".mp3", 0.7);
+		musicHandling();
 
 		var bg:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.dumbbg__png);
 		bg.scrollFactor.set(0.045, 0.045);
@@ -320,11 +320,6 @@ class PlayState extends FlxState
 
 			
 		}
-		
-		if (FlxG.keys.justPressed.Q)
-			FlxG.camera.zoom *= 0.7;
-		if (FlxG.keys.justPressed.E)
-			FlxG.camera.zoom *= 1.3;
 
 		FlxG.overlap(player, grpCheese, function(p, daCheese)
 		{

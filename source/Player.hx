@@ -88,7 +88,7 @@ class Player extends FlxSprite
     {
         left = FlxG.keys.anyPressed(['LEFT', 'A']);
         right = FlxG.keys.anyPressed(['RIGHT', 'D']);
-        jump = FlxG.keys.anyPressed(['SPACE', 'W', 'UP']);
+        jump = FlxG.keys.anyPressed(['SPACE', 'W', 'UP', 'Z']);
         jumpP = FlxG.keys.anyJustPressed(['SPACE', "W", 'UP', 'Z']);
         down = FlxG.keys.anyPressed(['S', 'DOWN']);
 
@@ -100,7 +100,7 @@ class Player extends FlxSprite
 		var _leftR:Bool = false;
 		var _rightR:Bool = false;
 		
-		_upR = FlxG.keys.anyJustReleased([UP, W, SPACE]);
+		_upR = FlxG.keys.anyJustReleased([UP, W, SPACE, Z]);
 		_downR = FlxG.keys.anyJustReleased([DOWN, S]);
 		_leftR = FlxG.keys.anyJustReleased([LEFT, A]);
         _rightR = FlxG.keys.anyJustReleased([RIGHT, D]);
@@ -113,6 +113,51 @@ class Player extends FlxSprite
 		_downP = FlxG.keys.anyJustPressed([DOWN, S]);
 		_leftP = FlxG.keys.anyJustPressed([LEFT, A]);
         _rightP = FlxG.keys.anyJustPressed([RIGHT, D]);
+
+        var gamepad = FlxG.gamepads.lastActive;
+		if (gamepad != null)
+		{
+			if (gamepad.anyPressed(["LEFT", "DPAD_LEFT", "LEFT_STICK_DIGITAL_LEFT"]))
+			{
+				left = true;
+			}
+			
+			if (gamepad.anyPressed(["RIGHT", "DPAD_RIGHT","LEFT_STICK_DIGITAL_RIGHT"]))
+			{
+				right = true;
+			}
+
+            if (gamepad.anyPressed([A]))
+			{
+				jump = true;
+			}
+			
+			if (gamepad.anyPressed(["DOWN", "DPAD_DOWN","LEFT_STICK_DIGITAL_DOWN"]))
+			{
+				down = true;
+			}
+
+            if (gamepad.anyJustPressed(["LEFT", "DPAD_LEFT", "LEFT_STICK_DIGITAL_LEFT"]))
+			{
+				_leftP = true;
+			}
+			
+			if (gamepad.anyJustPressed(["RIGHT", "DPAD_RIGHT","LEFT_STICK_DIGITAL_RIGHT"]))
+			{
+				_rightP = true;
+			}
+
+            if (gamepad.anyJustPressed([A]))
+			{
+				jumpP = true;
+			}
+			
+			if (gamepad.anyJustPressed(["DOWN", "DPAD_DOWN","LEFT_STICK_DIGITAL_DOWN"]))
+			{
+				_downP = true;
+			}
+
+		}
         
 
 
