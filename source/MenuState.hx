@@ -30,6 +30,10 @@ class MenuState extends FlxState
         add(pressStart);
 
         FlxFlicker.flicker(pressStart, 0, 0.5);
+
+        #if !debug
+		var ng:NGio = new NGio(APIStuff.APIKEY, APIStuff.EncKey);
+		#end
         
         super.create();
     }

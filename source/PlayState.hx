@@ -1,5 +1,6 @@
 package;
 
+import io.newgrounds.NG;
 import flixel.FlxBasic;
 import flixel.addons.text.FlxTypeText;
 import flixel.FlxSprite;
@@ -100,6 +101,7 @@ class PlayState extends FlxState
 		ogmo.level.get_entity_layer('entities').load_entities(entity_loader);
 
 		FlxG.camera.follow(player, FlxCameraFollowStyle.LOCKON, 0.15);
+		FlxG.camera.focusOn(player.getPosition());
 		FlxG.worldBounds.set(0, 0, level.width, level.height);
 		level.follow(FlxG.camera);
 
@@ -181,7 +183,7 @@ class PlayState extends FlxState
 				trace('ADDED SECRET');
 				grpSecretTriggers.add(new SecretTrigger(e.x, e.y, e.width, e.height));
 			case 'locked':
-				locked = new FlxSprite(e.x, e.y).makeGraphic(e.width, e.height);
+				locked = new FlxSprite(e.x, e.y).loadGraphic(AssetPaths.door__png);
 				locked.immovable = true;
 				add(locked);
 		}
@@ -396,6 +398,13 @@ class PlayState extends FlxState
 				daCheese.setPosition(95 + (10 * ((cheeseHolding.length - 1) % 6)), 10 + (10 * Math.floor((cheeseHolding.length - 1) / 6)));
 				grpDisplayCheese.add(daCheese);
 				//coinCount += 1;
+
+				if (NGio.isLoggedIn)
+				{
+					var hornyMedal = NG.core.medals.get(58879);
+					if (!hornyMedal.unlocked)
+						hornyMedal.sendUnlock();
+				}
 			}
 			
 		});

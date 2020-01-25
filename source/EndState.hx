@@ -1,5 +1,6 @@
 package;
 
+import io.newgrounds.NG;
 import flixel.FlxG;
 import flixel.text.FlxText;
 import flixel.FlxState;
@@ -44,6 +45,13 @@ class EndState extends FlxState
         }
 
         add(text);
+
+        if (NGio.isLoggedIn)
+        {
+            var hornyMedal = NG.core.medals.get(58882);
+            if (!hornyMedal.unlocked)
+                hornyMedal.sendUnlock();
+        }
         
         super.create();
     }
