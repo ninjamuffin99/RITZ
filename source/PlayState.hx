@@ -47,6 +47,7 @@ class PlayState extends FlxState
 
 	private var cheeseHolding:Array<Dynamic> = [];
 	private var locked:FlxSprite;
+	private var dialogueBubble:FlxSprite;
 
 	override public function create():Void
 	{
@@ -61,6 +62,8 @@ class PlayState extends FlxState
 		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, AssetPaths.dumbassLevel__json);
 		level.load_tilemap(ogmo, 'assets/data/');
 		add(ogmo.level.get_decal_layer('decalbg').get_decal_group('assets'));
+
+		
 
 
 		grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
@@ -88,6 +91,12 @@ class PlayState extends FlxState
 		//FlxG.sound.playMusic(AssetPaths.pillow__mp3, 0.7);
 		//FlxG.sound.music.loopTime = 4450;
 
+		dialogueBubble = new FlxSprite().loadGraphic(AssetPaths.dialogue__png, true, 32, 32);
+		dialogueBubble.animation.add('play', [0, 1, 2, 3], 6);
+		dialogueBubble.animation.play('play');
+		add(dialogueBubble);
+		dialogueBubble.visible = false;
+
 		
 
 		ogmo.level.get_entity_layer('entities').load_entities(entity_loader);
@@ -97,6 +106,8 @@ class PlayState extends FlxState
 		level.follow(FlxG.camera);
 
 		FlxG.mouse.visible = false;
+		
+		
 
 		
 
@@ -117,7 +128,7 @@ class PlayState extends FlxState
 		{
 			case "player": 
 				add(player = new Player(e.x, e.y));
-				curCheckpoint = new Checkpoint(e.x, e.y);
+				curCheckpoint = new Checkpoint(e.x, e.y, "");
 			case "spider":
 				var spider:Enemy = new Enemy(e.x, e.y, getPathData(e), e.values.speed);
 				add(spider);
@@ -156,7 +167,7 @@ class PlayState extends FlxState
 					grpObstacles.add(daSpike);
 				}
 			case "checkpoint":
-				grpCheckpoint.add(new Checkpoint(e.x, e.y));
+				grpCheckpoint.add(new Checkpoint(e.x, e.y, e.values.dialogue));
 			case "musicTrigger":
 				grpMusicTriggers.add(new MusicTrigger(e.x, e.y, e.width, e.height, e.values.song, e.values.fadetime));
 			case "secretTrigger":
@@ -279,9 +290,30 @@ class PlayState extends FlxState
 
 		if (player.justTouched(FlxObject.FLOOR))
 			add(new Dust(player.x, player.y));
+		
+		dialogueBubble.visible = false;
 
 		FlxG.overlap(grpCheckpoint, player, function(c:Checkpoint, p:Player)
 		{
+			dialogueBubble.visible = true;
+			dialogueBubble.setPosition(c.x + 20, c.y - 10);
+
+			if (FlxG.keys.anyJustPressed([E, F, X]))
+			{
+				persistentUpdate = false;
+				openSubState(new DialogueSubstate(c.dialogue));
+			}
+
+			var gamepad = FlxG.gamepads.lastActive;
+			if (gamepad != null)
+			{
+				if (gamepad.justPressed.X)
+				{
+					persistentUpdate = false;
+					openSubState(new DialogueSubstate(c.dialogue));
+				}
+			}
+
 			if (c != curCheckpoint)
 			{
 				grpCheckpoint.forEach(function(c)
