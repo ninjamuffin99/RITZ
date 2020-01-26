@@ -212,7 +212,7 @@ class Player extends FlxSprite
                 //velocity.y -= 480;
                 velocity.y -= baseJumpStrength * 2;
                 jumped = true;
-                FlxG.sound.play(AssetPaths.jump__mp3, 0.5);
+                FlxG.sound.play('assets/sounds/jump' + BootState.soundEXT, 0.5);
             }   
         }
         else
@@ -256,7 +256,7 @@ class Player extends FlxSprite
                     
                 velocity.y -= 600;
                 doubleJumped = true;
-                FlxG.sound.play(AssetPaths.doubleJump__mp3, 0.75);
+                FlxG.sound.play('assets/sounds/doubleJump' + BootState.soundEXT, 0.75);
             }
         }
 

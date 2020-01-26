@@ -13,7 +13,7 @@ class MenuState extends FlxState
     var title:FlxSprite;
     override public function create() {
 
-        FlxG.sound.playMusic(AssetPaths.fluffydream__mp3, 0);
+        FlxG.sound.playMusic('assets/music/fluffydream' + BootState.soundEXT, 0);
         FlxG.sound.music.fadeIn(5, 0, 1);
         FlxG.camera.fade(FlxColor.WHITE, 5, true);
 
@@ -49,11 +49,11 @@ class MenuState extends FlxState
                 {
                     FlxFlicker.flicker(pressStart, 1, 0.04, false, true, function(flic:FlxFlicker)
                     {
-                        FlxG.sound.play(AssetPaths.ritzstartjingle__mp3);
+                        FlxG.sound.play('assets/sounds/ritzstartjingle' + BootState.soundEXT);
                         title.animation.play('ritz');
                     });
                     
-                    FlxG.sound.play(AssetPaths.startbleep__mp3);
+                    FlxG.sound.play('assets/sounds/startbleep' + BootState.soundEXT);
                     if (FlxG.sound.music != null)
                     {
                         FlxG.sound.music.stop();
@@ -65,11 +65,11 @@ class MenuState extends FlxState
             {
                 FlxFlicker.flicker(pressStart, 1, 0.04, false, true, function(flic:FlxFlicker)
                 {
-                    FlxG.sound.play(AssetPaths.ritzstartjingle__mp3);
+                    FlxG.sound.play('assets/sounds/ritzstartjingle' + BootState.soundEXT);
                     title.animation.play('ritz');
                 });
                 
-                FlxG.sound.play(AssetPaths.startbleep__mp3);
+                FlxG.sound.play('assets/sounds/startbleep' + BootState.soundEXT);
                 if (FlxG.sound.music != null)
                 {
                     FlxG.sound.music.stop();

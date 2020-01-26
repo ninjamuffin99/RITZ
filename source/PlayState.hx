@@ -184,6 +184,8 @@ class PlayState extends FlxState
 				grpSecretTriggers.add(new SecretTrigger(e.x, e.y, e.width, e.height));
 			case 'locked':
 				locked = new FlxSprite(e.x, e.y).loadGraphic(AssetPaths.door__png);
+				locked.setGraphicSize(192, 64);
+				locked.updateHitbox();
 				locked.immovable = true;
 				add(locked);
 		}
@@ -206,6 +208,7 @@ class PlayState extends FlxState
 	// One of them is a ticker (cheeseAdding) and the other is to see if its in the state of adding cheese
 	private var cheeseAdding:Int = 0;
 	private var addingCheese:Bool = false;
+	private var ending:Bool = false;
 	override public function update(elapsed:Float):Void
 	{
 		FlxG.watch.addMouse();
@@ -244,15 +247,21 @@ class PlayState extends FlxState
 		});
 		FlxG.collide(level, player);
 
-		if (player.x > level.width)
-			FlxG.switchState(new EndState());
+		if (player.x > level.width && !ending)
+		{
+			ending = true;
+			FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
+				{
+					FlxG.switchState(new EndState());
+				});
+		}
 		
 		if (FlxG.collide(locked, player))
 		{
 			if (coinCount >= cheeseNeeded)
 			{
 				locked.kill();
-				FlxG.sound.play(AssetPaths.allcheesesunlocked__mp3);
+				FlxG.sound.play('assets/sounds/allcheesesunlocked' + BootState.soundEXT);
 				FlxG.sound.music.volume = 0;
 			}
 		}
@@ -283,7 +292,7 @@ class PlayState extends FlxState
 				sT.hasTriggered = true;
 				var oldVol:Float = FlxG.sound.music.volume;
 				FlxG.sound.music.volume = 0.1;
-				FlxG.sound.play(AssetPaths.discoverysound__mp3, 1, false, null, true, function()
+				FlxG.sound.play('assets/sounds/discoverysound' + BootState.soundEXT, 1, false, null, true, function()
 					{
 						FlxG.sound.music.volume = oldVol;
 					});
@@ -306,7 +315,7 @@ class PlayState extends FlxState
 
 				player.gettingHurt = true;
 				player.animation.play('fucking died lmao');
-				FlxG.sound.play(AssetPaths.damageTaken__mp3, 0.6);
+				FlxG.sound.play('assets/sounds/damageTaken' + BootState.soundEXT, 0.6);
 
 				new FlxTimer().start(0.5, function (tmr:FlxTimer)
 				{
@@ -352,7 +361,7 @@ class PlayState extends FlxState
 
 				c.isCurCheckpoint = true;
 				curCheckpoint = c;
-				FlxG.sound.play(AssetPaths.checkpoint__mp3, 0.8);
+				FlxG.sound.play('assets/sounds/checkpoint' + BootState.soundEXT, 0.8);
 			}
 
 			if (cheeseHolding.length > 0)
@@ -374,7 +383,7 @@ class PlayState extends FlxState
 				grpDisplayCheese.members.pop();
 				cheeseAdding = 0;
 
-				FlxG.sound.play('assets/sounds/Munchsound' + FlxG.random.int(1, 4) + ".mp3", FlxG.random.float(0.7, 1));
+				FlxG.sound.play('assets/sounds/Munchsound' + FlxG.random.int(1, 4) + BootState.soundEXT, FlxG.random.float(0.7, 1));
 			}
 
 			if (cheeseHolding.length == 0)
@@ -387,7 +396,7 @@ class PlayState extends FlxState
 		{
 			if (!p.gettingHurt)
 			{
-				FlxG.sound.play(AssetPaths.collectCheese__mp3, 0.6);
+				FlxG.sound.play('assets/sounds/collectCheese' + BootState.soundEXT, 0.6);
 				cheeseHolding.push(daCheese);
 				grpCheese.remove(daCheese, true);
 
@@ -413,7 +422,7 @@ class PlayState extends FlxState
 
 	private function musicHandling():Void
 	{
-		FlxG.sound.playMusic('assets/music/' + musicQueue + ".mp3", 0.7);
+		FlxG.sound.playMusic('assets/music/' + musicQueue + BootState.soundEXT, 0.7);
 		switch (musicQueue)
 		{
 			case "pillow":

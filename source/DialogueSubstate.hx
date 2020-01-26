@@ -35,7 +35,7 @@ class DialogueSubstate extends FlxSubState
 
         dialogueText = new TypeTextTwo(0, 0, FlxG.width, d, 16);
         dialogueText.scrollFactor.set();
-        dialogueText.sounds = [FlxG.sound.load('assets/sounds/talksound.mp3'), FlxG.sound.load('assets/sounds/talksound1.mp3')];
+        dialogueText.sounds = [FlxG.sound.load('assets/sounds/talksound' + BootState.soundEXT), FlxG.sound.load('assets/sounds/talksound1' + BootState.soundEXT)];
         dialogueText.finishSounds = true;
         dialogueText.skipKeys = ["E", "F", 'X', 'SPACE', 'Z', 'W', "UP"];
 		add(dialogueText);
