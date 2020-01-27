@@ -21,7 +21,8 @@ class Player extends FlxSprite
 
     private var doubleJumped:Bool = false;
     private var jumped:Bool = false;
-    private var coyoteTime:Float = 0;
+    private var coyoteTime:Int = 0;
+    private var ceilingBufferShit:Int = 0;
     private var hovering:Bool = false;
     private var wallClimbing:Bool = false;
 
@@ -88,8 +89,8 @@ class Player extends FlxSprite
     {
         left = FlxG.keys.anyPressed(['LEFT', 'A']);
         right = FlxG.keys.anyPressed(['RIGHT', 'D']);
-        jump = FlxG.keys.anyPressed(['SPACE', 'W', 'UP', 'Z']);
-        jumpP = FlxG.keys.anyJustPressed(['SPACE', "W", 'UP', 'Z']);
+        jump = FlxG.keys.anyPressed(['SPACE', 'W', 'UP', 'Z', 'Y']);
+        jumpP = FlxG.keys.anyJustPressed(['SPACE', "W", 'UP', 'Z', 'Y']);
         down = FlxG.keys.anyPressed(['S', 'DOWN']);
 
 
@@ -100,7 +101,7 @@ class Player extends FlxSprite
 		var _leftR:Bool = false;
 		var _rightR:Bool = false;
 		
-		_upR = FlxG.keys.anyJustReleased([UP, W, SPACE, Z]);
+		_upR = FlxG.keys.anyJustReleased([UP, W, SPACE, Z, Y]);
 		_downR = FlxG.keys.anyJustReleased([DOWN, S]);
 		_leftR = FlxG.keys.anyJustReleased([LEFT, A]);
         _rightR = FlxG.keys.anyJustReleased([RIGHT, D]);
@@ -206,6 +207,7 @@ class Player extends FlxSprite
             canJump = true;
             jumpBoost = 0;
             coyoteTime = 0;
+            ceilingBufferShit = 0;
 
             if (jumpP)
             {
@@ -213,14 +215,30 @@ class Player extends FlxSprite
                 velocity.y -= baseJumpStrength * 2;
                 jumped = true;
                 FlxG.sound.play('assets/sounds/jump' + BootState.soundEXT, 0.5);
+                //set to 20 so that u cant double jump twice??
+                coyoteTime = 20;
             }   
         }
         else
         {
+
+            coyoteTime++;
+
+            if (jumpP && coyoteTime <= 8)
+            {
+                //velocity.y -= 480;
+                velocity.y -= baseJumpStrength * 2;
+                jumped = true;
+                FlxG.sound.play('assets/sounds/jump' + BootState.soundEXT, 0.5);
+            }   
+
             animation.play('jumping');
 
-            if (isTouching(FlxObject.CEILING))  
+            if (isTouching(FlxObject.CEILING))
+            {
                 apexReached = true;
+            }
+                
 
             if (jump && !apexReached && canJump)
             {
@@ -241,10 +259,9 @@ class Player extends FlxSprite
             if (_upR)
                 apexReached = true;
 
-            if (!jumped)
-                coyoteTime += FlxG.elapsed;
+            
 
-            if (jumpP && !doubleJumped && !wallClimbing)
+            if (jumpP && !doubleJumped && !wallClimbing && coyoteTime > 8)
             {
                 velocity.y = 0;
                 if ((velocity.x > 0 && left) || (velocity.x < 0 && right))

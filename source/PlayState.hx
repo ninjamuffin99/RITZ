@@ -114,6 +114,8 @@ class PlayState extends FlxState
 		grpDisplayCheese = new FlxGroup();
 		add(grpDisplayCheese);
 
+		trace(grpCheese.length);
+
 		debug = new FlxText(40, 12, 0, "", 16);
 		debug.scrollFactor.set(0, 0);
 		debug.color = FlxColor.BLACK;
@@ -215,6 +217,16 @@ class PlayState extends FlxState
 		debug.text = coinCount + "/" + cheeseNeeded;
 
 		FlxG.watch.addQuick("daCheeses", cheeseHolding.length + " " + cheeseHolding.length);
+
+		if (coinCount >= 55)
+		{
+			if (NGio.isLoggedIn)
+			{
+				var hornyMedal = NG.core.medals.get(58884);
+				if (!hornyMedal.unlocked)
+					hornyMedal.sendUnlock();
+			}
+		}
 			
 
 		/* 
@@ -289,6 +301,13 @@ class PlayState extends FlxState
 		{
 			if (!sT.hasTriggered)
 			{
+				if (NGio.isLoggedIn)
+				{
+					var hornyMedal = NG.core.medals.get(58883);
+					if (!hornyMedal.unlocked)
+						hornyMedal.sendUnlock();
+				}
+
 				sT.hasTriggered = true;
 				var oldVol:Float = FlxG.sound.music.volume;
 				FlxG.sound.music.volume = 0.1;
