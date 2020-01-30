@@ -1,5 +1,7 @@
 package;
 
+import CameraTilemap;
+
 import io.newgrounds.NG;
 import flixel.FlxBasic;
 import flixel.addons.display.FlxBackdrop;
@@ -55,6 +57,11 @@ class PlayState extends FlxState
 	private var dialogueBubble:FlxSprite;
 	private var grpDisplayCheese:FlxGroup;
 	
+	/**
+	 * Too high and it can be disorienting,
+	 * too low and the player won't see ahead of their path
+	 */
+	inline static var CAMERA_LERP = 0.2;
 	inline static var PAN_DOWN_DELAY = 0.25;
 	inline static var PAN_DOWN_END_DELAY = 0.75;
 	inline static var PAN_DOWN_DISTANCE = 4;//tiles
@@ -63,20 +70,29 @@ class PlayState extends FlxState
 	private var panDownTimer = 0.0;
 	/** Offset for when the player is looking down */
 	private var camYPanOffset = 0.0;
+	inline static var PAN_LEAD_SHIFT_TIME = 0.5;
+	inline static var PAN_LEAD_TILES = 1;
 	/** TODO: The default offset of a given area, should point up normally, and down in areas that lead downwards*/
 	private var camYLeadOffset = 0.0;
+	private var camYLeadAmount = 0.0;
+	inline static var FALL_LEAD_DELAY = 0.15;
+	private var camTargetFallTimer = 0.0;
 	/** Time it takes to snap to the new platforms height */
 	inline static var PAN_SNAP_TIME = 0.3;
 	/** Used to snap the camera to a new ground height when landing */
 	private var camYSnapOffset = 0.0;
 	private var camYSnapTimer = 0.0;
 	private var camYSnapAmount = 0.0;
-
+	private var cameraTilemap:CameraTilemap;
+	private var lastCameraPos = new FlxPoint();
+	#if debug
+	private var debugDeadZone:FlxObject;
+	#end
 	override public function create():Void
 	{
 		FlxG.camera.fade(FlxColor.BLACK, 2, true);
 		musicHandling();
-
+		
 		var bg:FlxSprite = new FlxBackdrop(AssetPaths.dumbbg__png);
 		bg.scrollFactor.set(0.75, 0.75);
 		bg.alpha = 0.75;
@@ -86,7 +102,7 @@ class PlayState extends FlxState
 		level.load_tilemap(ogmo, 'assets/data/');
 		tileSize = Std.int(level.frames.getByIndex(0).frame.height);
 		add(ogmo.level.get_decal_layer('decalbg').get_decal_group('assets'));
-
+		cameraTilemap = new CameraTilemap(ogmo);
 
 		grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
 		add(grpMovingPlatforms);
@@ -122,13 +138,12 @@ class PlayState extends FlxState
 		ogmo.level.get_entity_layer('entities').load_entities(entity_loader);
 
 		var camera = FlxG.camera;
-		camera.follow(player, FlxCameraFollowStyle.PLATFORMER, 0.9);
+		camera.follow(player, FlxCameraFollowStyle.PLATFORMER, CAMERA_LERP);
 		camera.focusOn(player.getPosition());
 		var w = (camera.width / 8);
 		var h = (camera.height * 2 / 3);
 		camera.deadzone.set((camera.width - w) / 2, (camera.height - h) / 2, w, h);
-		camYLeadOffset = tileSize * -1.0;
-		camera.targetOffset.y = camYLeadOffset;
+		camYLeadOffset = camYLeadAmount = tileSize * -PAN_LEAD_TILES;
 		FlxG.worldBounds.set(0, 0, level.width, level.height);
 		level.follow(camera);
 
@@ -272,7 +287,6 @@ class PlayState extends FlxState
 		*/
 		
 		super.update(elapsed);
-		updateCamera(elapsed);
 		
 		FlxG.collide(grpMovingPlatforms, player, function(platform:MovingPlatform, p:Player)
 		{
@@ -465,25 +479,29 @@ class PlayState extends FlxState
 			}
 			
 		});
+		
+		updateCamera(elapsed);
 	}
 	
 	function updateCamera(elapsed:Float):Void
 	{
 		// Deadzone: taller when jumping, but snap to center when on the ground
-		if (player.onGround != player.wasOnGround)
+		var camera = FlxG.camera;
+		var zone = camera.deadzone;
+		if (!player.gettingHurt && player.onGround != player.wasOnGround)
 		{
-			var zone = FlxG.camera.deadzone;
 			if (player.onGround)
 			{
 				zone.height = player.height;
-				zone.y = (camera.height - zone.height) / 2;
+				zone.y = (camera.height - zone.height) / 2 - (tileSize * 1);
 			}
 			else
 			{
 				zone.height = camera.height * 2 / 3;
-				zone.y = (camera.height - zone.height) / 2;
+				zone.y = (camera.height - zone.height) / 2 - (tileSize * 2);
 			}
 			
+			// Snap to new ground height
 			if (player.onGround)
 			{
 				// Compute the amount of y dis to move the camera
@@ -497,15 +515,17 @@ class PlayState extends FlxState
 			}
 		}
 		
+		// actual snapping
 		if (camYSnapAmount != 0)
 		{
 			camYSnapTimer += elapsed;
 			if (camYSnapTimer > PAN_SNAP_TIME)
 				camYSnapOffset = camYSnapAmount = 0;
 			else
-				camYSnapOffset = camYSnapAmount * FlxEase.smootherStepInOut(1.0 - (camYSnapTimer / PAN_SNAP_TIME));
+				camYSnapOffset = camYSnapAmount * /*FlxEase.smootherStepInOut*/(1.0 - (camYSnapTimer / PAN_SNAP_TIME));
 		}
 		
+		// Look down while pressing down
 		var downPress = FlxG.keys.anyPressed([S, DOWN]);
 		var gamepad = FlxG.gamepads.lastActive;
 		if (!downPress && gamepad != null)
@@ -528,11 +548,78 @@ class PlayState extends FlxState
 			if (panDownTimer > PAN_DOWN_DELAY)
 				camYPanOffset
 					= tileSize * PAN_DOWN_DISTANCE
-					* FlxEase.smoothStepInOut(Math.min(panDownTimer - PAN_DOWN_DELAY, PAN_DOWN_TIME) / PAN_DOWN_TIME);
+					* /*FlxEase.smoothStepInOut*/(Math.min(panDownTimer - PAN_DOWN_DELAY, PAN_DOWN_TIME) / PAN_DOWN_TIME);
+		}
+		
+		// Tilemap leading bias, Look up unless it's a downward section of the level (indicated in ogmo)
+		var leading = cameraTilemap.getTileTypeAt(player.x, player.y);
+		if (leading != Down)
+		{
+			if (player.velocity.y > 0 && camera.scroll.y > lastCameraPos.y)
+			{
+				// Lead down when falling for some time
+				camTargetFallTimer += elapsed;
+				trace(camTargetFallTimer);
+				if (camTargetFallTimer > FALL_LEAD_DELAY)
+					leading = CameraTileType.Down;
+			}
+			else
+				camTargetFallTimer = 0;
+		}
+		
+		switch (leading)
+		{
+			case Up  : camYLeadAmount = tileSize * -PAN_LEAD_TILES;
+			case Down: camYLeadAmount = tileSize *  PAN_LEAD_TILES;
+		}
+		
+		// linear shift because I'm lazy and this can get weird if player keeps going back and forth
+		if (camYLeadOffset != camYLeadAmount)
+		{
+			var leadSpeed = 2 * PAN_LEAD_TILES * tileSize / PAN_LEAD_SHIFT_TIME * elapsed;
+			if (camYLeadOffset < camYLeadAmount)
+			{
+				camYLeadOffset += leadSpeed;
+				if (camYLeadOffset > camYLeadAmount)// bound
+					camYLeadOffset = camYLeadAmount;
+			}
+			else
+			{
+				camYLeadOffset -= leadSpeed;
+				if (camYLeadOffset < camYLeadAmount)// bound
+					camYLeadOffset = camYLeadAmount;
+			}
 		}
 		
 		// Combine all the camera offsets
-		camera.targetOffset.y = camYLeadOffset + camYSnapOffset + camYPanOffset;
+		camera.targetOffset.y = camYSnapOffset + camYPanOffset + camYLeadOffset;
+		lastCameraPos.copyFrom(camera.scroll);
+		
+		#if debug
+		if (FlxG.keys.justPressed.C)
+			FlxG.debugger.drawDebug = !FlxG.debugger.drawDebug;
+		
+		if (FlxG.debugger.drawDebug)
+		{
+			if (debugDeadZone == null)
+			{
+				debugDeadZone = new FlxObject();
+				debugDeadZone.scrollFactor.set();
+				
+				forEach((child)->
+				{
+					if (Std.is(child, FlxObject))
+						(cast child:FlxObject).ignoreDrawDebug = true;
+				}, true);
+				add(debugDeadZone);
+			}
+			
+			debugDeadZone.x = zone.x - camera.targetOffset.x;
+			debugDeadZone.y = zone.y - camera.targetOffset.y;
+			debugDeadZone.width = zone.width;
+			debugDeadZone.height = zone.height;
+		}
+		#end
 	}
 
 	private function musicHandling():Void
