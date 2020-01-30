@@ -25,6 +25,8 @@ class Player extends FlxSprite
     private var ceilingBufferShit:Int = 0;
     private var hovering:Bool = false;
     private var wallClimbing:Bool = false;
+    public var onGround   (default, null):Bool = false;
+    public var wasOnGround(default, null):Bool = false;
 
     var left:Bool;
     var right:Bool;
@@ -92,6 +94,8 @@ class Player extends FlxSprite
         jump = FlxG.keys.anyPressed(['SPACE', 'W', 'UP', 'Z', 'Y']);
         jumpP = FlxG.keys.anyJustPressed(['SPACE', "W", 'UP', 'Z', 'Y']);
         down = FlxG.keys.anyPressed(['S', 'DOWN']);
+        wasOnGround = onGround;
+        onGround = isTouching(FlxObject.FLOOR);
 
 
         // THESE VARIABLES HAVE UNDERSCORES SIMPLY BECAUSE I COPY PASTED IT FROM CITYHOPPIN LMAOOO
@@ -173,7 +177,7 @@ class Player extends FlxSprite
 
             var hoverMulti:Float = 1;
 
-            if (!isTouching(FlxObject.FLOOR) && doubleJumped && velocity.y > 0)
+            if (!onGround && doubleJumped && velocity.y > 0)
                 hoverMulti = 0.3;
 
             if (hovering)
@@ -198,7 +202,7 @@ class Player extends FlxSprite
 
         //wallJumping();      
         
-        if (isTouching(FlxObject.FLOOR))
+        if (onGround)
         {
             doubleJumped = false;
             jumped = false;

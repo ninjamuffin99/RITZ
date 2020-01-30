@@ -2,6 +2,7 @@ package;
 
 import io.newgrounds.NG;
 import flixel.FlxBasic;
+import flixel.addons.display.FlxBackdrop;
 import flixel.addons.text.FlxTypeText;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
@@ -14,6 +15,7 @@ import flixel.util.FlxPath;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
 import flixel.FlxCamera.FlxCameraFollowStyle;
 import flixel.FlxG;
 import flixel.tile.FlxTilemap;
@@ -30,6 +32,7 @@ class PlayState extends FlxState
 	var level:FlxTilemap = new FlxTilemap();
 	var player:Player;
 	var debug:FlxText;
+	var tileSize = 0;
 	private var cheeseNeeded:Int = 32;
 	private var totalCheese:Int = 0;
 
@@ -51,19 +54,37 @@ class PlayState extends FlxState
 	private var locked:FlxSprite;
 	private var dialogueBubble:FlxSprite;
 	private var grpDisplayCheese:FlxGroup;
+	
+	inline static var PAN_DOWN_DELAY = 0.25;
+	inline static var PAN_DOWN_END_DELAY = 0.75;
+	inline static var PAN_DOWN_DISTANCE = 4;//tiles
+	inline static var PAN_DOWN_TIME = 0.5;
+	/** Used to pan down the camera smoothly */
+	private var panDownTimer = 0.0;
+	/** Offset for when the player is looking down */
+	private var camYPanOffset = 0.0;
+	/** TODO: The default offset of a given area, should point up normally, and down in areas that lead downwards*/
+	private var camYLeadOffset = 0.0;
+	/** Time it takes to snap to the new platforms height */
+	inline static var PAN_SNAP_TIME = 0.3;
+	/** Used to snap the camera to a new ground height when landing */
+	private var camYSnapOffset = 0.0;
+	private var camYSnapTimer = 0.0;
+	private var camYSnapAmount = 0.0;
 
 	override public function create():Void
 	{
 		FlxG.camera.fade(FlxColor.BLACK, 2, true);
 		musicHandling();
 
-		var bg:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.dumbbg__png);
-		bg.scrollFactor.set(0.045, 0.045);
+		var bg:FlxSprite = new FlxBackdrop(AssetPaths.dumbbg__png);
+		bg.scrollFactor.set(0.75, 0.75);
 		bg.alpha = 0.75;
 		add(bg);
 
 		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, AssetPaths.dumbassLevel__json);
 		level.load_tilemap(ogmo, 'assets/data/');
+		tileSize = Std.int(level.frames.getByIndex(0).frame.height);
 		add(ogmo.level.get_decal_layer('decalbg').get_decal_group('assets'));
 
 
@@ -100,10 +121,16 @@ class PlayState extends FlxState
 
 		ogmo.level.get_entity_layer('entities').load_entities(entity_loader);
 
-		FlxG.camera.follow(player, FlxCameraFollowStyle.LOCKON, 0.15);
-		FlxG.camera.focusOn(player.getPosition());
+		var camera = FlxG.camera;
+		camera.follow(player, FlxCameraFollowStyle.PLATFORMER, 1.0);
+		camera.focusOn(player.getPosition());
+		var w = (camera.width / 8);
+		var h = (camera.height * 2 / 3);
+		camera.deadzone.set((camera.width - w) / 2, (camera.height - h) / 2, w, h);
+		camYLeadOffset = tileSize * -1.0;
+		camera.targetOffset.y = camYLeadOffset;
 		FlxG.worldBounds.set(0, 0, level.width, level.height);
-		level.follow(FlxG.camera);
+		level.follow(camera);
 
 		FlxG.mouse.visible = false;
 
@@ -243,7 +270,9 @@ class PlayState extends FlxState
 			}
 		}
 		*/
-
+		
+		updateCamera(elapsed);
+		
 		super.update(elapsed);
 		FlxG.collide(grpMovingPlatforms, player, function(platform:MovingPlatform, p:Player)
 		{
@@ -436,7 +465,72 @@ class PlayState extends FlxState
 			}
 			
 		});
-
+	}
+	
+	function updateCamera(elapsed:Float):Void
+	{
+		// Deadzone: taller when jumping, but snap to center when on the ground
+		if (player.onGround != player.wasOnGround)
+		{
+			var zone = FlxG.camera.deadzone;
+			zone.height = player.onGround ? player.height : camera.height * 2 / 3;
+			zone.y = (camera.height - zone.height) / 2;
+			
+			if (player.onGround)
+			{
+				// Compute the amount of y dis to move the camera
+				camera.targetOffset.y = camYLeadOffset + camYPanOffset;
+				var oldCam = FlxPoint.get().copyFrom(camera.scroll);
+				camera.snapToTarget();
+				camYSnapTimer = 0;
+				camYSnapAmount = -(camera.scroll.y - oldCam.y);
+				camera.scroll.copyFrom(oldCam);
+				oldCam.put();
+			}
+		}
+		
+		if (camYSnapAmount != 0)
+		{
+			camYSnapTimer += elapsed;
+			if (camYSnapTimer > PAN_SNAP_TIME)
+			{
+				camera.scroll.y += camYSnapAmount;
+				camYSnapOffset = camYSnapAmount = 0;
+			}
+			else
+			{
+				camYSnapOffset = camYSnapAmount * FlxEase.smootherStepInOut(1.0 - (camYSnapTimer / PAN_SNAP_TIME));
+				trace(camYSnapOffset + "->" + camYSnapAmount);
+			}
+		}
+		
+		var downPress = FlxG.keys.anyPressed([S, DOWN]);
+		var gamepad = FlxG.gamepads.lastActive;
+		if (!downPress && gamepad != null)
+			downPress = gamepad.anyPressed([DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN, RIGHT_STICK_DIGITAL_DOWN]);
+		
+		if (downPress)
+		{
+			panDownTimer += elapsed;
+			if (panDownTimer > PAN_DOWN_DELAY + PAN_DOWN_TIME)
+				// stay down after releasing the button for a bit
+				panDownTimer = PAN_DOWN_DELAY + PAN_DOWN_TIME + PAN_DOWN_END_DELAY;
+		}
+		else if (panDownTimer < PAN_DOWN_DELAY)
+			panDownTimer = 0;
+		else
+			panDownTimer -= elapsed;
+		
+		if (panDownTimer > 0)
+		{
+			if (panDownTimer > PAN_DOWN_DELAY)
+				camYPanOffset
+					= tileSize * PAN_DOWN_DISTANCE
+					* FlxEase.smoothStepInOut(Math.min(panDownTimer - PAN_DOWN_DELAY, PAN_DOWN_TIME) / PAN_DOWN_TIME);
+		}
+		
+		// Combine all the camera offsets
+		camera.targetOffset.y = camYLeadOffset + camYSnapOffset + camYPanOffset;
 	}
 
 	private function musicHandling():Void
