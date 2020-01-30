@@ -218,6 +218,8 @@ class Player extends FlxSprite
                 //velocity.y -= 480;
                 velocity.y -= baseJumpStrength * 2;
                 jumped = true;
+                onGround = false;
+                wasOnGround = true;
                 FlxG.sound.play('assets/sounds/jump' + BootState.soundEXT, 0.5);
                 //set to 20 so that u cant double jump twice??
                 coyoteTime = 20;

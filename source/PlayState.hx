@@ -122,7 +122,7 @@ class PlayState extends FlxState
 		ogmo.level.get_entity_layer('entities').load_entities(entity_loader);
 
 		var camera = FlxG.camera;
-		camera.follow(player, FlxCameraFollowStyle.PLATFORMER, 1.0);
+		camera.follow(player, FlxCameraFollowStyle.PLATFORMER, 0.9);
 		camera.focusOn(player.getPosition());
 		var w = (camera.width / 8);
 		var h = (camera.height * 2 / 3);
@@ -271,9 +271,9 @@ class PlayState extends FlxState
 		}
 		*/
 		
+		super.update(elapsed);
 		updateCamera(elapsed);
 		
-		super.update(elapsed);
 		FlxG.collide(grpMovingPlatforms, player, function(platform:MovingPlatform, p:Player)
 		{
 			if (platform.disintigrating && !platform.curDisintigrating)
@@ -473,8 +473,16 @@ class PlayState extends FlxState
 		if (player.onGround != player.wasOnGround)
 		{
 			var zone = FlxG.camera.deadzone;
-			zone.height = player.onGround ? player.height : camera.height * 2 / 3;
-			zone.y = (camera.height - zone.height) / 2;
+			if (player.onGround)
+			{
+				zone.height = player.height;
+				zone.y = (camera.height - zone.height) / 2;
+			}
+			else
+			{
+				zone.height = camera.height * 2 / 3;
+				zone.y = (camera.height - zone.height) / 2;
+			}
 			
 			if (player.onGround)
 			{
@@ -493,15 +501,9 @@ class PlayState extends FlxState
 		{
 			camYSnapTimer += elapsed;
 			if (camYSnapTimer > PAN_SNAP_TIME)
-			{
-				camera.scroll.y += camYSnapAmount;
 				camYSnapOffset = camYSnapAmount = 0;
-			}
 			else
-			{
 				camYSnapOffset = camYSnapAmount * FlxEase.smootherStepInOut(1.0 - (camYSnapTimer / PAN_SNAP_TIME));
-				trace(camYSnapOffset + "->" + camYSnapAmount);
-			}
 		}
 		
 		var downPress = FlxG.keys.anyPressed([S, DOWN]);
