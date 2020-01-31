@@ -15,7 +15,7 @@ class PlayCamera extends FlxCamera
 	 * Too high and it can be disorienting,
 	 * too low and the player won't see ahead of their path
 	 */
-	inline static var CAMERA_LERP = 0.2;
+	inline static var LERP = 0.2;
 	
 	inline static var PAN_DOWN_DELAY = 0.25;
 	inline static var PAN_DOWN_END_DELAY = 0.75;
@@ -24,23 +24,23 @@ class PlayCamera extends FlxCamera
 	/** Used to pan down the camera smoothly */
 	var panDownTimer = 0.0;
 	/** Offset for when the player is looking down */
-	var camYPanOffset = 0.0;
+	var panOffset = 0.0;
 	
 	inline static var PAN_LEAD_SHIFT_TIME = 0.5;
 	inline static var PAN_LEAD_TILES = 1;
 	/** TODO: The default offset of a given area, should point up normally, and down in areas that lead downwards*/
-	var camYLeadOffset = 0.0;
+	var leadOffset = 0.0;
 	var camYLeadAmount = 0.0;
 	inline static var FALL_LEAD_DELAY = 0.15;
-	var camTargetFallTimer = 0.0;
+	var fallTimer = 0.0;
 	
 	/** Time it takes to snap to the new platforms height */
 	inline static var PAN_SNAP_TIME = 0.3;
 	/** Used to snap the camera to a new ground height when landing */
-	var camYSnapOffset = 0.0;
-	var camYSnapTimer = 0.0;
-	var camYSnapAmount = 0.0;
-	var lastCameraPos = new FlxPoint();
+	var snapOffset = 0.0;
+	var snapTimer = 0.0;
+	var snapAmount = 0.0;
+	var lastPos = new FlxPoint();
 	
 	#if debug
 	var debugDeadZone:FlxObject;
@@ -59,12 +59,12 @@ class PlayCamera extends FlxCamera
 	
 	public function init(player:Player):Void
 	{
-		follow(player, FlxCameraFollowStyle.PLATFORMER, CAMERA_LERP);
+		follow(player, FlxCameraFollowStyle.PLATFORMER, LERP);
 		focusOn(player.getPosition());
 		var w = (width / 8);
 		var h = (height * 2 / 3);
 		deadzone.set((width - w) / 2, (height - h) / 2, w, h);
-		camYLeadOffset = camYLeadAmount = tileSize * -PAN_LEAD_TILES;
+		leadOffset = camYLeadAmount = tileSize * -PAN_LEAD_TILES;
 	}
 	
 	override function update(elapsed:Float)
@@ -87,24 +87,24 @@ class PlayCamera extends FlxCamera
 			if (player.onGround)
 			{
 				// Compute the amount of y dis to move the camera
-				targetOffset.y = camYLeadOffset + camYPanOffset;
+				targetOffset.y = leadOffset + panOffset;
 				var oldCam = FlxPoint.get().copyFrom(scroll);
 				snapToTarget();
-				camYSnapTimer = 0;
-				camYSnapAmount = -(scroll.y - oldCam.y);
+				snapTimer = 0;
+				snapAmount = -(scroll.y - oldCam.y);
 				scroll.copyFrom(oldCam);
 				oldCam.put();
 			}
 		}
 		
 		// actual snapping
-		if (camYSnapAmount != 0)
+		if (snapAmount != 0)
 		{
-			camYSnapTimer += elapsed;
-			if (camYSnapTimer > PAN_SNAP_TIME)
-				camYSnapOffset = camYSnapAmount = 0;
+			snapTimer += elapsed;
+			if (snapTimer > PAN_SNAP_TIME)
+				snapOffset = snapAmount = 0;
 			else
-				camYSnapOffset = camYSnapAmount * /*FlxEase.smootherStepInOut*/(1.0 - (camYSnapTimer / PAN_SNAP_TIME));
+				snapOffset = snapAmount * /*FlxEase.smootherStepInOut*/(1.0 - (snapTimer / PAN_SNAP_TIME));
 		}
 		
 		// Look down while pressing down
@@ -128,7 +128,7 @@ class PlayCamera extends FlxCamera
 		if (panDownTimer > 0)
 		{
 			if (panDownTimer > PAN_DOWN_DELAY)
-				camYPanOffset
+				panOffset
 					= tileSize * PAN_DOWN_DISTANCE
 					* /*FlxEase.smoothStepInOut*/(Math.min(panDownTimer - PAN_DOWN_DELAY, PAN_DOWN_TIME) / PAN_DOWN_TIME);
 		}
@@ -137,16 +137,16 @@ class PlayCamera extends FlxCamera
 		var leading = cameraTilemap.getTileTypeAt(player.x, player.y);
 		if (leading != Down)
 		{
-			if (player.velocity.y > 0 && scroll.y > lastCameraPos.y)
+			if (player.velocity.y > 0 && scroll.y > lastPos.y)
 			{
 				// Lead down when falling for some time
-				camTargetFallTimer += elapsed;
-				trace(camTargetFallTimer);
-				if (camTargetFallTimer > FALL_LEAD_DELAY)
+				fallTimer += elapsed;
+				trace(fallTimer);
+				if (fallTimer > FALL_LEAD_DELAY)
 					leading = CameraTileType.Down;
 			}
 			else
-				camTargetFallTimer = 0;
+				fallTimer = 0;
 		}
 		
 		switch (leading)
@@ -156,26 +156,26 @@ class PlayCamera extends FlxCamera
 		}
 		
 		// linear shift because I'm lazy and this can get weird if player keeps going back and forth
-		if (camYLeadOffset != camYLeadAmount)
+		if (leadOffset != camYLeadAmount)
 		{
 			var leadSpeed = 2 * PAN_LEAD_TILES * tileSize / PAN_LEAD_SHIFT_TIME * elapsed;
-			if (camYLeadOffset < camYLeadAmount)
+			if (leadOffset < camYLeadAmount)
 			{
-				camYLeadOffset += leadSpeed;
-				if (camYLeadOffset > camYLeadAmount)// bound
-					camYLeadOffset = camYLeadAmount;
+				leadOffset += leadSpeed;
+				if (leadOffset > camYLeadAmount)// bound
+					leadOffset = camYLeadAmount;
 			}
 			else
 			{
-				camYLeadOffset -= leadSpeed;
-				if (camYLeadOffset < camYLeadAmount)// bound
-					camYLeadOffset = camYLeadAmount;
+				leadOffset -= leadSpeed;
+				if (leadOffset < camYLeadAmount)// bound
+					leadOffset = camYLeadAmount;
 			}
 		}
 		
 		// Combine all the camera offsets
-		targetOffset.y = camYSnapOffset + camYPanOffset + camYLeadOffset;
-		lastCameraPos.copyFrom(scroll);
+		targetOffset.y = snapOffset + panOffset + leadOffset;
+		lastPos.copyFrom(scroll);
 		
 		#if debug
 		if (FlxG.keys.justPressed.C)
