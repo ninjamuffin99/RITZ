@@ -15,7 +15,7 @@ class PlayCamera extends FlxCamera
 	 * Too high and it can be disorienting,
 	 * too low and the player won't see ahead of their path
 	 */
-	inline static var LERP = 0.2;
+	inline static var LERP = 0.3;
 	
 	inline static var PAN_DOWN_DELAY = 0.25;
 	inline static var PAN_DOWN_END_DELAY = 0.75;
@@ -35,7 +35,7 @@ class PlayCamera extends FlxCamera
 	var fallTimer = 0.0;
 	
 	/** Time it takes to snap to the new platforms height */
-	inline static var PAN_SNAP_TIME = 0.3;
+	inline static var PAN_SNAP_TIME = 0.4;
 	/** Used to snap the camera to a new ground height when landing */
 	var snapOffset = 0.0;
 	var snapTimer = 0.0;

@@ -11,7 +11,6 @@ using zero.flixel.utilities.FlxOgmoUtils;
 
 class CameraTilemap extends FlxTilemap
 {
-	
 	public function new(ogmo:OgmoPackage)
 	{
 		super();
