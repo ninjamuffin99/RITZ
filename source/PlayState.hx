@@ -172,13 +172,7 @@ class PlayState extends FlxState
 				grpMovingPlatforms.add(platform);
 
 			case "spike":
-				var spikeAmount = Std.int(e.width / 32);
-				for (i in 0...spikeAmount)
-				{
-					var daSpike:SpikeObstacle = new SpikeObstacle(e.x + (i * 32), e.y);
-					daSpike.angle = e.values.angle;
-					grpObstacles.add(daSpike);
-				}
+				grpObstacles.add(new SpikeObstacle(e.x, e.y, e.rotation));
 			case "checkpoint":
 				grpCheckpoint.add(new Checkpoint(e.x, e.y, e.values.dialogue));
 			case "musicTrigger":
@@ -439,6 +433,9 @@ class PlayState extends FlxState
 			}
 			
 		});
+		
+		if (FlxG.keys.justPressed.B)
+			FlxG.debugger.drawDebug = !FlxG.debugger.drawDebug;
 	}
 	
 	private function musicHandling():Void
