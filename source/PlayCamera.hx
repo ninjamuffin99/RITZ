@@ -141,7 +141,6 @@ class PlayCamera extends FlxCamera
 			{
 				// Lead down when falling for some time
 				fallTimer += elapsed;
-				trace(fallTimer);
 				if (fallTimer > FALL_LEAD_DELAY)
 					leading = CameraTileType.Down;
 			}
