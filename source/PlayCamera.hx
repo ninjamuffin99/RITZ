@@ -178,9 +178,6 @@ class PlayCamera extends FlxCamera
 		
 		#if debug
 		if (FlxG.keys.justPressed.C)
-			FlxG.debugger.drawDebug = !FlxG.debugger.drawDebug;
-		
-		if (FlxG.debugger.drawDebug)
 		{
 			if (debugDeadZone == null)
 			{
@@ -195,7 +192,12 @@ class PlayCamera extends FlxCamera
 				
 				FlxG.state.add(debugDeadZone);
 			}
-			
+			else
+				debugDeadZone.visible = !debugDeadZone.visible;
+		}
+		
+		if (FlxG.debugger.drawDebug && debugDeadZone != null && debugDeadZone.visible)
+		{
 			debugDeadZone.x = deadzone.x - targetOffset.x;
 			debugDeadZone.y = deadzone.y - targetOffset.y;
 			debugDeadZone.width = deadzone.width;
