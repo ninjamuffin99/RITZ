@@ -1,6 +1,6 @@
 {
   "name": "RoachSticker",
-  "ogmoVersion": "3.2.2",
+  "ogmoVersion": "3.3.0",
   "levelPaths": ["."],
   "backgroundColor": "#3b404bff",
   "gridColor": "#3c4049cc",
@@ -13,6 +13,8 @@
   "levelValues": [],
   "defaultExportMode": ".json",
   "compactExport": false,
+  "externalScript": "",
+  "playCommand": "",
   "entityTags": [],
   "layers": [
     {
