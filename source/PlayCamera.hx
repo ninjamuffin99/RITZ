@@ -46,8 +46,8 @@ class PlayCamera extends FlxCamera
 	var debugDeadZone:FlxObject;
 	#end
 	
-	public var tileSize = 1.0;
-	public var cameraTilemap:CameraTilemap;
+	var tileSize = 1.0;
+	var cameraTilemap:CameraTilemap;
 	
 	var player(get, never):Player;
 	inline function get_player():Player return cast target;
@@ -57,14 +57,17 @@ class PlayCamera extends FlxCamera
 		super(x, y, width, height, zoom);
 	}
 	
-	public function init(player:Player):Void
+	public function init(player:Player, tileSize:Float, cameraTilemap:CameraTilemap):PlayCamera
 	{
+		this.tileSize = tileSize;
+		this.cameraTilemap = cameraTilemap;
 		follow(player, FlxCameraFollowStyle.PLATFORMER, LERP);
 		focusOn(player.getPosition());
 		var w = (width / 8);
 		var h = (height * 2 / 3);
 		deadzone.set((width - w) / 2, (height - h) / 2, w, h);
 		leadOffset = camYLeadAmount = tileSize * -PAN_LEAD_TILES;
+		return this;
 	}
 	
 	override function update(elapsed:Float)

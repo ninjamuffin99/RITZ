@@ -2,6 +2,7 @@ package;
 
 import io.newgrounds.NG;
 import flixel.FlxBasic;
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.addons.display.FlxBackdrop;
 import flixel.addons.text.FlxTypeText;
@@ -27,6 +28,8 @@ using StringTools;
 
 class PlayState extends FlxState
 {
+	inline static var USE_NEW_CAMERA = false;
+	
 	var level:FlxTilemap = new FlxTilemap();
 	var player:Player;
 	var debug:FlxText;
@@ -118,10 +121,18 @@ class PlayState extends FlxState
 
 		super.create();
 		
-		var camera = PlayCamera.replaceCurrentCamera();
-		camera.tileSize = Std.int(level.frames.getByIndex(0).frame.height);
-		camera.cameraTilemap = new CameraTilemap(ogmo);
-		camera.init(player);
+		var camera = FlxG.camera;
+		if (USE_NEW_CAMERA)
+		{
+			var tileSize = Std.int(level.frames.getByIndex(0).frame.height);
+			camera = PlayCamera.replaceCurrentCamera()
+				.init(player, tileSize, new CameraTilemap(ogmo));
+		}
+		else
+		{
+			camera.follow(player, FlxCameraFollowStyle.PLATFORMER, 0.15);
+			camera.focusOn(player.getPosition());
+		}
 		FlxG.worldBounds.set(0, 0, level.width, level.height);
 		level.follow(camera);
 		FlxG.camera.fade(FlxColor.BLACK, 2, true);
