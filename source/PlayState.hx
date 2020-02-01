@@ -2,6 +2,9 @@ package;
 
 import io.newgrounds.NG;
 import flixel.FlxBasic;
+import flixel.FlxCamera;
+import flixel.FlxG;
+import flixel.addons.display.FlxBackdrop;
 import flixel.addons.text.FlxTypeText;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
@@ -14,8 +17,6 @@ import flixel.util.FlxPath;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
-import flixel.FlxCamera.FlxCameraFollowStyle;
-import flixel.FlxG;
 import flixel.tile.FlxTilemap;
 import flixel.FlxState;
 import flixel.FlxObject;
@@ -27,9 +28,12 @@ using StringTools;
 
 class PlayState extends FlxState
 {
+	inline static var USE_NEW_CAMERA = false;
+	
 	var level:FlxTilemap = new FlxTilemap();
 	var player:Player;
 	var debug:FlxText;
+	var tileSize = 0;
 	private var cheeseNeeded:Int = 32;
 	private var totalCheese:Int = 0;
 
@@ -51,21 +55,19 @@ class PlayState extends FlxState
 	private var locked:FlxSprite;
 	private var dialogueBubble:FlxSprite;
 	private var grpDisplayCheese:FlxGroup;
-
+	
 	override public function create():Void
 	{
-		FlxG.camera.fade(FlxColor.BLACK, 2, true);
 		musicHandling();
-
-		var bg:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.dumbbg__png);
-		bg.scrollFactor.set(0.045, 0.045);
+		
+		var bg:FlxSprite = new FlxBackdrop(AssetPaths.dumbbg__png);
+		bg.scrollFactor.set(0.75, 0.75);
 		bg.alpha = 0.75;
 		add(bg);
 
 		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, AssetPaths.dumbassLevel__json);
 		level.load_tilemap(ogmo, 'assets/data/');
 		add(ogmo.level.get_decal_layer('decalbg').get_decal_group('assets'));
-
 
 		grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
 		add(grpMovingPlatforms);
@@ -100,11 +102,6 @@ class PlayState extends FlxState
 
 		ogmo.level.get_entity_layer('entities').load_entities(entity_loader);
 
-		FlxG.camera.follow(player, FlxCameraFollowStyle.LOCKON, 0.15);
-		FlxG.camera.focusOn(player.getPosition());
-		FlxG.worldBounds.set(0, 0, level.width, level.height);
-		level.follow(FlxG.camera);
-
 		FlxG.mouse.visible = false;
 
 		var displayCheese:Cheese = new Cheese(10, 10);
@@ -123,6 +120,22 @@ class PlayState extends FlxState
 		add(debug);
 
 		super.create();
+		
+		var camera = FlxG.camera;
+		if (USE_NEW_CAMERA)
+		{
+			var tileSize = Std.int(level.frames.getByIndex(0).frame.height);
+			camera = PlayCamera.replaceCurrentCamera()
+				.init(player, tileSize, new CameraTilemap(ogmo));
+		}
+		else
+		{
+			camera.follow(player, FlxCameraFollowStyle.PLATFORMER, 0.15);
+			camera.focusOn(player.getPosition());
+		}
+		FlxG.worldBounds.set(0, 0, level.width, level.height);
+		level.follow(camera);
+		FlxG.camera.fade(FlxColor.BLACK, 2, true);
 	}
 
 	function entity_loader(e:EntityData) 
@@ -237,8 +250,9 @@ class PlayState extends FlxState
 			}
 		}
 		*/
-
+		
 		super.update(elapsed);
+		
 		FlxG.collide(grpMovingPlatforms, player, function(platform:MovingPlatform, p:Player)
 		{
 			if (platform.disintigrating && !platform.curDisintigrating)
@@ -434,7 +448,7 @@ class PlayState extends FlxState
 		if (FlxG.keys.justPressed.B)
 			FlxG.debugger.drawDebug = !FlxG.debugger.drawDebug;
 	}
-
+	
 	private function musicHandling():Void
 	{
 		FlxG.sound.playMusic('assets/music/' + musicQueue + BootState.soundEXT, 0.7);
