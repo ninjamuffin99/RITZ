@@ -34,7 +34,7 @@ class PlayState extends FlxState
 	
 	var level:OgmoTilemap;
 	var player:Player;
-	var debug:FlxText;
+	var cheeseCount:FlxText;
 	var tileSize = 0;
 	private var cheeseNeeded:Int = 32;
 	private var totalCheese:Int = 0;
@@ -65,6 +65,7 @@ class PlayState extends FlxState
 		var bg:FlxSprite = new FlxBackdrop(AssetPaths.dumbbg__png);
 		bg.scrollFactor.set(0.75, 0.75);
 		bg.alpha = 0.75;
+		bg.ignoreDrawDebug = true;
 		add(bg);
 
 		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, AssetPaths.dumbassLevel__json);
@@ -91,7 +92,9 @@ class PlayState extends FlxState
 		
 
 		add(level);
-		add(ogmo.level.get_decal_layer('decals').get_decal_group('assets'));
+		var decalGroup = ogmo.level.get_decal_layer('decals').get_decal_group('assets');
+		(cast decalGroup:FlxTypedGroup<FlxSprite>).forEach((decal)->decal.ignoreDrawDebug = true);
+		add(decalGroup);
 
 		grpCheese = new FlxTypedGroup<Cheese>();
 		add(grpCheese);
@@ -108,30 +111,34 @@ class PlayState extends FlxState
 		ogmo.level.get_entity_layer('entities').load_entities(entity_loader);
 
 		FlxG.mouse.visible = false;
-
-		var displayCheese:Cheese = new Cheese(10, 10);
-		displayCheese.scrollFactor.set();
-		add(displayCheese);
+		
+		var uiGroup = new FlxGroup();
+		var bigCheese:Cheese = new Cheese(10, 10);
+		bigCheese.scrollFactor.set();
+		bigCheese.ignoreDrawDebug = true;
+		uiGroup.add(bigCheese);
 
 		grpDisplayCheese = new FlxGroup();
-		add(grpDisplayCheese);
-
-		trace(grpCheese.length);
-
-		debug = new FlxText(40, 12, 0, "", 16);
-		debug.scrollFactor.set(0, 0);
-		debug.color = FlxColor.BLACK;
-		debug.setFormat(null, 16, FlxColor.WHITE, null, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		add(debug);
-
+		uiGroup.add(grpDisplayCheese);
+		
+		cheeseCount = new FlxText(40, 12, 0, "", 16);
+		cheeseCount.scrollFactor.set(0, 0);
+		cheeseCount.color = FlxColor.BLACK;
+		cheeseCount.setFormat(null, 16, FlxColor.WHITE, null, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		cheeseCount.ignoreDrawDebug = true;
+		uiGroup.add(cheeseCount);
+		add(uiGroup);
+		
 		super.create();
 		
 		var camera = FlxG.camera;
 		if (USE_NEW_CAMERA)
 		{
 			var tileSize = Std.int(level.frames.getByIndex(0).frame.height);
+			var cameraTiles = new CameraTilemap(ogmo);
+			cameraTiles.ignoreDrawDebug = true;
 			camera = PlayCamera.replaceCurrentCamera()
-				.init(player, tileSize, new CameraTilemap(ogmo));
+				.init(player, tileSize, cameraTiles);
 		}
 		else
 		{
@@ -226,7 +233,7 @@ class PlayState extends FlxState
 	override public function update(elapsed:Float):Void
 	{
 		FlxG.watch.addMouse();
-		debug.text = coinCount + "/" + cheeseNeeded;
+		cheeseCount.text = coinCount + "/" + cheeseNeeded;
 
 		FlxG.watch.addQuick("daCheeses", cheeseHolding.length + " " + cheeseHolding.length);
 
@@ -434,6 +441,7 @@ class PlayState extends FlxState
 
 				var daCheese:Cheese = new Cheese(0, 0);
 				daCheese.scrollFactor.set();
+				daCheese.ignoreDrawDebug = true;
 				daCheese.setGraphicSize(Std.int(daCheese.width / 2));
 				daCheese.updateHitbox();
 				daCheese.setPosition(95 + (10 * ((cheeseHolding.length - 1) % 6)), 10 + (10 * Math.floor((cheeseHolding.length - 1) / 6)));
