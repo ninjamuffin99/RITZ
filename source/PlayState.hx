@@ -340,33 +340,27 @@ class PlayState extends FlxState
 	
 		});
 
-		if (FlxG.overlap(grpObstacles, player))
+		if (!player.gettingHurt && Obstacle.overlap(grpObstacles, player))
 		{
-			if (!player.gettingHurt)
+			for (ch in 0...cheeseHolding.length)
 			{
-				for (ch in 0...cheeseHolding.length)
-				{
-					grpCheese.add(cheeseHolding[ch]);
-				}
-				cheeseHolding = [];
-
-				grpDisplayCheese.members = [];
-
-				player.gettingHurt = true;
-				player.animation.play('fucking died lmao');
-				FlxG.sound.play('assets/sounds/damageTaken' + BootState.soundEXT, 0.6);
-
-				new FlxTimer().start(0.5, function (tmr:FlxTimer)
-				{
-					player.setPosition(curCheckpoint.x, curCheckpoint.y - 16);
-					player.velocity.set();
-					player.gettingHurt = false;
-				});
+				grpCheese.add(cheeseHolding[ch]);
 			}
-		}
+			cheeseHolding = [];
 
-		if (player.justTouched(FlxObject.FLOOR))
-			add(new Dust(player.x, player.y));
+			grpDisplayCheese.members = [];
+
+			player.gettingHurt = true;
+			player.animation.play('fucking died lmao');
+			FlxG.sound.play('assets/sounds/damageTaken' + BootState.soundEXT, 0.6);
+
+			new FlxTimer().start(0.5, function (tmr:FlxTimer)
+			{
+				player.setPosition(curCheckpoint.x, curCheckpoint.y - 16);
+				player.velocity.set();
+				player.gettingHurt = false;
+			});
+		}
 		
 		dialogueBubble.visible = false;
 
