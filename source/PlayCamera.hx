@@ -94,9 +94,11 @@ class PlayCamera extends FlxCamera
 				var oldCam = FlxPoint.get().copyFrom(scroll);
 				snapToTarget();
 				snapTimer = 0;
-				snapAmount = -(scroll.y - oldCam.y);
+				snapAmount = scroll.y - oldCam.y;
 				scroll.copyFrom(oldCam);
 				oldCam.put();
+				if (snapAmount + scroll.y + height > maxScrollY)
+					snapAmount = maxScrollY - (scroll.y + height);
 			}
 		}
 		
@@ -107,7 +109,7 @@ class PlayCamera extends FlxCamera
 			if (snapTimer > PAN_SNAP_TIME)
 				snapOffset = snapAmount = 0;
 			else
-				snapOffset = snapAmount * /*FlxEase.smootherStepInOut*/(1.0 - (snapTimer / PAN_SNAP_TIME));
+				snapOffset = -snapAmount * /*FlxEase.smootherStepInOut*/(1.0 - (snapTimer / PAN_SNAP_TIME));
 		}
 		
 		// Look down while pressing down
