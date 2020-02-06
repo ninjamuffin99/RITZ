@@ -155,7 +155,9 @@ class PlayState extends FlxState
 		switch(e.name)
 		{
 			case "player": 
-				add(player = new Player(e.x, e.y));
+				player = new Player(e.x, e.y);
+				add(player.dust);
+				add(player);
 				curCheckpoint = new Checkpoint(e.x, e.y, "");
 			case "spider":
 				var spider:Enemy = new Enemy(e.x, e.y, getPathData(e), e.values.speed);
