@@ -1,6 +1,6 @@
 package;
 
-import CameraTilemap;
+import OgmoTilemap;
 
 import flixel.FlxG;
 import flixel.FlxCamera;

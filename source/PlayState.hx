@@ -1,5 +1,7 @@
 package;
 
+import OgmoTilemap;
+
 import io.newgrounds.NG;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
@@ -30,7 +32,7 @@ class PlayState extends FlxState
 {
 	inline static var USE_NEW_CAMERA = false;
 	
-	var level:FlxTilemap = new FlxTilemap();
+	var level:OgmoTilemap;
 	var player:Player;
 	var debug:FlxText;
 	var tileSize = 0;
@@ -66,8 +68,11 @@ class PlayState extends FlxState
 		add(bg);
 
 		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, AssetPaths.dumbassLevel__json);
-		level.load_tilemap(ogmo, 'assets/data/');
-		add(ogmo.level.get_decal_layer('decalbg').get_decal_group('assets'));
+		level = new OgmoTilemap(ogmo, 'tiles');
+		level.ignoreDrawDebug = true;
+		var crack = new OgmoTilemap(ogmo, 'Crack', "assets/images/");
+		crack.ignoreDrawDebug = true;
+		add(crack);
 
 		grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
 		add(grpMovingPlatforms);
