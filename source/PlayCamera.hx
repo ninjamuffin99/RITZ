@@ -16,7 +16,7 @@ class PlayCamera extends FlxCamera
 	 * Too high and it can be disorienting,
 	 * too low and the player won't see ahead of their path
 	 */
-	inline static var LERP = 0.3;
+	inline static var LERP = 0.75;
 	
 	inline static var PAN_DOWN_DELAY = 0.25;
 	inline static var PAN_DOWN_END_DELAY = 0.75;
@@ -32,7 +32,7 @@ class PlayCamera extends FlxCamera
 	/** TODO: The default offset of a given area, should point up normally, and down in areas that lead downwards*/
 	var leadOffset = 0.0;
 	var camYLeadAmount = 0.0;
-	inline static var FALL_LEAD_DELAY = 0.15;
+	inline static var FALL_LEAD_DELAY = 0.25;
 	var fallTimer = 0.0;
 	
 	/** Time it takes to snap to the new platforms height */
@@ -80,12 +80,12 @@ class PlayCamera extends FlxCamera
 			if (player.onGround)
 			{
 				deadzone.height = player.height;
-				deadzone.y = (height - deadzone.height) / 2 - (tileSize * 1);
+				deadzone.y = (height - deadzone.height) / 2 - (tileSize * 1 * zoom);
 			}
 			else
 			{
-				deadzone.height = height * 2 / 3;
-				deadzone.y = (height - deadzone.height) / 2 - (tileSize * 2);
+				deadzone.height = height * 2 / 3 / zoom;
+				deadzone.y = (height - deadzone.height) / 2 - (tileSize * 2 * zoom);
 			}
 			
 			// Snap to new ground height
@@ -194,15 +194,9 @@ class PlayCamera extends FlxCamera
 		{
 			if (debugDeadZone == null)
 			{
+				FlxG.debugger.drawDebug = true;
 				debugDeadZone = new FlxObject();
 				debugDeadZone.scrollFactor.set();
-				
-				FlxG.state.forEach((child)->
-				{
-					if (Std.is(child, FlxObject))
-						(cast child:FlxObject).ignoreDrawDebug = true;
-				}, true);
-				
 				FlxG.state.add(debugDeadZone);
 			}
 			else
