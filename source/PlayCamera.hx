@@ -7,6 +7,7 @@ import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.math.FlxPoint;
 import flixel.tile.FlxTilemap;
+import flixel.tweens.FlxEase;
 
 class PlayCamera extends FlxCamera
 {
@@ -35,11 +36,12 @@ class PlayCamera extends FlxCamera
 	var fallTimer = 0.0;
 	
 	/** Time it takes to snap to the new platforms height */
-	inline static var PAN_SNAP_TIME = 0.4;
+	inline static var PAN_SNAP_TIME = 0.3;
 	/** Used to snap the camera to a new ground height when landing */
 	var snapOffset = 0.0;
 	var snapTimer = 0.0;
 	var snapAmount = 0.0;
+	var snapEase:Null<(Float)->Float> = null;
 	var lastPos = new FlxPoint();
 	
 	#if debug
@@ -99,6 +101,10 @@ class PlayCamera extends FlxCamera
 				oldCam.put();
 				if (snapAmount + scroll.y + height > maxScrollY)
 					snapAmount = maxScrollY - (scroll.y + height);
+				
+				snapEase = null;
+				if (fallTimer > FALL_LEAD_DELAY)
+					snapEase = FlxEase.smootherStepOut;
 			}
 		}
 		
@@ -108,8 +114,10 @@ class PlayCamera extends FlxCamera
 			snapTimer += elapsed;
 			if (snapTimer > PAN_SNAP_TIME)
 				snapOffset = snapAmount = 0;
+			else if (snapEase == null)
+				snapOffset = -snapAmount * (1.0 - (snapTimer / PAN_SNAP_TIME));
 			else
-				snapOffset = -snapAmount * /*FlxEase.smootherStepInOut*/(1.0 - (snapTimer / PAN_SNAP_TIME));
+				snapOffset = -snapAmount * snapEase(1.0 - (snapTimer / PAN_SNAP_TIME));
 		}
 		
 		// Look down while pressing down
