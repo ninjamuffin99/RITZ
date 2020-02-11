@@ -28,7 +28,6 @@ class PlayCamera extends FlxCamera
 	var panOffset = 0.0;
 	
 	inline static var PAN_LEAD_SHIFT_TIME = 0.5;
-	inline static var PAN_LEAD_TILES = 1;
 	/** TODO: The default offset of a given area, should point up normally, and down in areas that lead downwards*/
 	var leadOffset = 0.0;
 	var camYLeadAmount = 0.0;
@@ -68,7 +67,7 @@ class PlayCamera extends FlxCamera
 		var w = (width / 8);
 		var h = (height * 2 / 3);
 		deadzone.set((width - w) / 2, (height - h) / 2, w, h);
-		leadOffset = camYLeadAmount = tileSize * -PAN_LEAD_TILES;
+		leadOffset = camYLeadAmount = -tileSize;
 		return this;
 	}
 	
@@ -148,7 +147,7 @@ class PlayCamera extends FlxCamera
 		
 		// Tilemap leading bias, Look up unless it's a downward section of the level (indicated in ogmo)
 		var leading = cameraTilemap.getTileTypeAt(player.x, player.y);
-		if (leading != Down)
+		if (leading != Down && leading != MoreDown)
 		{
 			if (player.velocity.y > 0 && scroll.y > lastPos.y)
 			{
@@ -163,14 +162,16 @@ class PlayCamera extends FlxCamera
 		
 		switch (leading)
 		{
-			case Up  : camYLeadAmount = tileSize * -PAN_LEAD_TILES;
-			case Down: camYLeadAmount = tileSize *  PAN_LEAD_TILES;
+			case None    : camYLeadAmount = tileSize * -1;
+			case Up      : camYLeadAmount = tileSize * -4;
+			case Down    : camYLeadAmount = tileSize *  1;
+			case MoreDown: camYLeadAmount = tileSize *  4;
 		}
 		
 		// linear shift because I'm lazy and this can get weird if player keeps going back and forth
 		if (leadOffset != camYLeadAmount)
 		{
-			var leadSpeed = 2 * PAN_LEAD_TILES * tileSize / PAN_LEAD_SHIFT_TIME * elapsed;
+			var leadSpeed = 2 * tileSize / PAN_LEAD_SHIFT_TIME * elapsed;
 			if (leadOffset < camYLeadAmount)
 			{
 				leadOffset += leadSpeed;

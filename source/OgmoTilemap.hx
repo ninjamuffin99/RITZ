@@ -118,12 +118,20 @@ abstract CameraTilemap(OgmoTilemap) to FlxTilemap
 	
 	public function getTileTypeAt(x:Float, y:Float):CameraTileType
 	{
-		return this.getTileByIndex(this.getTileIndexByCoords(FlxPoint.weak(x, y))) == 0 ? Up : Down;
+		return switch(this.getTileByIndex(this.getTileIndexByCoords(FlxPoint.weak(x, y))))
+		{
+			case  0: Up;
+			case  1: Down;
+			case  2: MoreDown;
+			case -1,_: None;
+		} 
 	}
 }
 
 enum CameraTileType
 {
+	None;
 	Up;
 	Down;
+	MoreDown;
 }
