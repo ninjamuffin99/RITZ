@@ -31,7 +31,7 @@ using StringTools;
 
 class PlayState extends FlxState
 {
-	inline static var USE_NEW_CAMERA = false;
+	inline static var USE_NEW_CAMERA = true;
 	
 	var level:OgmoTilemap;
 	var player:Player;
@@ -142,6 +142,7 @@ class PlayState extends FlxState
 			camera.follow(player, FlxCameraFollowStyle.PLATFORMER, 0.15);
 			camera.focusOn(player.getPosition());
 		}
+		// camera.zoom = 1.5;
 		FlxG.worldBounds.set(0, 0, level.width, level.height);
 		level.follow(camera);
 		FlxG.camera.fade(FlxColor.BLACK, 2, true);

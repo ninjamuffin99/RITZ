@@ -26,11 +26,14 @@ class Player extends FlxSprite
     
     inline static var JUMP_DISTANCE = TILE_SIZE * (USE_NEW_SETTINGS ? 5 : 5);
     inline static var SLOW_DOWN_TIME       = (USE_NEW_SETTINGS ? 0.5 : 0.32);
-    inline static var GROUND_SPEED_UP_TIME = (USE_NEW_SETTINGS ? 0.2 : 0.16);
+    inline static var GROUND_SPEED_UP_TIME = (USE_NEW_SETTINGS ? 0.15 : 0.16);
+    inline static var AIR_SPEED_UP_TIME    = (USE_NEW_SETTINGS ? 0.36 : 0.16);
     inline static var AIRHOP_SPEED_UP_TIME = (USE_NEW_SETTINGS ? 0.5 : 0.5);
+    inline static var FALL_SPEED = (USE_NEW_SETTINGS ? -JUMP_SPEED : 520.0);
     
     inline static var MAXSPEED = JUMP_DISTANCE / MAX_APEX_TIME / 2;
     inline static var GROUND_ACCEL = MAXSPEED / GROUND_SPEED_UP_TIME;
+    inline static var AIR_ACCEL = MAXSPEED / AIR_SPEED_UP_TIME;
     inline static var AIRHOP_ACCEL = MAXSPEED / AIRHOP_SPEED_UP_TIME;
     inline static var DRAG = MAXSPEED / SLOW_DOWN_TIME;
     
@@ -41,18 +44,18 @@ class Player extends FlxSprite
     private var jumpBoost:Int = 0;
 
     public var gettingHurt:Bool = false;
-
-
-    static inline var COYOTE_TIME = 8 / 60;
+    
+    /** Input buffering, allow normal jump slightly after walking off a ledge */
+    static inline var COYOTE_TIME = 0.1;
     private var coyoteTimer:Float = 0;
-    private var doubleJumped:Bool = false;
+    private var airHopped:Bool = false;
     private var jumped:Bool = false;
     private var jumpTimer:Float = 0;
     private var hovering:Bool = false;
     private var wallClimbing:Bool = false;
-    public var onGround   (default, null):Bool = false;
-    public var wasOnGround(default, null):Bool = false;
-    public var onCoyoteGround   (default, null):Bool = false;
+    public var onGround      (default, null):Bool = false;
+    public var wasOnGround   (default, null):Bool = false;
+    public var onCoyoteGround(default, null):Bool = false;
     
     public var dust:FlxTypedGroup<Dust> = new FlxTypedGroup();
 
@@ -91,19 +94,18 @@ class Player extends FlxSprite
 
     override public function update(elapsed:Float):Void
     {
-
-        if (!wallClimbing)
-        {
+        // if (!wallClimbing)
+        // {
             acceleration.y = GRAVITY;
-            drag.y = 2000;
-        }
-        else
-        {
-            if (velocity.y > 0)
-                drag.y = 1000;
-            else
-                drag.y = 1200;
-        }
+        //     drag.y = 2000;
+        // }
+        // else
+        // {
+        //     if (velocity.y > 0)
+        //         drag.y = 1000;
+        //     else
+        //         drag.y = 1200;
+        // }
 
         if (gettingHurt)
         {
@@ -214,11 +216,16 @@ class Player extends FlxSprite
         
             
         
-        if ((left != right))
+        if (left != right)
         {
             var accel:Float = GROUND_ACCEL;
-            if (!onCoyoteGround && doubleJumped && velocity.y > 0)
-                accel = AIRHOP_ACCEL;
+            if (!onCoyoteGround)
+            {
+                if (airHopped && velocity.y > 0)
+                    accel = AIRHOP_ACCEL;
+                else
+                    accel = AIR_ACCEL;
+            }
 
             // if (hovering)
             //     hoverMulti = 0.6;
@@ -247,7 +254,7 @@ class Player extends FlxSprite
         
         if (onCoyoteGround)
         {
-            doubleJumped = false;
+            airHopped = false;
             jumped = false;
             hovering = false;
             apexReached = false;
@@ -258,7 +265,7 @@ class Player extends FlxSprite
             {
                 //velocity.y -= 480;
                 // velocity.y -= baseJumpStrength * 2;
-                velocity.y = JUMP_SPEED;
+                velocity.y = JUMP_SPEED;//TODO: add moving platform velocity?
                 jumped = true;
                 onGround = false;
                 onCoyoteGround = false;
@@ -271,11 +278,16 @@ class Player extends FlxSprite
         {
             animation.play(velocity.y < 0 ? 'jumping' : "falling");
             
-            // variableJump_old(elapsed);
-            variableJump_new(elapsed);
+            if (USE_NEW_SETTINGS)
+                variableJump_new(elapsed);
+            else
+            {
+                variableJump_old(elapsed);
+                jumpTimer = Math.POSITIVE_INFINITY;
+            }
             
             
-            if (jumpP && !doubleJumped && !wallClimbing)
+            if (jumpP && !airHopped && !wallClimbing)
             {
                 velocity.y = 0;
                 if ((velocity.x > 0 && left) || (velocity.x < 0 && right))
@@ -287,7 +299,7 @@ class Player extends FlxSprite
                     
                 // velocity.y = -600;
                 velocity.y = airJumpSpeed;
-                doubleJumped = true;
+                airHopped = true;
                 FlxG.sound.play('assets/sounds/doubleJump' + BootState.soundEXT, 0.75);
             }
         }
@@ -295,7 +307,7 @@ class Player extends FlxSprite
         
         
         /* 
-        if (doubleJumped && velocity.y > 0)
+        if (airHopped && velocity.y > 0)
         {
             drag.x = 200;
 
@@ -312,7 +324,7 @@ class Player extends FlxSprite
 
         if (wallClimbing)
         {
-            doubleJumped = false;
+            airHopped = false;
             hovering = false;
         }
             
@@ -335,19 +347,23 @@ class Player extends FlxSprite
     {
         if (jump && !apexReached)
         {
+            jumped = true;
             jumpTimer += elapsed;
             if (jumpTimer < JUMP_HOLD_TIME)
                 velocity.y = JUMP_SPEED;
             else
+            {
+                jumpTimer = JUMP_HOLD_TIME;
                 apexReached = true;
+            }
         }
     }
     
     function variableJump_old(elapsed:Float):Void
     {
-        
         if (jump && !apexReached)
         {
+            jumped = true;
             jumpBoost++;
 
             var C = FlxMath.fastCos(10.7 * jumpBoost * FlxG.elapsed);
