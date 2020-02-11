@@ -168,34 +168,7 @@ class PlayState extends FlxState
 				grpCheese.add(daCoin);
 				totalCheese += 1;
 			case "movingPlatform":
-				var platform:MovingPlatform = new MovingPlatform(e.x, e.y, getPathData(e));
-				platform.disintigrating = e.values.disintigrate;
-				platform.disS = e.values.disintigrateSeconds;
-				if (e.values.graphic != "none")
-				{
-					platform.loadGraphic('assets/images/' + e.values.graphic + '.png');
-				}
-				else
-				{
-					platform.makeGraphic(e.width, e.height);
-					platform.updateHitbox();
-				}
-				
-				platform.path.setProperties(e.values.speed, FlxPath.LOOP_FORWARD);
-				platform.visible = e.values.visible;
-
-				if (e.values.onewayplatform)
-				{
-					platform.allowCollisions = FlxObject.UP;
-				}
-				
-				var lastStringbit:String = Std.string(e.values.color).substring(1, 7);
-				var firstStringbit:String = Std.string(e.values.color).substring(7, 10);
-
-				platform.color = FlxColor.fromString(Std.string("#" + firstStringbit + lastStringbit).toUpperCase());
-				
-				grpMovingPlatforms.add(platform);
-
+				grpMovingPlatforms.add(MovingPlatform.fromOgmo(e));
 			case "spike":
 				grpObstacles.add(new SpikeObstacle(e.x, e.y, e.rotation));
 			case "checkpoint":

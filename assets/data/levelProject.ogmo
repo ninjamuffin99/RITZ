@@ -145,7 +145,7 @@
       "exportID": "47158608",
       "name": "movingPlatform",
       "limit": -1,
-      "size": {"x": 16, "y": 16},
+      "size": {"x": 32, "y": 32},
       "origin": {"x": 0, "y": 0},
       "originAnchored": true,
       "shape": {
@@ -162,7 +162,7 @@
       "color": "#ff00f5ff",
       "tileX": false,
       "tileY": false,
-      "tileSize": {"x": 16, "y": 16},
+      "tileSize": {"x": 32, "y": 32},
       "resizeableX": true,
       "resizeableY": true,
       "rotatable": false,
@@ -177,19 +177,27 @@
       "tags": [],
       "values": [
         {"name": "speed", "definition": "Float", "defaults": 70, "bounded": false, "min": 0, "max": 1},
-        {"name": "holdPerNode", "definition": "Float", "defaults": 0, "bounded": false, "min": 0, "max": 100},
+        {"name": "holdPerNode", "definition": "Float", "defaults": 0.5, "bounded": false, "min": 0, "max": 100},
+        {"name": "holdPerLoop", "definition": "Float", "defaults": 0, "bounded": false, "min": 0, "max": 100},
         {
-          "name": "TYPE",
+          "name": "type",
           "definition": "Enum",
           "choices": ["LOOP_FORWARD", "LOOP_BACKWARD", "FORWARD", "BACKWARD", "YOYO"],
           "defaults": 0
         },
-        {"name": "color", "definition": "Color", "defaults": "#ffffffff", "includeAlpha": false},
-        {"name": "graphic", "definition": "String", "defaults": "none", "maxLength": 0, "trimWhitespace": true},
-        {"name": "onewayplatform", "definition": "Boolean", "defaults": true},
-        {"name": "disintigrate", "definition": "Boolean", "defaults": false},
-        {"name": "disintigrateSeconds", "definition": "Float", "defaults": 1, "bounded": false, "min": 0, "max": 100},
-        {"name": "visible", "definition": "Boolean", "defaults": true}
+        {
+          "name": "graphic",
+          "definition": "Enum",
+          "choices": ["auto", "movingLongside", "movingLonger", "movingLong", "movingShort", "movingSingle", "none"],
+          "defaults": 0
+        },
+        {"name": "oneWayPlatform", "definition": "Boolean", "defaults": true},
+        {
+          "name": "trigger",
+          "definition": "Enum",
+          "choices": ["Load", "OnScreen", "Collide", "Ground"],
+          "defaults": 0
+        }
       ]
     },
     {

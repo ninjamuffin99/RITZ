@@ -226,7 +226,7 @@
             {"x": 928, "y": 3488},
             {"x": 800, "y": 3488}
           ],
-          "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_BACKWARD", "color": "#ffffffff", "graphic": "none", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": false}
+          "values": {"speed": 70, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "none", "oneWayPlatform": true, "trigger": "Load"}
         },
         {"name": "spike", "id": 58, "_eid": "62782057", "x": 640, "y": 3776, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 59, "_eid": "62782057", "x": 576, "y": 3776, "originX": 0, "originY": 0, "rotation": 0},
@@ -247,7 +247,7 @@
           "nodes": [
             {"x": 328, "y": 1536}
           ],
-          "values": {"speed": 120, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "movingLong", "onewayplatform": false, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
+          "values": {"speed": 120, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "movingLong", "oneWayPlatform": true, "trigger": "Load"}
         },
         {
           "name": "movingPlatform",
@@ -262,7 +262,7 @@
           "nodes": [
             {"x": 488, "y": 1584}
           ],
-          "values": {"speed": 100, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "movingLong", "onewayplatform": false, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
+          "values": {"speed": 100, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "movingLong", "oneWayPlatform": true, "trigger": "Load"}
         },
         {"name": "coins", "id": 72, "_eid": "46479631", "x": 328, "y": 1520, "originX": 0, "originY": 0},
         {
@@ -280,7 +280,7 @@
             {"x": 576, "y": 1040},
             {"x": 680, "y": 1096}
           ],
-          "values": {"speed": 150, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "movingLongside", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
+          "values": {"speed": 150, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "movingLongside", "oneWayPlatform": true, "trigger": "Load"}
         },
         {"name": "spike", "id": 74, "_eid": "62782057", "x": 416, "y": 1024, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 75, "_eid": "62782057", "x": 672, "y": 1056, "originX": 0, "originY": 0, "rotation": -90},
@@ -297,7 +297,7 @@
           "nodes": [
             {"x": 1040, "y": 832}
           ],
-          "values": {"speed": 120, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "movingSingle", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
+          "values": {"speed": 120, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "movingSingle", "oneWayPlatform": true, "trigger": "Load"}
         },
         {"name": "spike", "id": 79, "_eid": "62782057", "x": 1120, "y": 768, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 80, "_eid": "62782057", "x": 1184, "y": 800, "originX": 0, "originY": 0, "rotation": 90},
@@ -319,7 +319,7 @@
             {"x": 344, "y": 816},
             {"x": 344, "y": 848}
           ],
-          "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "none", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": false}
+          "values": {"speed": 70, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "none", "oneWayPlatform": true, "trigger": "Load"}
         },
         {"name": "coins", "id": 86, "_eid": "46479631", "x": 184, "y": 800, "originX": 0, "originY": 0},
         {"name": "spike", "id": 87, "_eid": "62782057", "x": 479, "y": 1776, "originX": 0, "originY": 0, "rotation": 90},
@@ -359,7 +359,7 @@
           "nodes": [
             {"x": 1664, "y": 3112}
           ],
-          "values": {"speed": 100, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "movingSingle", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
+          "values": {"speed": 100, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "movingSingle", "oneWayPlatform": true, "trigger": "Load"}
         },
         {"name": "spike", "id": 106, "_eid": "62782057", "x": 1536, "y": 3040, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 107, "_eid": "62782057", "x": 1536, "y": 3040, "originX": 0, "originY": 0, "rotation": 0},
@@ -415,7 +415,7 @@
             {"x": 960, "y": 2336},
             {"x": 1344, "y": 2336}
           ],
-          "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "none", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": false}
+          "values": {"speed": 70, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "none", "oneWayPlatform": true, "trigger": "Load"}
         },
         {"name": "coins", "id": 132, "_eid": "46479631", "x": 736, "y": 832, "originX": 0, "originY": 0},
         {
@@ -517,7 +517,7 @@
           "nodes": [
             {"x": 2008, "y": 1312}
           ],
-          "values": {"speed": 120, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "movingLonger", "onewayplatform": false, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
+          "values": {"speed": 120, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "movingLonger", "oneWayPlatform": true, "trigger": "Load"}
         },
         {
           "name": "movingPlatform",
@@ -532,7 +532,7 @@
           "nodes": [
             {"x": 1824, "y": 1152}
           ],
-          "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "movingSingle", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
+          "values": {"speed": 70, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "movingSingle", "oneWayPlatform": true, "trigger": "Load"}
         },
         {
           "name": "movingPlatform",
@@ -547,7 +547,7 @@
           "nodes": [
             {"x": 1576, "y": 1104}
           ],
-          "values": {"speed": 70, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "movingShort", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
+          "values": {"speed": 70, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "movingShort", "oneWayPlatform": true, "trigger": "Load"}
         },
         {
           "name": "movingPlatform",
@@ -564,7 +564,7 @@
             {"x": 1496, "y": 984},
             {"x": 1496, "y": 1144}
           ],
-          "values": {"speed": 200, "holdPerNode": 0, "TYPE": "LOOP_FORWARD", "color": "#ffffffff", "graphic": "movingSingle", "onewayplatform": true, "disintigrate": false, "disintigrateSeconds": 1, "visible": true}
+          "values": {"speed": 200, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "movingSingle", "oneWayPlatform": true, "trigger": "Load"}
         },
         {"name": "coins", "id": 188, "_eid": "46479631", "x": 1552, "y": 1024, "originX": 0, "originY": 0},
         {
