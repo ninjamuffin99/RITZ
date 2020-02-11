@@ -22,6 +22,7 @@ import flixel.text.FlxText;
 import flixel.tile.FlxTilemap;
 import flixel.FlxState;
 import flixel.FlxObject;
+import flixel.tweens.FlxEase;
 
 using zero.utilities.OgmoUtils;
 using zero.flixel.utilities.FlxOgmoUtils;
@@ -34,29 +35,30 @@ class PlayState extends FlxState
 	
 	var level:OgmoTilemap;
 	var player:Player;
-	var cheeseCount:FlxText;
 	var tileSize = 0;
-	private var cheeseNeeded:Int = 32;
-	private var totalCheese:Int = 0;
 
-	private var grpCheese:FlxTypedGroup<Cheese>;
-	private var grpMovingPlatforms:FlxTypedGroup<MovingPlatform>;
+	private var grpCheese = new FlxTypedGroup<Cheese>();
+	private var grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
 
-	private var grpObstacles:FlxTypedGroup<Obstacle>;
+	private var grpObstacles = new FlxTypedGroup<Obstacle>();
 	private var coinCount:Int = 0;
 	private var curCheckpoint:Checkpoint;
-	private var grpCheckpoint:FlxTypedGroup<Checkpoint>;
+	private var grpCheckpoint = new FlxTypedGroup<Checkpoint>();
+	private var grpLockedDoors = new FlxTypedGroup<Lock>();
 
-	private var grpMusicTriggers:FlxTypedGroup<MusicTrigger>;
-	private var grpSecretTriggers:FlxTypedGroup<SecretTrigger>;
+	private var grpMusicTriggers = new FlxTypedGroup<MusicTrigger>();
+	private var grpSecretTriggers = new FlxTypedGroup<SecretTrigger>();
 	private var musicQueue:String = "pillow";
 
 	private var curTalking:Bool = false;
 
-	private var cheeseHolding:Array<Dynamic> = [];
-	private var locked:FlxSprite;
-	private var dialogueBubble:FlxSprite;
-	private var grpDisplayCheese:FlxGroup;
+	var cheeseCount:FlxText;
+	var cheeseHolding:Array<Cheese> = [];
+	var dialogueBubble:FlxSprite;
+	var grpDisplayCheese:FlxGroup;
+	var cheeseNeeded = 0;
+	var totalCheese = 0;
+	var cheeseNeededText:LockAmountText;
 	
 	override public function create():Void
 	{
@@ -79,21 +81,12 @@ class PlayState extends FlxState
 		crack.ignoreDrawDebug = true;
 		add(crack);
 
-		grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
 		add(grpMovingPlatforms);
-
-		grpObstacles = new FlxTypedGroup<Obstacle>();
 		add(grpObstacles);
-
-		grpCheckpoint = new FlxTypedGroup<Checkpoint>();
 		add(grpCheckpoint);
-
-		grpMusicTriggers = new FlxTypedGroup<MusicTrigger>();
 		add(grpMusicTriggers);
-
-		grpSecretTriggers = new FlxTypedGroup<SecretTrigger>();
 		add(grpSecretTriggers);
-		
+		add(grpLockedDoors);
 
 		add(level);
 		var decalGroup = ogmo.level.get_decal_layer('decals').get_decal_group('assets');
@@ -181,11 +174,7 @@ class PlayState extends FlxState
 				trace('ADDED SECRET');
 				grpSecretTriggers.add(new SecretTrigger(e.x, e.y, e.width, e.height));
 			case 'locked':
-				locked = new FlxSprite(e.x, e.y).loadGraphic(AssetPaths.door__png);
-				locked.setGraphicSize(192, 64);
-				locked.updateHitbox();
-				locked.immovable = true;
-				add(locked);
+				grpLockedDoors.add(Lock.fromOgmo(e));
 		}
 	}
 
@@ -197,7 +186,7 @@ class PlayState extends FlxState
 	override public function update(elapsed:Float):Void
 	{
 		FlxG.watch.addMouse();
-		cheeseCount.text = coinCount + "/" + cheeseNeeded;
+		cheeseCount.text = coinCount + (cheeseNeeded > 0 ? "/" + cheeseNeeded : "");
 
 		FlxG.watch.addQuick("daCheeses", cheeseHolding.length + " " + cheeseHolding.length);
 
@@ -241,15 +230,39 @@ class PlayState extends FlxState
 				});
 		}
 		
-		if (FlxG.collide(locked, player))
-		{
-			if (coinCount >= cheeseNeeded)
+		FlxG.collide(grpLockedDoors, player,
+			function (lock:Lock, _)
 			{
-				locked.kill();
-				FlxG.sound.play('assets/sounds/allcheesesunlocked' + BootState.soundEXT);
-				FlxG.sound.music.volume = 0;
+				if (cheeseNeededText == null)
+				{
+					if (coinCount >= lock.amountNeeded)
+					{
+						lock.kill();
+						FlxG.sound.play('assets/sounds/allcheesesunlocked' + BootState.soundEXT);
+						FlxG.sound.music.volume = 0;
+					}
+					else if (cheeseNeeded != lock.amountNeeded)
+					{
+						cheeseNeededText = new LockAmountText
+							( lock.x + lock.width  / 2
+							, lock.y + lock.height / 2
+							, lock.amountNeeded
+							);
+						add(cheeseNeededText);
+						cheeseNeededText.animateTo
+							( cheeseCount.x + cheeseCount.width
+							, cheeseCount.y + cheeseCount.height / 2
+							,   ()->
+								{
+									cheeseNeeded = lock.amountNeeded;
+									cheeseNeededText.kill();
+									cheeseNeededText = null;
+								}
+							);
+					}
+				}
 			}
-		}
+		);
 
 		FlxG.overlap(player, grpMusicTriggers, function(p:Player, mT:MusicTrigger)
 		{
@@ -378,9 +391,9 @@ class PlayState extends FlxState
 			
 		}
 
-		FlxG.overlap(player, grpCheese, function(p, daCheese)
+		FlxG.overlap(player, grpCheese, function(_, daCheese:Cheese)
 		{
-			if (!p.gettingHurt)
+			if (!player.gettingHurt)
 			{
 				FlxG.sound.play('assets/sounds/collectCheese' + BootState.soundEXT, 0.6);
 				cheeseHolding.push(daCheese);
@@ -419,5 +432,43 @@ class PlayState extends FlxState
 			case "ritz":
 				FlxG.sound.music.loopTime = 0;
 		}
+	}
+}
+
+@:forward
+abstract LockAmountText(FlxText) to FlxText
+{
+	inline public function new (x, y, amount:Int)
+	{
+		this = new FlxText(x, y, 0, Std.string(amount), 16);
+		this.setFormat(null, 16, FlxColor.WHITE, null, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		this.ignoreDrawDebug = true;
+		this.offset.x = this.width / 2;
+		this.offset.y = this.height / 2;
+	}
+	
+	inline static var RISE_AMOUNT = 32;
+	inline public function animateTo(x:Float, y:Float, callback:()->Void):Void
+	{
+		FlxTween.tween
+			( this
+			, { y:this.y - RISE_AMOUNT }
+			, 0.5
+			,   { ease:FlxEase.backOut
+				, onComplete:(_)->
+					{
+						this.x -= this.camera.scroll.x;
+						this.y -= this.camera.scroll.y;
+						this.scrollFactor.set();
+					}
+			 	}
+			).then(FlxTween.tween
+				( this
+				, { x:x, y:y }
+				,   { ease:FlxEase.cubeIn
+					, onComplete:(_)->callback()
+					}
+				)
+			);
 	}
 }

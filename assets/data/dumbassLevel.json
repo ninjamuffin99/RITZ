@@ -554,7 +554,18 @@
           "originY": 0,
           "values": {"dialogue": "Damn this song is pretty bumpin! Beats to eat cheese/cook food/relax to."}
         },
-        {"name": "locked", "id": 202, "_eid": "93485468", "x": 2304, "y": 2656, "width": 192, "height": 64, "originX": 0, "originY": 0},
+        {
+          "name": "locked",
+          "id": 202,
+          "_eid": "93485468",
+          "x": 2304,
+          "y": 2656,
+          "width": 192,
+          "height": 64,
+          "originX": 0,
+          "originY": 0,
+          "values": {"amountNeeded": 32}
+        },
         {
           "name": "checkpoint",
           "id": 203,
