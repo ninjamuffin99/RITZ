@@ -248,7 +248,7 @@ class Player extends FlxSprite
                 animation.play('walk');
             else
             {
-                if (animation.curAnim.name == "walk")
+                if (onCoyoteGround && animation.curAnim.name == "walk")
                     makeDust(Skid);
                 animation.play('skid');
             }
@@ -297,6 +297,9 @@ class Player extends FlxSprite
             if (jumpP && !airHopped && !wallClimbing)
             {
                 velocity.y = 0;
+                
+                if (left != right)
+                    velocity.x = maxVelocity.x * (left ? -1 : 1);
                 
                 // if ((velocity.x > 0 && left) || (velocity.x < 0 && right))
                 // {
