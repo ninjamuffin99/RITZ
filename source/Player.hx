@@ -88,8 +88,9 @@ class Player extends FlxSprite
         setFacingFlip(FlxObject.RIGHT, true, false);
 
         drag.x = DRAG;
+        acceleration.y = GRAVITY;
         maxVelocity.x = MAXSPEED;
-        maxVelocity.y = -JUMP_SPEED;
+        maxVelocity.y = -FALL_SPEED;
     }
 
     override public function update(elapsed:Float):Void
@@ -115,6 +116,11 @@ class Player extends FlxSprite
         else
         {
             movement(elapsed);
+            
+            if (velocity.y > 0)
+                maxVelocity.y = FALL_SPEED;
+            else
+                maxVelocity.y = -airJumpSpeed;
         }
         super.update(elapsed);
     }
@@ -276,7 +282,8 @@ class Player extends FlxSprite
         }
         else
         {
-            animation.play(velocity.y < 0 ? 'jumping' : "falling");
+            if (jumped)
+                animation.play(velocity.y < 0 ? 'jumping' : "falling");
             
             if (USE_NEW_SETTINGS)
                 variableJump_new(elapsed);
@@ -290,12 +297,13 @@ class Player extends FlxSprite
             if (jumpP && !airHopped && !wallClimbing)
             {
                 velocity.y = 0;
-                if ((velocity.x > 0 && left) || (velocity.x < 0 && right))
-                {
-                    // sorta sidejump style boost thingie
-                    //velocity.y -= 200;
-                    //velocity.x *= -0.1;
-                }
+                
+                // if ((velocity.x > 0 && left) || (velocity.x < 0 && right))
+                // {
+                //     sorta sidejump style boost thingie
+                //     velocity.y -= 200;
+                //     velocity.x *= -0.1;
+                // }
                     
                 // velocity.y = -600;
                 velocity.y = airJumpSpeed;
