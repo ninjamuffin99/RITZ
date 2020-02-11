@@ -68,8 +68,12 @@ class PlayState extends FlxState
 		bg.ignoreDrawDebug = true;
 		add(bg);
 
-		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, AssetPaths.dumbassLevel__json);
-		level = new OgmoTilemap(ogmo, 'tiles');
+		var ogmo = FlxOgmoUtils.get_ogmo_package
+			( AssetPaths.levelProject__ogmo
+			// , AssetPaths.dumbassLevel__json
+			, AssetPaths.smartassLevel__json
+			);
+		level = new OgmoTilemap(ogmo, 'tiles', 0, 4);
 		level.ignoreDrawDebug = true;
 		var crack = new OgmoTilemap(ogmo, 'Crack', "assets/images/");
 		crack.ignoreDrawDebug = true;
@@ -160,12 +164,10 @@ class PlayState extends FlxState
 				add(player);
 				curCheckpoint = new Checkpoint(e.x, e.y, "");
 			case "spider":
-				var spider:Enemy = new Enemy(e.x, e.y, getPathData(e), e.values.speed);
-				add(spider);
+				add(new Enemy(e.x, e.y, OgmoPath.fromEntity(e), e.values.speed));
 				trace('spider added');
 			case "coins":
-				var daCoin:Cheese = new Cheese(e.x, e.y);
-				grpCheese.add(daCoin);
+				grpCheese.add(new Cheese(e.x, e.y));
 				totalCheese += 1;
 			case "movingPlatform":
 				grpMovingPlatforms.add(MovingPlatform.fromOgmo(e));
@@ -186,19 +188,6 @@ class PlayState extends FlxState
 				add(locked);
 		}
 	}
-
-	private function getPathData(o:EntityData):FlxPath
-	{
-		var daPath:Array<FlxPoint> = [new FlxPoint(o.x, o.y)];
-
-		for (point in o.nodes)
-		{
-			daPath.push(new FlxPoint(point.x, point.y));
-		}
-
-		return new FlxPath(daPath);
-	}
-
 
 	// These are stupid awful and confusing names for these variables
 	// One of them is a ticker (cheeseAdding) and the other is to see if its in the state of adding cheese
@@ -221,8 +210,7 @@ class PlayState extends FlxState
 					hornyMedal.sendUnlock();
 			}
 		}
-			
-
+		
 		/* 
 		if (cheeseHolding.length > grpDisplayCheese.length)
 		{
@@ -240,18 +228,8 @@ class PlayState extends FlxState
 		
 		super.update(elapsed);
 		
-		FlxG.collide(grpMovingPlatforms, player, function(platform:MovingPlatform, p:Player)
-		{
-			if (platform.disintigrating && !platform.curDisintigrating)
-			{
-				platform.curDisintigrating = true;
-				new FlxTimer().start(platform.disS, function(t:FlxTimer)
-					{
-						platform.kill();
-					});
-			}
-
-		});
+		FlxG.collide(grpMovingPlatforms, player);
+		
 		FlxG.collide(level, player);
 
 		if (player.x > level.width && !ending)

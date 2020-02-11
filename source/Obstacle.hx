@@ -12,7 +12,7 @@ class Obstacle extends FlxSprite
     public function new(x:Float, y:Float) {
         super(x, y);
 
-        makeGraphic(32, 16, FlxColor.BLUE);
+        // makeGraphic(32, 16, FlxColor.BLUE);
     }
     
     public function hitObject(obj:FlxObject):Bool { return true; }

@@ -13,33 +13,54 @@ using zero.flixel.utilities.FlxOgmoUtils;
 @:forward
 abstract OgmoTilemap(FlxTilemap) to FlxTilemap
 {
-	inline public function new(ogmo:OgmoPackage, layerName:String, path = 'assets/data/')
+	inline public function new
+		( ogmo     :OgmoPackage
+		, layerName:String
+		, path         = 'assets/data/'
+		, drawIndex    = 0
+		, collideIndex = 1
+		)
 	{
 		this = new FlxTilemap();
 		var layer = ogmo.level.get_tile_layer(layerName);
 		var tileset = ogmo.project.get_tileset_data(layer.tileset);
 		@:privateAccess//get_export_mode
 		switch layer.get_export_mode() {
-			case CSV    : loadOgmoCSVMap(layer, tileset, path);
-			case ARRAY  : loadOgmoArrayMap(layer, tileset, path);
-			case ARRAY2D: loadOgmo2DArrayMap(layer, tileset, path);
+			case CSV    : loadOgmoCSVMap(layer, tileset, path, 0, drawIndex, collideIndex);
+			case ARRAY  : loadOgmoArrayMap(layer, tileset, path, 0, drawIndex, collideIndex);
+			case ARRAY2D: loadOgmo2DArrayMap(layer, tileset, path, 0, drawIndex, collideIndex);
 		}
 	}
 	
-	function loadOgmoCSVMap(layer:TileLayer, tileset:ProjectTilesetData, path:String, startingIndex = 0, drawIndex = 0)
+	function loadOgmoCSVMap
+		( layer  :TileLayer
+		, tileset:ProjectTilesetData
+		, path   :String
+		, startingIndex = 0
+		, drawIndex     = 0
+		, collideIndex  = 1
+		)
 	{
 		return this.loadMapFromCSV
 			( layer.dataCSV
 			, getPaddedTileset(tileset, path)
 			, tileset.tileWidth
 			, tileset.tileHeight
-			, null
+			, OFF
 			, startingIndex
 			, drawIndex
+			, collideIndex
 			);
 	}
 	
-	function loadOgmoArrayMap(layer:TileLayer, tileset:ProjectTilesetData, path:String, startingIndex = 0, drawIndex = 0)
+	function loadOgmoArrayMap
+		( layer  :TileLayer
+		, tileset:ProjectTilesetData
+		, path   :String
+		, startingIndex = 0
+		, drawIndex     = 0
+		, collideIndex  = 1
+		)
 	{
 		return this.loadMapFromArray
 			( layer.data
@@ -48,22 +69,31 @@ abstract OgmoTilemap(FlxTilemap) to FlxTilemap
 			, getPaddedTileset(tileset, path)
 			, tileset.tileWidth
 			, tileset.tileHeight
-			, null
+			, OFF
 			, startingIndex
 			, drawIndex
+			, collideIndex
 			);
 	}
 	
-	function loadOgmo2DArrayMap(layer:TileLayer, tileset:ProjectTilesetData, path:String, startingIndex = 0, drawIndex = 0)
+	function loadOgmo2DArrayMap
+		( layer  :TileLayer
+		, tileset:ProjectTilesetData
+		, path   :String
+		, startingIndex = 0
+		, drawIndex     = 0
+		, collideIndex  = 1
+		)
 	{
 		return this.loadMapFrom2DArray
 			( layer.data2D
 			, getPaddedTileset(tileset, path)
 			, tileset.tileWidth
 			, tileset.tileHeight
-			, null
+			, OFF
 			, startingIndex
 			, drawIndex
+			, collideIndex
 			);
 	}
 	
