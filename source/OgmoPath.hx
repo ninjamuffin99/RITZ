@@ -29,7 +29,9 @@ class OgmoPath extends FlxPath
     
     override function advancePath(Snap:Bool = true):FlxPoint
     {
-        holdTimer = holdPerNode;
+        if (!wasFirstUpdate)
+            holdTimer = holdPerNode;
+        
         var oldIndex = nodeIndex;
         var point = super.advancePath(Snap);
         if (oldIndex == 0 && !wasFirstUpdate)
