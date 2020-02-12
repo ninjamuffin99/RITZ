@@ -206,7 +206,14 @@ class PlayState extends FlxState
 		
 		super.update(elapsed);
 		
-		FlxG.collide(grpMovingPlatforms, player);
+		player.platform = null;
+		FlxG.collide(grpMovingPlatforms, player, 
+			function(platform:MovingPlatform, _)
+			{
+				if (player.platform == null || (platform.velocity.y < player.platform.velocity.y))
+					player.platform = platform;
+			}
+		);
 		
 		FlxG.collide(level, player);
 

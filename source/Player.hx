@@ -1,11 +1,11 @@
 package;
 
 import Dust;
+import flixel.FlxG;
+import flixel.FlxObject;
+import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
-import flixel.FlxObject;
-import flixel.FlxG;
-import flixel.FlxSprite;
 
 class Player extends FlxSprite
 {
@@ -58,6 +58,7 @@ class Player extends FlxSprite
     public var onCoyoteGround(default, null):Bool = false;
     
     public var dust:FlxTypedGroup<Dust> = new FlxTypedGroup();
+    public var platform:MovingPlatform = null;
     
     public var cheese = new List<Cheese>();
     
@@ -88,28 +89,23 @@ class Player extends FlxSprite
 
         setFacingFlip(FlxObject.LEFT, false, false);
         setFacingFlip(FlxObject.RIGHT, true, false);
-
+        
         drag.x = DRAG;
         acceleration.y = GRAVITY;
         maxVelocity.x = MAXSPEED;
-        maxVelocity.y = -FALL_SPEED;
+        maxVelocity.y = FALL_SPEED;
+    }
+    
+    public function respawn(x, y):Void
+    {
+        reset(x, y);
+        platform = null;
+        gettingHurt = false;
+        acceleration.y = GRAVITY;
     }
 
     override public function update(elapsed:Float):Void
     {
-        // if (!wallClimbing)
-        // {
-            acceleration.y = GRAVITY;
-        //     drag.y = 2000;
-        // }
-        // else
-        // {
-        //     if (velocity.y > 0)
-        //         drag.y = 1000;
-        //     else
-        //         drag.y = 1200;
-        // }
-
         if (gettingHurt)
         {
             velocity.set();
@@ -118,11 +114,6 @@ class Player extends FlxSprite
         else
         {
             movement(elapsed);
-            
-            if (velocity.y > 0)
-                maxVelocity.y = FALL_SPEED;
-            else
-                maxVelocity.y = -airJumpSpeed;
         }
         super.update(elapsed);
     }
@@ -134,6 +125,9 @@ class Player extends FlxSprite
         jump = FlxG.keys.anyPressed(['SPACE', 'W', 'UP', 'Z', 'Y']);
         jumpP = FlxG.keys.anyJustPressed(['SPACE', "W", 'UP', 'Z', 'Y']);
         down = FlxG.keys.anyPressed(['S', 'DOWN']);
+        
+        if (velocity.y > 0)
+            maxVelocity.y = FALL_SPEED;
         
         wasOnGround = onGround;
         onGround = isTouching(FlxObject.FLOOR);
@@ -173,7 +167,7 @@ class Player extends FlxSprite
 		_downP = FlxG.keys.anyJustPressed([DOWN, S]);
 		_leftP = FlxG.keys.anyJustPressed([LEFT, A]);
         _rightP = FlxG.keys.anyJustPressed([RIGHT, D]);
-
+        
         var gamepad = FlxG.gamepads.lastActive;
 		if (gamepad != null)
 		{
@@ -222,8 +216,6 @@ class Player extends FlxSprite
         if (isTouching(FlxObject.CEILING) || _upR)
             apexReached = true;
         
-            
-        
         if (left != right)
         {
             var accel:Float = GROUND_ACCEL;
@@ -270,17 +262,7 @@ class Player extends FlxSprite
             jumpTimer = 0;
 
             if (jumpP)
-            {
-                //velocity.y -= 480;
-                // velocity.y -= baseJumpStrength * 2;
-                velocity.y = JUMP_SPEED;//TODO: add moving platform velocity?
-                jumped = true;
-                onGround = false;
-                onCoyoteGround = false;
-                wasOnGround = true;
-                FlxG.sound.play('assets/sounds/jump' + BootState.soundEXT, 0.5);
-                coyoteTimer = COYOTE_TIME;
-            }   
+                startJump();
         }
         else
         {
@@ -340,30 +322,46 @@ class Player extends FlxSprite
             airHopped = false;
             hovering = false;
         }
+    }
+    
+    function startJump()
+    {
+        maxVelocity.y = Math.max(-airJumpSpeed, -JUMP_SPEED);
+        if (platform != null)
+        {
+            if (platform.velocity.y < 0)
+                maxVelocity.y += -platform.velocity.y;
             
-
-
-        if (hovering)
-        {
-            velocity.y = 100;
-            drag.x = 150;
-        }
-        else
-        {
-            drag.x = 1700;
+            velocity.y = platform.velocity.y;
+            velocity.x += platform.velocity.x;
+            platform = null;
         }
         
-        
+        velocity.y += JUMP_SPEED;
+        jumped = true;
+        onGround = false;
+        onCoyoteGround = false;
+        wasOnGround = true;
+        FlxG.sound.play('assets/sounds/jump' + BootState.soundEXT, 0.5);
+        coyoteTimer = COYOTE_TIME;
     }
     
     function variableJump_new(elapsed:Float):Void
     {
         if (jump && !apexReached)
         {
-            jumped = true;
+            if (!jumped)
+            {
+                velocity.y = 0;
+                startJump();
+            }
+            
             jumpTimer += elapsed;
             if (jumpTimer < JUMP_HOLD_TIME)
-                velocity.y = JUMP_SPEED;
+            {
+                if (velocity.y > JUMP_SPEED)
+                    velocity.y = JUMP_SPEED;
+            }
             else
             {
                 jumpTimer = JUMP_HOLD_TIME;
