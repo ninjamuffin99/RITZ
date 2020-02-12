@@ -58,7 +58,9 @@ class Player extends FlxSprite
     public var onCoyoteGround(default, null):Bool = false;
     
     public var dust:FlxTypedGroup<Dust> = new FlxTypedGroup();
-
+    
+    public var cheese = new List<Cheese>();
+    
     var left:Bool;
     var right:Bool;
     var jump:Bool;

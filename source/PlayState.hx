@@ -41,7 +41,6 @@ class PlayState extends FlxState
 	private var grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
 
 	private var grpObstacles = new FlxTypedGroup<Obstacle>();
-	private var coinCount:Int = 0;
 	private var curCheckpoint:Checkpoint;
 	private var grpCheckpoint = new FlxTypedGroup<Checkpoint>();
 	private var grpLockedDoors = new FlxTypedGroup<Lock>();
@@ -52,10 +51,9 @@ class PlayState extends FlxState
 
 	private var curTalking:Bool = false;
 
-	var cheeseCount:FlxText;
-	var cheeseHolding:Array<Cheese> = [];
+	var cheeseCountText:FlxText;
 	var dialogueBubble:FlxSprite;
-	var grpDisplayCheese:FlxGroup;
+	var cheeseCount = 0;
 	var cheeseNeeded = 0;
 	var totalCheese = 0;
 	var cheeseNeededText:LockAmountText;
@@ -114,16 +112,13 @@ class PlayState extends FlxState
 		bigCheese.scrollFactor.set();
 		bigCheese.ignoreDrawDebug = true;
 		uiGroup.add(bigCheese);
-
-		grpDisplayCheese = new FlxGroup();
-		uiGroup.add(grpDisplayCheese);
 		
-		cheeseCount = new FlxText(40, 12, 0, "", 16);
-		cheeseCount.scrollFactor.set(0, 0);
-		cheeseCount.color = FlxColor.BLACK;
-		cheeseCount.setFormat(null, 16, FlxColor.WHITE, null, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		cheeseCount.ignoreDrawDebug = true;
-		uiGroup.add(cheeseCount);
+		cheeseCountText = new FlxText(40, 12, 0, "", 16);
+		cheeseCountText.scrollFactor.set(0, 0);
+		cheeseCountText.color = FlxColor.BLACK;
+		cheeseCountText.setFormat(null, 16, FlxColor.WHITE, null, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		cheeseCountText.ignoreDrawDebug = true;
+		uiGroup.add(cheeseCountText);
 		add(uiGroup);
 		
 		super.create();
@@ -161,7 +156,7 @@ class PlayState extends FlxState
 				trace('spider added');
 			case "coins":
 				grpCheese.add(new Cheese(e.x, e.y));
-				totalCheese += 1;
+				totalCheese++;
 			case "movingPlatform":
 				grpMovingPlatforms.add(MovingPlatform.fromOgmo(e));
 			case "spike":
@@ -177,20 +172,14 @@ class PlayState extends FlxState
 				grpLockedDoors.add(Lock.fromOgmo(e));
 		}
 	}
-
-	// These are stupid awful and confusing names for these variables
-	// One of them is a ticker (cheeseAdding) and the other is to see if its in the state of adding cheese
-	private var cheeseAdding:Int = 0;
-	private var addingCheese:Bool = false;
+	
 	private var ending:Bool = false;
 	override public function update(elapsed:Float):Void
 	{
 		FlxG.watch.addMouse();
-		cheeseCount.text = coinCount + (cheeseNeeded > 0 ? "/" + cheeseNeeded : "");
+		cheeseCountText.text = cheeseCount + (cheeseNeeded > 0 ? "/" + cheeseNeeded : "");
 
-		FlxG.watch.addQuick("daCheeses", cheeseHolding.length + " " + cheeseHolding.length);
-
-		if (coinCount >= 55)
+		if (cheeseCount >= 55)
 		{
 			if (NGio.isLoggedIn)
 			{
@@ -235,7 +224,7 @@ class PlayState extends FlxState
 			{
 				if (cheeseNeededText == null)
 				{
-					if (coinCount >= lock.amountNeeded)
+					if (cheeseCount >= lock.amountNeeded)
 					{
 						lock.kill();
 						FlxG.sound.play('assets/sounds/allcheesesunlocked' + BootState.soundEXT);
@@ -250,8 +239,8 @@ class PlayState extends FlxState
 							);
 						add(cheeseNeededText);
 						cheeseNeededText.animateTo
-							( cheeseCount.x + cheeseCount.width
-							, cheeseCount.y + cheeseCount.height / 2
+							( cheeseCountText.x + cheeseCountText.width
+							, cheeseCountText.y + cheeseCountText.height / 2
 							,   ()->
 								{
 									cheeseNeeded = lock.amountNeeded;
@@ -308,37 +297,31 @@ class PlayState extends FlxState
 
 		if (!player.gettingHurt && Obstacle.overlap(grpObstacles, player))
 		{
-			for (ch in 0...cheeseHolding.length)
-			{
-				grpCheese.add(cheeseHolding[ch]);
-			}
-			cheeseHolding = [];
-
-			grpDisplayCheese.members = [];
-
+			for (cheese in player.cheese)
+				cheese.resetToSpawn();
+			player.cheese.clear();
+			
 			player.gettingHurt = true;
 			player.animation.play('fucking died lmao');
 			FlxG.sound.play('assets/sounds/damageTaken' + BootState.soundEXT, 0.6);
 
 			new FlxTimer().start(0.5, function (tmr:FlxTimer)
 			{
-				player.setPosition(curCheckpoint.x, curCheckpoint.y - 16);
-				player.velocity.set();
-				player.gettingHurt = false;
+				player.respawn(curCheckpoint.x, curCheckpoint.y - 16);
 			});
 		}
 		
 		dialogueBubble.visible = false;
 
-		FlxG.overlap(grpCheckpoint, player, function(c:Checkpoint, p:Player)
+		FlxG.overlap(grpCheckpoint, player, function(checkpoint:Checkpoint, _)
 		{
 			dialogueBubble.visible = true;
-			dialogueBubble.setPosition(c.x + 20, c.y - 10);
+			dialogueBubble.setPosition(checkpoint.x + 20, checkpoint.y - 10);
 
 			if (FlxG.keys.anyJustPressed([E, F, X]))
 			{
 				persistentUpdate = false;
-				openSubState(new DialogueSubstate(c.dialogue));
+				openSubState(new DialogueSubstate(checkpoint.dialogue));
 			}
 
 			var gamepad = FlxG.gamepads.lastActive;
@@ -347,67 +330,34 @@ class PlayState extends FlxState
 				if (gamepad.justPressed.X)
 				{
 					persistentUpdate = false;
-					openSubState(new DialogueSubstate(c.dialogue));
+					openSubState(new DialogueSubstate(checkpoint.dialogue));
 				}
 			}
 
-			if (c != curCheckpoint)
+			if (checkpoint != curCheckpoint)
 			{
-				grpCheckpoint.forEach(function(c)
-					{
-						c.isCurCheckpoint = false;
-					});
-
-				c.isCurCheckpoint = true;
-				curCheckpoint = c;
+				curCheckpoint.isCurCheckpoint = false;
+				checkpoint.isCurCheckpoint = true;
+				curCheckpoint = checkpoint;
 				FlxG.sound.play('assets/sounds/checkpoint' + BootState.soundEXT, 0.8);
 			}
 
-			if (cheeseHolding.length > 0)
+			if (!player.cheese.isEmpty())
 			{
-
-				addingCheese = true;
+				player.cheese.first().sendToMouse(checkpoint, ()->{ cheeseCount++; });
+				player.cheese.clear();
 			}
-				
 		});
 
-		if (addingCheese)
-		{
-			cheeseAdding++;
 
-			if (cheeseAdding >= 10)
-			{
-				coinCount += 1;
-				cheeseHolding.pop();
-				grpDisplayCheese.members.pop();
-				cheeseAdding = 0;
-
-				FlxG.sound.play('assets/sounds/Munchsound' + FlxG.random.int(1, 4) + BootState.soundEXT, FlxG.random.float(0.7, 1));
-			}
-
-			if (cheeseHolding.length == 0)
-				addingCheese = false;
-
-			
-		}
-
-		FlxG.overlap(player, grpCheese, function(_, daCheese:Cheese)
+		FlxG.overlap(player, grpCheese, function(_, cheese:Cheese)
 		{
 			if (!player.gettingHurt)
 			{
 				FlxG.sound.play('assets/sounds/collectCheese' + BootState.soundEXT, 0.6);
-				cheeseHolding.push(daCheese);
-				grpCheese.remove(daCheese, true);
-
-				var daCheese:Cheese = new Cheese(0, 0);
-				daCheese.scrollFactor.set();
-				daCheese.ignoreDrawDebug = true;
-				daCheese.setGraphicSize(Std.int(daCheese.width / 2));
-				daCheese.updateHitbox();
-				daCheese.setPosition(95 + (10 * ((cheeseHolding.length - 1) % 6)), 10 + (10 * Math.floor((cheeseHolding.length - 1) / 6)));
-				grpDisplayCheese.add(daCheese);
-				//coinCount += 1;
-
+				cheese.startFollow(player);
+				player.cheese.add(cheese);
+				
 				if (NGio.isLoggedIn)
 				{
 					var hornyMedal = NG.core.medals.get(58879);
