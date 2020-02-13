@@ -82,6 +82,7 @@ class PlayState extends FlxState
 		add(grpMovingPlatforms);
 		add(level);
 		add(grpObstacles);
+		add(level);
 		add(grpCheckpoint);
 		add(grpMusicTriggers);
 		add(grpSecretTriggers);
@@ -141,7 +142,8 @@ class PlayState extends FlxState
 		}
 		FlxG.worldBounds.set(0, 0, level.width, level.height);
 		level.follow(camera);
-		FlxG.camera.fade(FlxColor.BLACK, 2, true);
+		camera.fade(FlxColor.BLACK, 2, true);
+		camera.bgColor = FlxG.stage.color;
 	}
 
 	function entity_loader(e:EntityData) 
