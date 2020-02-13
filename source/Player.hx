@@ -84,10 +84,10 @@ class Player extends FlxSprite
 
         animation.play("idle");
 
+        width  -= 20;
         height -= 8;
         offset.y = 6;
-        width -= 16;
-        offset.x = 8;
+        offset.x = 10;
 
         setFacingFlip(FlxObject.LEFT, false, false);
         setFacingFlip(FlxObject.RIGHT, true, false);

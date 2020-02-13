@@ -99,31 +99,22 @@ class Cheese extends FlxSprite
             switch (mode)
             {
                 case GetAnim: mode = StartFollow;
-                case ToStart|Idle:// Acceptable, player died before anim complete
+                case ToStart|Idle// Acceptable, player died before anim complete
+                    |ToCheckpoint:// Acceptable, player touched checkpoint before anim complete
                 default:
                     throw "anim complete with invalid mode: " + mode.getName();
             }
         });
-        // FlxTween.tween(this, { y: y - height * 1.5 }, animDuration,
-        //     { ease:FlxEase.backOut
-        //     ,   onComplete:(_)->
-        //         {
-        //             switch (mode)
-        //             {
-        //                 case GetAnim: mode = StartFollow;
-        //                 case ToStart|Idle:// Acceptable, player died before anim complete
-        //                 default:
-        //                     throw "anim complete with invalid mode: " + mode.getName();
-        //             }
-        //         }
-        //     }
-        // );
     }
     
     public function resetToSpawn():Void
     {
         followTarget = null;
         follower = null;
+        velocity.set();
+        maxVelocity.set();
+        drag.set();
+        acceleration.set();
         animation.play("idle");
         mode = ToStart;
         final maxTime = 1.0;
@@ -141,8 +132,9 @@ class Cheese extends FlxSprite
         );
     }
     
-    public function sendToMouse(target:Checkpoint, onEat:()->Void):Void
+    public function sendToCheckpoint(target:Checkpoint, onEat:()->Void):Void
     {
+        solid = false;
         followTarget = target;
         mode = ToCheckpoint;
         eatCallback = onEat;
@@ -206,7 +198,7 @@ class Cheese extends FlxSprite
                 {
                     eatCallback();
                     if (follower != null)
-                        follower.sendToMouse(cast followTarget, eatCallback);
+                        follower.sendToCheckpoint(cast followTarget, eatCallback);
                     followTarget = null;
                     follower = null;
                     eatCallback = null;

@@ -77,16 +77,16 @@ class PlayState extends FlxState
 		level.ignoreDrawDebug = true;
 		var crack = new OgmoTilemap(ogmo, 'Crack', "assets/images/");
 		crack.ignoreDrawDebug = true;
+		
 		add(crack);
-
 		add(grpMovingPlatforms);
+		add(level);
 		add(grpObstacles);
 		add(grpCheckpoint);
 		add(grpMusicTriggers);
 		add(grpSecretTriggers);
 		add(grpLockedDoors);
 
-		add(level);
 		var decalGroup = ogmo.level.get_decal_layer('decals').get_decal_group('assets');
 		(cast decalGroup:FlxTypedGroup<FlxSprite>).forEach((decal)->decal.ignoreDrawDebug = true);
 		add(decalGroup);
@@ -104,6 +104,8 @@ class PlayState extends FlxState
 		dialogueBubble.visible = false;
 
 		ogmo.level.get_entity_layer('entities').load_entities(entity_loader);
+		if (player == null)
+			throw "player missing";
 
 		FlxG.mouse.visible = false;
 		
@@ -351,7 +353,7 @@ class PlayState extends FlxState
 
 			if (!player.cheese.isEmpty())
 			{
-				player.cheese.first().sendToMouse(checkpoint, ()->{ cheeseCount++; });
+				player.cheese.first().sendToCheckpoint(checkpoint, ()->{ cheeseCount++; });
 				player.cheese.clear();
 			}
 		});

@@ -45,14 +45,18 @@ class OgmoPath extends FlxPath
     
     override function calculateVelocity(node:FlxPoint, horizontalOnly:Bool, verticalOnly:Bool)
     {
-        if (holdTimer <= 0)
+        if (active && holdTimer <= 0)
             super.calculateVelocity(node, horizontalOnly, verticalOnly);
         else
             object.velocity.set();
     }
     
     inline public function resume():Void { active = true; }
-    inline public function pause():Void { active = false; }
+    inline public function pause():Void
+    {
+        active = false;
+        object.velocity.set();
+    }
     
     static public function fromEntity(data:EntityData):OgmoPath
     {

@@ -163,7 +163,7 @@ class PlayCamera extends FlxCamera
 		switch (leading)
 		{
 			case None    : camYLeadAmount = tileSize * -1;
-			case Up      : camYLeadAmount = tileSize * -4;
+			case Up      : camYLeadAmount = tileSize * -3;
 			case Down    : camYLeadAmount = tileSize *  1;
 			case MoreDown: camYLeadAmount = tileSize *  4;
 		}

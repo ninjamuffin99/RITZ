@@ -64,11 +64,13 @@ class MovingPlatform extends flixel.FlxSprite
                     {
                         case 1: graphic = "movingSingle";
                         case 3: graphic = "movingLong";
+                        case 4: graphic = "movingLong";//<--stretched
                         case 5: graphic = "movingLonger";
                         case _: throw 'Cannot autodetermine graphics from size (32x${data.height})';
                     }
                 case 2: graphic = "movingShort";
                 case 3: graphic = "movingLongside";
+                case 4: graphic = "movingLongside";
                 case _: throw 'Cannot autodetermine graphics from size (${data.width}x${data.height})';
             }
         }
