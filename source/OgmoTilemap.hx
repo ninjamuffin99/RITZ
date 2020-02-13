@@ -128,10 +128,25 @@ abstract CameraTilemap(OgmoTilemap) to FlxTilemap
 	}
 }
 
+@:using(OgmoTilemap.CameraTileTypeTools)
 enum CameraTileType
 {
 	None;
 	Up;
 	Down;
 	MoreDown;
+}
+@:noCompletion
+class CameraTileTypeTools
+{
+	public static function getOffset(type:CameraTileType):Float
+	{
+		return switch (type)
+		{
+			case None    : -1;
+			case Up      : -3;
+			case Down    :  1;
+			case MoreDown:  5;
+		}
+	}
 }

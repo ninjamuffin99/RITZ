@@ -6,6 +6,7 @@ import flixel.FlxG;
 import flixel.FlxCamera;
 import flixel.FlxObject;
 import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
 import flixel.tile.FlxTilemap;
 import flixel.tweens.FlxEase;
 
@@ -27,11 +28,12 @@ class PlayCamera extends FlxCamera
 	/** Offset for when the player is looking down */
 	var panOffset = 0.0;
 	
-	inline static var PAN_LEAD_SHIFT_TIME = 0.5;
+	inline static var AIR_PAN_LEAD_SHIFT_SPEED = 6 / 0.5;//6 tiles in 0.25 seconds
+	inline static var GROUND_PAN_LEAD_SHIFT_SPEED = 2 / 0.5;//6 tiles in 0.25 seconds
 	/** TODO: The default offset of a given area, should point up normally, and down in areas that lead downwards*/
 	var leadOffset = 0.0;
 	var camYLeadAmount = 0.0;
-	inline static var FALL_LEAD_DELAY = 0.25;
+	inline static var FALL_LEAD_DELAY = 0.05;
 	var fallTimer = 0.0;
 	
 	/** Time it takes to snap to the new platforms height */
@@ -50,6 +52,9 @@ class PlayCamera extends FlxCamera
 	var tileSize = 1.0;
 	var cameraTilemap:CameraTilemap;
 	
+	var groundRect = new FlxRect();
+	var airRect = new FlxRect();
+	
 	var player(get, never):Player;
 	inline function get_player():Player return cast target;
 	
@@ -60,13 +65,21 @@ class PlayCamera extends FlxCamera
 	
 	public function init(player:Player, tileSize:Float, cameraTilemap:CameraTilemap):PlayCamera
 	{
+		var w = (width / 8);
+		var h = (height * 2 / 3);
+		groundRect.x = (width - w) / 2;
+		groundRect.width = w;
+		groundRect.height = player.height;
+		groundRect.y = (height - groundRect.height) / 2 - (tileSize * 1 * zoom);
+		airRect.copyFrom(groundRect);
+		airRect.y -= Player.MAX_JUMP;
+		airRect.height += Player.MAX_JUMP + 3 * tileSize;
+		
 		this.tileSize = tileSize;
 		this.cameraTilemap = cameraTilemap;
 		follow(player, FlxCameraFollowStyle.PLATFORMER, LERP);
 		focusOn(player.getPosition());
-		var w = (width / 8);
-		var h = (height * 2 / 3);
-		deadzone.set((width - w) / 2, (height - h) / 2, w, h);
+		deadzone.copyFrom(airRect);
 		leadOffset = camYLeadAmount = -tileSize;
 		return this;
 	}
@@ -76,16 +89,7 @@ class PlayCamera extends FlxCamera
 		// Deadzone: taller when jumping, but snap to center when on the ground
 		if (!player.gettingHurt && player.onGround != player.wasOnGround)
 		{
-			if (player.onGround)
-			{
-				deadzone.height = player.height;
-				deadzone.y = (height - deadzone.height) / 2 - (tileSize * 1 * zoom);
-			}
-			else
-			{
-				deadzone.height = height * 2 / 3 / zoom;
-				deadzone.y = (height - deadzone.height) / 2 - (tileSize * 2 * zoom);
-			}
+			deadzone.copyFrom(player.onGround ? groundRect : airRect);
 			
 			// Snap to new ground height
 			if (player.onGround)
@@ -147,40 +151,38 @@ class PlayCamera extends FlxCamera
 		
 		// Tilemap leading bias, Look up unless it's a downward section of the level (indicated in ogmo)
 		var leading = cameraTilemap.getTileTypeAt(player.x, player.y);
-		if (leading != Down && leading != MoreDown)
+		if (leading != MoreDown)
 		{
-			if (player.velocity.y > 0 && scroll.y > lastPos.y)
+			if (player.velocity.y > 0 && scroll.y > lastPos.y + 1)
 			{
 				// Lead down when falling for some time
 				fallTimer += elapsed;
 				if (fallTimer > FALL_LEAD_DELAY)
-					leading = CameraTileType.Down;
+					leading = CameraTileType.MoreDown;
 			}
 			else
 				fallTimer = 0;
 		}
 		
-		switch (leading)
-		{
-			case None    : camYLeadAmount = tileSize * -1;
-			case Up      : camYLeadAmount = tileSize * -3;
-			case Down    : camYLeadAmount = tileSize *  1;
-			case MoreDown: camYLeadAmount = tileSize *  4;
-		}
+		camYLeadAmount = tileSize * leading.getOffset();
 		
 		// linear shift because I'm lazy and this can get weird if player keeps going back and forth
 		if (leadOffset != camYLeadAmount)
 		{
-			var leadSpeed = 2 * tileSize / PAN_LEAD_SHIFT_TIME * elapsed;
+			final speed = tileSize * (player.onGround ? GROUND_PAN_LEAD_SHIFT_SPEED : AIR_PAN_LEAD_SHIFT_SPEED);
 			if (leadOffset < camYLeadAmount)
 			{
-				leadOffset += leadSpeed;
+				leadOffset += speed * elapsed;
 				if (leadOffset > camYLeadAmount)// bound
 					leadOffset = camYLeadAmount;
 			}
 			else
 			{
-				leadOffset -= leadSpeed;
+				if (!player.onGround && leadOffset > tileSize * CameraTileType.Down.getOffset())
+					leadOffset = camYLeadAmount
+				else
+					leadOffset -= speed * elapsed;
+				
 				if (leadOffset < camYLeadAmount)// bound
 					leadOffset = camYLeadAmount;
 			}
