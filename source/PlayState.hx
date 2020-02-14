@@ -145,6 +145,7 @@ class PlayState extends FlxState
 		level.follow(camera);
 		camera.fade(FlxColor.BLACK, 2, true);
 		camera.bgColor = FlxG.stage.color;
+		bg.camera = camera;//prevents it from showing in the dialog substates camera
 	}
 
 	function entity_loader(e:EntityData) 
@@ -181,9 +182,14 @@ class PlayState extends FlxState
 	private var ending:Bool = false;
 	override public function update(elapsed:Float):Void
 	{
+		super.update(elapsed);
+		
+		if (!player.active)
+			return;
+		
 		cheeseCountText.text = cheeseCount + (cheeseNeeded > 0 ? "/" + cheeseNeeded : "");
 
-		if (cheeseCount >= 55)
+		if (cheeseCount >= totalCheese)
 		{
 			if (NGio.isLoggedIn)
 			{
@@ -192,23 +198,6 @@ class PlayState extends FlxState
 					hornyMedal.sendUnlock();
 			}
 		}
-		
-		/* 
-		if (cheeseHolding.length > grpDisplayCheese.length)
-		{
-			for (i in grpDisplayCheese.length...cheeseHolding.length)
-			{
-				var daCheese:Cheese = cheeseHolding[i];
-				daCheese.scrollFactor.set();
-				daCheese.setGraphicSize(Std.int(daCheese.width / 2));
-				daCheese.updateHitbox();
-				daCheese.setPosition(90 + (10 * (i % 6)), 10 + (10 * Math.floor(i / 6)));
-				grpDisplayCheese.add(daCheese);
-			}
-		}
-		*/
-		
-		super.update(elapsed);
 		
 		player.platform = null;
 		FlxG.collide(grpMovingPlatforms, player, 
@@ -327,8 +316,23 @@ class PlayState extends FlxState
 
 			var gamepad = FlxG.gamepads.lastActive;
 			if (FlxG.keys.anyJustPressed([E, F, X]) || (gamepad != null && gamepad.justPressed.X))
-				openSubState(new DialogueSubstate(checkpoint.dialogue));
-
+			{
+				persistentUpdate = true;
+				persistentDraw = true;
+				player.active = false;
+				var oldZoom = FlxG.camera.zoom;
+				var subState = new DialogueSubstate(checkpoint.dialogue, false,
+					()->
+					{
+						persistentUpdate = false;
+						persistentDraw = false;
+						FlxTween.tween(FlxG.camera, { zoom: oldZoom }, 0.25, { onComplete: (_)->player.active = true } );
+					}
+				);
+				openSubState(subState);
+				FlxTween.tween(FlxG.camera, { zoom: oldZoom * 2 }, 0.25, {onComplete:(_)->subState.start() });
+			}
+			
 			if (checkpoint != curCheckpoint)
 			{
 				curCheckpoint.isCurCheckpoint = false;
