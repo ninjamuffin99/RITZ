@@ -29,7 +29,8 @@ whether to show more above or below the player
 * Skid hop: Jump while changing horizontal direction to instantly reach max speed in
 the desired direction. Works on ground jump and air hops
 (Example: While moving right but holding left press jump and you'll jump left at max speed)
-
+* added temp animation frames for falling/skidding
+* added dust animations
 
 ## Moving Platforms
 * Added `Hold Per Node`(Float): pauses the platform at each node for the specified duration
