@@ -9,6 +9,7 @@ import flixel.FlxG;
 import flixel.addons.display.FlxBackdrop;
 import flixel.addons.text.FlxTypeText;
 import flixel.FlxSprite;
+import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxTween;
@@ -80,7 +81,6 @@ class PlayState extends FlxState
 		
 		add(crack);
 		add(grpMovingPlatforms);
-		add(level);
 		add(grpObstacles);
 		add(level);
 		add(grpCheckpoint);
@@ -105,6 +105,7 @@ class PlayState extends FlxState
 		dialogueBubble.visible = false;
 
 		ogmo.level.get_entity_layer('entities').load_entities(entity_loader);
+		trace('Total cheese: $totalCheese');
 		if (player == null)
 			throw "player missing";
 
@@ -172,7 +173,7 @@ class PlayState extends FlxState
 			case "secretTrigger":
 				trace('ADDED SECRET');
 				grpSecretTriggers.add(new SecretTrigger(e.x, e.y, e.width, e.height));
-			case 'locked':
+			case 'locked' | 'locked_tall':
 				grpLockedDoors.add(Lock.fromOgmo(e));
 		}
 	}
@@ -237,9 +238,19 @@ class PlayState extends FlxState
 				{
 					if (cheeseCount >= lock.amountNeeded)
 					{
-						lock.kill();
-						FlxG.sound.play('assets/sounds/allcheesesunlocked' + BootState.soundEXT);
-						FlxG.sound.music.volume = 0;
+						cheeseNeededText = new LockAmountText
+							( lock.x + lock.width  / 2
+							, lock.y + lock.height / 2
+							, lock.amountNeeded
+							);
+						add(cheeseNeededText);
+						cheeseNeededText.showLockAmount(()->
+						{
+							lock.kill();
+							FlxG.sound.play('assets/sounds/allcheesesunlocked' + BootState.soundEXT);
+							FlxG.camera.shake(0.05, 0.15);
+						});
+						// FlxG.sound.music.volume = 0;
 					}
 					else if (cheeseNeeded != lock.amountNeeded)
 					{
@@ -257,6 +268,7 @@ class PlayState extends FlxState
 									cheeseNeeded = lock.amountNeeded;
 									cheeseNeededText.kill();
 									cheeseNeededText = null;
+									FlxFlicker.flicker(cheeseCountText, 1, 0.12);
 								}
 							);
 					}
@@ -379,8 +391,13 @@ class PlayState extends FlxState
 			
 		});
 		
+		#if debug
 		if (FlxG.keys.justPressed.B)
 			FlxG.debugger.drawDebug = !FlxG.debugger.drawDebug;
+		
+		if (FlxG.keys.justPressed.T)
+			cheeseCount++;
+		#end
 	}
 	
 	private function musicHandling():Void
@@ -408,28 +425,39 @@ abstract LockAmountText(FlxText) to FlxText
 		this.offset.y = this.height / 2;
 	}
 	
-	inline static var RISE_AMOUNT = 32;
 	inline public function animateTo(x:Float, y:Float, callback:()->Void):Void
 	{
-		FlxTween.tween
+		showLockAmount
+		(   ()->
+			{
+				this.x -= this.camera.scroll.x;
+				this.y -= this.camera.scroll.y;
+				this.scrollFactor.set();
+			}
+		).then(FlxTween.tween
+			( this
+			, { x:x, y:y }
+			,   { ease:FlxEase.cubeIn
+				, onComplete:(_)->callback()
+				}
+			)
+		);
+	}
+	
+	inline static var RISE_AMOUNT = 32;
+	inline public function showLockAmount(callback:()->Void)
+	{
+		var onComplete:TweenCallback = null;
+		if (callback != null)
+			onComplete = (_)->callback();
+		
+		return FlxTween.tween
 			( this
 			, { y:this.y - RISE_AMOUNT }
 			, 0.5
 			,   { ease:FlxEase.backOut
-				, onComplete:(_)->
-					{
-						this.x -= this.camera.scroll.x;
-						this.y -= this.camera.scroll.y;
-						this.scrollFactor.set();
-					}
+				, onComplete:onComplete
 			 	}
-			).then(FlxTween.tween
-				( this
-				, { x:x, y:y }
-				,   { ease:FlxEase.cubeIn
-					, onComplete:(_)->callback()
-					}
-				)
 			);
 	}
 }
