@@ -61,6 +61,9 @@ and the cheese line moves to the checkpoint rat.
 ## Checkpoints
 * Camera zooms in on rats while they talk. Iunno I thought it looked cool.
 
+## Spikes
+* Spikes no longer use a box for a hitshape, the collision matches the traignle graphic
+
 ## Level changes
 * Adjusted many gaps and jumpable spots to account for the new movement settings and abilities
 * Moved the long downward pit to a later point in the level, and the 4 cheese fall jump tutorial earlier
