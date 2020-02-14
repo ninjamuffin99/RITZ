@@ -28,17 +28,19 @@ class Player extends FlxSprite
     static var airJumpSpeed(default, never) = -Math.sqrt(2 * GRAVITY * AIR_JUMP);
     
     public inline static var JUMP_DISTANCE = TILE_SIZE * (USE_NEW_SETTINGS ? 5 : 5);
-    public inline static var SLOW_DOWN_TIME       = (USE_NEW_SETTINGS ? 0.2 : 0.135);
-    public inline static var GROUND_SPEED_UP_TIME = (USE_NEW_SETTINGS ? 0.15 : 0.16);
-    public inline static var AIR_SPEED_UP_TIME    = (USE_NEW_SETTINGS ? 0.36 : 0.16);
-    public inline static var AIRHOP_SPEED_UP_TIME = (USE_NEW_SETTINGS ? 0.5 : 0.5);
+    public inline static var GROUND_SLOW_DOWN_TIME = (USE_NEW_SETTINGS ? 0.3 : 0.135);
+    public inline static var GROUND_SPEED_UP_TIME  = (USE_NEW_SETTINGS ? 0.25 : 0.16);
+    public inline static var AIR_SLOW_DOWN_TIME    = (USE_NEW_SETTINGS ? 0.2 : 0.135);
+    public inline static var AIR_SPEED_UP_TIME     = (USE_NEW_SETTINGS ? 0.36 : 0.16);
+    public inline static var AIRHOP_SPEED_UP_TIME  = (USE_NEW_SETTINGS ? 0.5 : 0.5);
     public inline static var FALL_SPEED = (USE_NEW_SETTINGS ? -JUMP_SPEED : 520.0);
     
     inline static var MAXSPEED = JUMP_DISTANCE / MAX_APEX_TIME / 2;
     inline static var GROUND_ACCEL = MAXSPEED / GROUND_SPEED_UP_TIME;
     inline static var AIR_ACCEL = MAXSPEED / AIR_SPEED_UP_TIME;
     inline static var AIRHOP_ACCEL = MAXSPEED / AIRHOP_SPEED_UP_TIME;
-    inline static var DRAG = MAXSPEED / SLOW_DOWN_TIME;
+    inline static var GROUND_DRAG = MAXSPEED / GROUND_SLOW_DOWN_TIME;
+    inline static var AIR_DRAG = MAXSPEED / AIR_SLOW_DOWN_TIME;
     
     private var baseJumpStrength:Float = 120;
     private var apexReached:Bool = true;
@@ -93,7 +95,7 @@ class Player extends FlxSprite
         setFacingFlip(FlxObject.LEFT, false, false);
         setFacingFlip(FlxObject.RIGHT, true, false);
         
-        drag.x = DRAG;
+        drag.x = AIR_DRAG;
         acceleration.y = GRAVITY;
         maxVelocity.x = MAXSPEED;
         maxVelocity.y = FALL_SPEED;
@@ -201,6 +203,8 @@ class Player extends FlxSprite
         else
             onCoyoteGround = false;
         
+        if (onGround != wasOnGround)
+            drag.x = onGround ? GROUND_DRAG : AIR_DRAG;
         
         if (isTouching(FlxObject.CEILING) || jumpR)
             apexReached = true;
