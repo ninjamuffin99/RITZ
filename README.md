@@ -1,7 +1,7 @@
 # Ritz
 
-Originally coded by [@ninjamuffin99](hhttps://github.com/ninjamuffin99) for pixel day,
-Edited by [@Geokureli](hhttps://github.com/Geokureli)
+Originally coded by [@ninjamuffin99](https://github.com/ninjamuffin99) for pixel day,
+Edited by [@Geokureli](https://github.com/Geokureli)
 
 Changes are as follows
 
