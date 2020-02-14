@@ -8,6 +8,7 @@ import flixel.group.FlxGroup;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxMath;
+import flixel.util.FlxTimer;
 
 class Player extends FlxSprite
 {
@@ -96,6 +97,19 @@ class Player extends FlxSprite
         acceleration.y = GRAVITY;
         maxVelocity.x = MAXSPEED;
         maxVelocity.y = FALL_SPEED;
+    }
+    
+    public function hurtAndRespawn(x, y):Void
+    {
+        for (c in cheese)
+            c.resetToSpawn();
+        cheese.clear();
+        
+        gettingHurt = true;
+        animation.play('fucking died lmao');
+        FlxG.sound.play('assets/sounds/damageTaken' + BootState.soundEXT, 0.6);
+
+        new FlxTimer().start(0.5, (_)->respawn(x, y));
     }
     
     public function respawn(x, y):Void

@@ -11,7 +11,6 @@ import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup;
-import flixel.util.FlxTimer;
 import flixel.math.FlxRect;
 import flixel.math.FlxPoint;
 import flixel.tweens.FlxTween;
@@ -313,25 +312,10 @@ class PlayState extends FlxState
 						FlxG.sound.music.volume = oldVol;
 					});
 			}
-				
-	
 		});
 
 		if (!player.gettingHurt && Obstacle.overlap(grpObstacles, player))
-		{
-			for (cheese in player.cheese)
-				cheese.resetToSpawn();
-			player.cheese.clear();
-			
-			player.gettingHurt = true;
-			player.animation.play('fucking died lmao');
-			FlxG.sound.play('assets/sounds/damageTaken' + BootState.soundEXT, 0.6);
-
-			new FlxTimer().start(0.5, function (tmr:FlxTimer)
-			{
-				player.respawn(curCheckpoint.x, curCheckpoint.y - 16);
-			});
-		}
+			player.hurtAndRespawn(curCheckpoint.x, curCheckpoint.y - 16);
 		
 		dialogueBubble.visible = false;
 
