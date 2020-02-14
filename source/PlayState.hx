@@ -237,6 +237,8 @@ class PlayState extends FlxState
 							lock.kill();
 							FlxG.sound.play('assets/sounds/allcheesesunlocked' + BootState.soundEXT);
 							FlxG.camera.shake(0.05, 0.15);
+							cheeseNeededText.kill();
+							cheeseNeededText = null;
 						});
 						// FlxG.sound.music.volume = 0;
 					}

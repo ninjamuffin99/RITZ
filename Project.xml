@@ -31,7 +31,8 @@
 	<set name="BUILD_DIR" value="export/release" unless="debug" />
 	
 	<classpath name="source" />
-	<assets path="assets" />
+	<assets path="assets" exclude="*.mp3" if="desktop"/>
+	<assets path="assets" exclude="*.ogg" unless="desktop"/>
 
 	<!-- _______________________________ Libraries ______________________________ -->
 

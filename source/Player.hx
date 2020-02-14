@@ -19,7 +19,6 @@ class Player extends FlxSprite
     public static inline var MIN_JUMP  = TILE_SIZE * (USE_NEW_SETTINGS ? 1.5 : 2.5);
     public static inline var MAX_JUMP  = TILE_SIZE * (USE_NEW_SETTINGS ? 3.5 : 4.5);
     public static inline var AIR_JUMP  = TILE_SIZE * (USE_NEW_SETTINGS ? 2.0 : 2.0);
-    public static inline var FALL_JUMP = TILE_SIZE * (USE_NEW_SETTINGS ? 3.0 : 4.0);
     
     static inline var MIN_APEX_TIME = 2 * MAX_APEX_TIME * MIN_JUMP / (MIN_JUMP + MAX_JUMP);
     static inline var GRAVITY = 2 * MIN_JUMP / MIN_APEX_TIME / MIN_APEX_TIME;
@@ -51,7 +50,7 @@ class Player extends FlxSprite
     public var gettingHurt:Bool = false;
     
     /** Input buffering, allow normal jump slightly after walking off a ledge */
-    static inline var COYOTE_TIME = 0.1;
+    static inline var COYOTE_TIME = 8/60;
     private var coyoteTimer:Float = 0;
     private var airHopped:Bool = false;
     private var jumped:Bool = false;
