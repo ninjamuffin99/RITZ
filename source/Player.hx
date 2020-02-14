@@ -319,6 +319,10 @@ class Player extends FlxSprite
     
     function startJump()
     {
+        //quick change jump dir
+        if (USE_NEW_SETTINGS && left != right)
+            velocity.x = maxVelocity.x * (left ? -1 : 1);
+        
         maxVelocity.y = Math.max(-airJumpSpeed, -JUMP_SPEED);
         if (platform != null)
         {
