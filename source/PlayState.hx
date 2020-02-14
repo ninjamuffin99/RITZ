@@ -70,7 +70,8 @@ class PlayState extends FlxState
 
 		var ogmo = FlxOgmoUtils.get_ogmo_package
 			( AssetPaths.levelProject__ogmo
-			, AssetPaths.dumbassLevel__json
+			// , AssetPaths.dumbassLevel__json
+			, AssetPaths.normassLevel__json
 			// , AssetPaths.smartassLevel__json
 			);
 		level = new OgmoTilemap(ogmo, 'tiles', 0, 4);

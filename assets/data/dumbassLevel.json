@@ -196,7 +196,7 @@
           "nodes": [
             {"x": 328, "y": 1536}
           ],
-          "values": {"speed": 120, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "movingLong", "oneWayPlatform": true, "trigger": "Load"}
+          "values": {"speed": 120, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "movingLong", "oneWayPlatform": false, "trigger": "Load"}
         },
         {
           "name": "movingPlatform",
@@ -211,7 +211,7 @@
           "nodes": [
             {"x": 488, "y": 1584}
           ],
-          "values": {"speed": 100, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "movingLong", "oneWayPlatform": true, "trigger": "Load"}
+          "values": {"speed": 100, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "movingLong", "oneWayPlatform": false, "trigger": "Load"}
         },
         {"name": "coins", "id": 72, "_eid": "46479631", "x": 328, "y": 1520, "originX": 0, "originY": 0},
         {
@@ -466,7 +466,7 @@
           "nodes": [
             {"x": 2008, "y": 1312}
           ],
-          "values": {"speed": 120, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "movingLonger", "oneWayPlatform": true, "trigger": "Load"}
+          "values": {"speed": 120, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "movingLonger", "oneWayPlatform": false, "trigger": "Load"}
         },
         {
           "name": "movingPlatform",
