@@ -3,27 +3,27 @@ package;
 import OgmoTilemap;
 
 import io.newgrounds.NG;
+
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
-import flixel.addons.display.FlxBackdrop;
-import flixel.addons.text.FlxTypeText;
 import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup;
+import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxTimer;
-import flixel.tweens.FlxTween;
-import flixel.util.FlxColor;
 import flixel.math.FlxRect;
 import flixel.math.FlxPoint;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
 import flixel.util.FlxPath;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
 import flixel.tile.FlxTilemap;
 import flixel.FlxState;
 import flixel.FlxObject;
 import flixel.tweens.FlxEase;
+
+import flixel.addons.display.FlxBackdrop;
 
 using zero.utilities.OgmoUtils;
 using zero.flixel.utilities.FlxOgmoUtils;
@@ -66,7 +66,7 @@ class PlayState extends FlxState
 		var bg:FlxSprite = new FlxBackdrop(AssetPaths.dumbbg__png);
 		bg.scrollFactor.set(0.75, 0.75);
 		bg.alpha = 0.75;
-		bg.ignoreDrawDebug = true;
+		#if debug bg.ignoreDrawDebug = true; #end
 		add(bg);
 
 		var ogmo = FlxOgmoUtils.get_ogmo_package
@@ -75,9 +75,9 @@ class PlayState extends FlxState
 			// , AssetPaths.smartassLevel__json
 			);
 		level = new OgmoTilemap(ogmo, 'tiles', 0, 4);
-		level.ignoreDrawDebug = true;
+		#if debug level.ignoreDrawDebug = true; #end
 		var crack = new OgmoTilemap(ogmo, 'Crack', "assets/images/");
-		crack.ignoreDrawDebug = true;
+		#if debug crack.ignoreDrawDebug = true; #end
 		
 		add(crack);
 		add(grpMovingPlatforms);
@@ -89,7 +89,9 @@ class PlayState extends FlxState
 		add(grpLockedDoors);
 
 		var decalGroup = ogmo.level.get_decal_layer('decals').get_decal_group('assets');
+		#if debug
 		(cast decalGroup:FlxTypedGroup<FlxSprite>).forEach((decal)->decal.ignoreDrawDebug = true);
+		#end
 		add(decalGroup);
 
 		grpCheese = new FlxTypedGroup<Cheese>();
@@ -108,20 +110,18 @@ class PlayState extends FlxState
 		trace('Total cheese: $totalCheese');
 		if (player == null)
 			throw "player missing";
-
-		FlxG.mouse.visible = false;
 		
 		var uiGroup = new FlxGroup();
 		var bigCheese:Cheese = new Cheese(10, 10);
 		bigCheese.scrollFactor.set();
-		bigCheese.ignoreDrawDebug = true;
+		#if debug bigCheese.ignoreDrawDebug = true; #end
 		uiGroup.add(bigCheese);
 		
 		cheeseCountText = new FlxText(40, 12, 0, "", 16);
 		cheeseCountText.scrollFactor.set(0, 0);
 		cheeseCountText.color = FlxColor.BLACK;
 		cheeseCountText.setFormat(null, 16, FlxColor.WHITE, null, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		cheeseCountText.ignoreDrawDebug = true;
+		#if debug cheeseCountText.ignoreDrawDebug = true; #end
 		uiGroup.add(cheeseCountText);
 		add(uiGroup);
 		
@@ -132,7 +132,7 @@ class PlayState extends FlxState
 		{
 			var tileSize = Std.int(level.frames.getByIndex(0).frame.height);
 			var cameraTiles = new CameraTilemap(ogmo);
-			cameraTiles.ignoreDrawDebug = true;
+			#if debug cameraTiles.ignoreDrawDebug = true; #end
 			camera = PlayCamera.replaceCurrentCamera()
 				.init(player, tileSize, cameraTiles);
 		}
@@ -181,7 +181,6 @@ class PlayState extends FlxState
 	private var ending:Bool = false;
 	override public function update(elapsed:Float):Void
 	{
-		FlxG.watch.addMouse();
 		cheeseCountText.text = cheeseCount + (cheeseNeeded > 0 ? "/" + cheeseNeeded : "");
 
 		if (cheeseCount >= 55)
@@ -420,7 +419,7 @@ abstract LockAmountText(FlxText) to FlxText
 	{
 		this = new FlxText(x, y, 0, Std.string(amount), 16);
 		this.setFormat(null, 16, FlxColor.WHITE, null, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-		this.ignoreDrawDebug = true;
+		#if debug this.ignoreDrawDebug = true; #end
 		this.offset.x = this.width / 2;
 		this.offset.y = this.height / 2;
 	}

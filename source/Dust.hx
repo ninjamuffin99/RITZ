@@ -12,7 +12,7 @@ class Dust extends FlxSprite
         super(x, y);
         
         offset.y = HEIGHT;
-        ignoreDrawDebug = true;
+        #if debug ignoreDrawDebug = true; #end
     }
     
     inline public function place(type:DustType, x:Float, y:Float, flipX:Bool)
