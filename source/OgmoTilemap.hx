@@ -103,7 +103,7 @@ abstract OgmoTilemap(FlxTilemap) to FlxTilemap
 			( tileset.get_tileset_path(path)
 			, FlxPoint.get(tileset.tileWidth, tileset.tileHeight)
 			, FlxPoint.get(tileset.tileSeparationX, tileset.tileSeparationY)
-			, FlxPoint.get(padding)
+			, FlxPoint.get(padding, padding)
 			);
 	}
 }

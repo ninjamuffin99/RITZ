@@ -324,21 +324,9 @@ class PlayState extends FlxState
 			dialogueBubble.visible = true;
 			dialogueBubble.setPosition(checkpoint.x + 20, checkpoint.y - 10);
 
-			if (FlxG.keys.anyJustPressed([E, F, X]))
-			{
-				persistentUpdate = false;
-				openSubState(new DialogueSubstate(checkpoint.dialogue));
-			}
-
 			var gamepad = FlxG.gamepads.lastActive;
-			if (gamepad != null)
-			{
-				if (gamepad.justPressed.X)
-				{
-					persistentUpdate = false;
-					openSubState(new DialogueSubstate(checkpoint.dialogue));
-				}
-			}
+			if (FlxG.keys.anyJustPressed([E, F, X]) || (gamepad != null && gamepad.justPressed.X))
+				openSubState(new DialogueSubstate(checkpoint.dialogue));
 
 			if (checkpoint != curCheckpoint)
 			{
