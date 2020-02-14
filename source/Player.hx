@@ -120,12 +120,17 @@ class Player extends FlxSprite
         super.update(elapsed);
     }
 
+    static final leftButtons :Array<FlxGamepadInputID> = [DPAD_LEFT , LEFT_STICK_DIGITAL_LEFT ];
+    static final rightButtons:Array<FlxGamepadInputID> = [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT];
+    static final jumpButtons :Array<FlxGamepadInputID> = [A];
+    static final downButtons :Array<FlxGamepadInputID> = [DPAD_DOWN , LEFT_STICK_DIGITAL_DOWN ];
+    
+    static final jumpKeys :Array<FlxKey> = [SPACE, W, UP, Z, Y];
+    static final downKeys :Array<FlxKey> = [DOWN, S];
+    static final leftKeys :Array<FlxKey> = [LEFT, A];
+    static final rightKeys:Array<FlxKey> = [RIGHT, D];
     private function movement(elapsed:Float):Void
     {
-        final jumpKeys :Array<FlxKey> = [SPACE, W, UP, Z, Y];
-        final downKeys :Array<FlxKey> = [DOWN, S];
-        final leftKeys :Array<FlxKey> = [LEFT, A];
-        final rightKeys:Array<FlxKey> = [RIGHT, D];
         
         jump  = FlxG.keys.anyPressed(jumpKeys);
         down  = FlxG.keys.anyPressed(downKeys);
@@ -141,6 +146,25 @@ class Player extends FlxSprite
         var downP  = FlxG.keys.anyJustPressed(downKeys);
         var leftP  = FlxG.keys.anyJustPressed(leftKeys);
         var rightP = FlxG.keys.anyJustPressed(rightKeys);
+        
+        var gamepad = FlxG.gamepads.lastActive;
+        if (gamepad != null)
+        {
+            left  = left  || gamepad.anyPressed(leftButtons);
+            right = right || gamepad.anyPressed(rightButtons);
+            jump  = jump  || gamepad.anyPressed(jumpButtons);
+            down  = down  || gamepad.anyPressed(downButtons);
+            
+            leftP  = leftP  || gamepad.anyJustPressed(leftButtons);
+            rightP = rightP || gamepad.anyJustPressed(rightButtons);
+            jumpP  = jumpP  || gamepad.anyJustPressed(jumpButtons);
+            downP  = downP  || gamepad.anyJustPressed(downButtons);
+            
+            leftR  = leftR  || gamepad.anyJustReleased(leftButtons);
+            rightR = rightR || gamepad.anyJustReleased(rightButtons);
+            jumpR  = jumpR  || gamepad.anyJustReleased(jumpButtons);
+            downR  = downR  || gamepad.anyJustReleased(downButtons);
+        }
         
         if (velocity.y > 0)
             maxVelocity.y = FALL_SPEED;
@@ -163,29 +187,6 @@ class Player extends FlxSprite
         else
             onCoyoteGround = false;
         
-        var gamepad = FlxG.gamepads.lastActive;
-        if (gamepad != null)
-        {
-            final leftButtons :Array<FlxGamepadInputID> = [DPAD_LEFT , LEFT_STICK_DIGITAL_LEFT ];
-            final rightButtons:Array<FlxGamepadInputID> = [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT];
-            final jumpButtons :Array<FlxGamepadInputID> = [A];
-            final downButtons :Array<FlxGamepadInputID> = [DPAD_DOWN , LEFT_STICK_DIGITAL_DOWN ];
-            
-            left  = left  || gamepad.anyPressed(leftButtons);
-            right = right || gamepad.anyPressed(rightButtons);
-            jump  = jump  || gamepad.anyPressed(jumpButtons);
-            down  = down  || gamepad.anyPressed(downButtons);
-            
-            leftP  = leftP  || gamepad.anyJustPressed(leftButtons);
-            rightP = rightP || gamepad.anyJustPressed(rightButtons);
-            jumpP   =  jumpP  || gamepad.anyJustPressed(jumpButtons);
-            downP  = downP  || gamepad.anyJustPressed(downButtons);
-            
-            leftR  = leftR  || gamepad.anyJustReleased(leftButtons);
-            rightR = rightR || gamepad.anyJustReleased(rightButtons);
-            jumpR    = jumpR    || gamepad.anyJustReleased(jumpButtons);
-            downR  = downR  || gamepad.anyJustReleased(downButtons);
-        }
         
         if (isTouching(FlxObject.CEILING) || jumpR)
             apexReached = true;
@@ -256,7 +257,7 @@ class Player extends FlxSprite
             {
                 velocity.y = 0;
                 
-                if (left != right)
+                if (USE_NEW_SETTINGS &&  left != right)
                     velocity.x = maxVelocity.x * (left ? -1 : 1);
                 
                 // if ((velocity.x > 0 && left) || (velocity.x < 0 && right))
