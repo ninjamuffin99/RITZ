@@ -226,6 +226,7 @@ class PlayState extends FlxState
 				{
 					if (cheeseCount >= lock.amountNeeded)
 					{
+						// Open door
 						cheeseNeededText = new LockAmountText
 							( lock.x + lock.width  / 2
 							, lock.y + lock.height / 2
@@ -239,11 +240,14 @@ class PlayState extends FlxState
 							FlxG.camera.shake(0.05, 0.15);
 							cheeseNeededText.kill();
 							cheeseNeededText = null;
+							if (cheeseNeeded <= lock.amountNeeded)
+								cheeseNeeded = 0;
 						});
 						// FlxG.sound.music.volume = 0;
 					}
 					else if (cheeseNeeded != lock.amountNeeded)
 					{
+						// replace current goal with door's goal
 						cheeseNeededText = new LockAmountText
 							( lock.x + lock.width  / 2
 							, lock.y + lock.height / 2
