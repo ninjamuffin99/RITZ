@@ -74,7 +74,7 @@ class PlayState extends FlxState
 			, AssetPaths.normassLevel__json
 			// , AssetPaths.smartassLevel__json
 			);
-		level = new OgmoTilemap(ogmo, 'tiles', 0, 4);
+		level = new OgmoTilemap(ogmo, 'tiles', 0, 3);
 		#if debug level.ignoreDrawDebug = true; #end
 		var crack = new OgmoTilemap(ogmo, 'Crack', "assets/images/");
 		#if debug crack.ignoreDrawDebug = true; #end
