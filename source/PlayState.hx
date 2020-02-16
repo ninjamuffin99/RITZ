@@ -327,14 +327,13 @@ class PlayState extends FlxState
 				persistentDraw = true;
 				player.active = false;
 				var oldZoom = FlxG.camera.zoom;
-				var subState = new DialogueSubstate(checkpoint.dialogue, false,
-					()->
-					{
-						persistentUpdate = false;
-						persistentDraw = false;
-						FlxTween.tween(FlxG.camera, { zoom: oldZoom }, 0.25, { onComplete: (_)->player.active = true } );
-					}
-				);
+				var subState = new DialogueSubstate(checkpoint.dialogue, false);
+				subState.closeCallback = ()->
+				{
+					persistentUpdate = false;
+					persistentDraw = false;
+					FlxTween.tween(FlxG.camera, { zoom: oldZoom }, 0.3, { onComplete: (_)->player.active = true } );
+				};
 				openSubState(subState);
 				FlxTween.tween(FlxG.camera, { zoom: oldZoom * 2 }, 0.25, {onComplete:(_)->subState.start() });
 			}
