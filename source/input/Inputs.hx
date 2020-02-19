@@ -6,6 +6,19 @@ import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxVector;
 import flixel.util.FlxSignal;
 
+enum Input
+{
+	ACCEPT;
+	BACK;
+	UP;
+	DOWN;
+	LEFT;
+	RIGHT;
+	JUMP;
+	TALK;
+	PAUSE;
+}
+
 class Inputs extends flixel.FlxBasic {
 	
 	static public var keyPressed       (default, null):InputList;
@@ -37,6 +50,7 @@ class Inputs extends flixel.FlxBasic {
 		, LEFT   => [A, LEFT]
 		, RIGHT  => [D, RIGHT]
 		, JUMP   => [Z, Y, UP, W, SPACE]
+		, TALK   => [E, F, X]
 		, PAUSE  => [P, ESCAPE, ENTER]
 		];
 	
@@ -48,6 +62,7 @@ class Inputs extends flixel.FlxBasic {
 		, LEFT   => [DPAD_LEFT , LEFT_STICK_DIGITAL_LEFT]
 		, RIGHT  => [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT]
 		, JUMP   => [A]
+		, TALK   => [X]
 		, PAUSE  => [START, GUIDE]
 		];
 	
@@ -165,6 +180,7 @@ class InputList {
 			case BACK  : "BACK";
 			case PAUSE : "PAUSE";
 			case JUMP  : "JUMP";
+			case TALK  : "TALK";
 			case ACCEPT: "ACCEPT";
 		}
 	}
@@ -176,5 +192,6 @@ class InputList {
 	public var LEFT  (get, never):Bool; inline function get_LEFT  () { return get(Input.LEFT  ); };
 	public var RIGHT (get, never):Bool; inline function get_RIGHT () { return get(Input.RIGHT ); };
 	public var JUMP  (get, never):Bool; inline function get_JUMP  () { return get(Input.JUMP  ); };
+	public var TALK  (get, never):Bool; inline function get_TALK  () { return get(Input.TALK  ); };
 	public var PAUSE (get, never):Bool; inline function get_PAUSE () { return get(Input.PAUSE ); };
 }

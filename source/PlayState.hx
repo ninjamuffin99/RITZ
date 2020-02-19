@@ -332,7 +332,7 @@ class PlayState extends FlxState
 			minimap.showCheckpointGet(checkpoint.id);
 
 			var gamepad = FlxG.gamepads.lastActive;
-			if (FlxG.keys.anyJustPressed([E, F, X]) || (gamepad != null && gamepad.justPressed.X))
+			if (Inputs.justPressed.TALK)
 			{
 				persistentUpdate = true;
 				persistentDraw = true;
