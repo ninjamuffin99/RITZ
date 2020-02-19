@@ -1,5 +1,6 @@
 package;
 
+import input.Inputs;
 import OgmoTilemap;
 
 import flixel.FlxG;
@@ -123,13 +124,8 @@ class PlayCamera extends FlxCamera
 				snapOffset = -snapAmount * snapEase(1.0 - (snapTimer / PAN_SNAP_TIME));
 		}
 		
-		// Look down while pressing down
-		var downPress = FlxG.keys.anyPressed([S, DOWN]);
-		var gamepad = FlxG.gamepads.lastActive;
-		if (!downPress && gamepad != null)
-			downPress = gamepad.anyPressed([DPAD_DOWN, LEFT_STICK_DIGITAL_DOWN, RIGHT_STICK_DIGITAL_DOWN]);
-		
-		if (downPress)
+		// Look around
+		if (Inputs.pressed.DOWN && player.onGround)
 		{
 			panDownTimer += elapsed;
 			if (panDownTimer > PAN_DOWN_DELAY + PAN_DOWN_TIME)

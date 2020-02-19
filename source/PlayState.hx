@@ -1,6 +1,10 @@
 package;
 
 import OgmoTilemap;
+import input.Inputs;
+import ui.DialogueSubstate;
+import ui.MinimapSubstate;
+import ui.Minimap;
 
 import io.newgrounds.NG;
 
@@ -34,6 +38,7 @@ class PlayState extends FlxState
 	inline static var USE_NEW_CAMERA = true;
 	
 	var level:OgmoTilemap;
+	var minimap:Minimap;
 	var player:Player;
 	var tileSize = 0;
 
@@ -74,6 +79,7 @@ class PlayState extends FlxState
 			, AssetPaths.normassLevel__json
 			// , AssetPaths.smartassLevel__json
 			);
+		minimap = new Minimap(AssetPaths.normassLevel__json);
 		level = new OgmoTilemap(ogmo, 'tiles', 0, 3);
 		level.setTilesCollisions(40, 4, FlxObject.UP);
 		#if debug level.ignoreDrawDebug = true; #end
@@ -161,15 +167,15 @@ class PlayState extends FlxState
 			case "spider":
 				add(new Enemy(e.x, e.y, OgmoPath.fromEntity(e), e.values.speed));
 				trace('spider added');
-			case "coins":
-				grpCheese.add(new Cheese(e.x, e.y));
+			case "coins" | "cheese":
+				grpCheese.add(new Cheese(e.x, e.y, true));
 				totalCheese++;
 			case "movingPlatform":
 				grpMovingPlatforms.add(MovingPlatform.fromOgmo(e));
 			case "spike":
 				grpObstacles.add(new SpikeObstacle(e.x, e.y, e.rotation));
 			case "checkpoint":
-				grpCheckpoint.add(new Checkpoint(e.x, e.y, e.values.dialogue));
+				grpCheckpoint.add(new Checkpoint(e.x, e.y, e.values.dialogue, true));
 			case "musicTrigger":
 				grpMusicTriggers.add(new MusicTrigger(e.x, e.y, e.width, e.height, e.values.song, e.values.fadetime));
 			case "secretTrigger":
@@ -187,6 +193,8 @@ class PlayState extends FlxState
 		
 		if (!player.active)
 			return;
+		
+		minimap.updateSeen(FlxG.camera);
 		
 		cheeseCountText.text = cheeseCount + (cheeseNeeded > 0 ? "/" + cheeseNeeded : "");
 
@@ -321,6 +329,7 @@ class PlayState extends FlxState
 		{
 			dialogueBubble.visible = true;
 			dialogueBubble.setPosition(checkpoint.x + 20, checkpoint.y - 10);
+			minimap.showCheckpointGet(checkpoint.id);
 
 			var gamepad = FlxG.gamepads.lastActive;
 			if (FlxG.keys.anyJustPressed([E, F, X]) || (gamepad != null && gamepad.justPressed.X))
@@ -350,15 +359,21 @@ class PlayState extends FlxState
 
 			if (!player.cheese.isEmpty())
 			{
-				player.cheese.first().sendToCheckpoint(checkpoint, ()->{ cheeseCount++; });
+				player.cheese.first().sendToCheckpoint(checkpoint,
+					(cheese)->
+					{
+						cheeseCount++;
+						minimap.showCheeseGet(cheese.id);
+					}
+				);
 				player.cheese.clear();
 			}
 		});
 
 
-		FlxG.overlap(player, grpCheese, function(_, cheese:Cheese)
+		if (!player.gettingHurt)
 		{
-			if (!player.gettingHurt)
+			FlxG.overlap(player, grpCheese, function(_, cheese:Cheese)
 			{
 				FlxG.sound.play('assets/sounds/collectCheese' + BootState.soundEXT, 0.6);
 				cheese.startFollow(player);
@@ -370,9 +385,11 @@ class PlayState extends FlxState
 					if (!hornyMedal.unlocked)
 						hornyMedal.sendUnlock();
 				}
-			}
-			
-		});
+			});
+		}
+		
+		if (Inputs.justPressed.PAUSE)
+			openSubState(new MinimapSubstate(minimap, player, player.hurtAndRespawn));
 		
 		#if debug
 		if (FlxG.keys.justPressed.B)

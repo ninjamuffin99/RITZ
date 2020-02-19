@@ -1,4 +1,4 @@
-package;
+package ui;
 
 import flixel.FlxCamera;
 import flixel.system.FlxAssets;

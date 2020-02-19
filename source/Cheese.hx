@@ -13,17 +13,24 @@ import flixel.tweens.FlxTween;
 
 class Cheese extends FlxSprite
 {
+    static var counter = 0;
+    
+    public var id(default, null) = -1;
+    
     var followTarget:FlxObject = null;
     var follower:Cheese = null;
     var startPos = new FlxPoint();
     var mode:CheeseState = Idle;
     var flickerTimer = 0.0;
-    var eatCallback:()->Void;
+    var eatCallback:(Cheese)->Void;
     
-    public function new(x:Float, y:Float) 
+    public function new(x:Float, y:Float, collectible = false)
     {
         super(x, y);
         startPos.set(x, y);
+        
+        if (collectible)
+            id = counter++;
 
         loadGraphic(AssetPaths.cheese_idle__png, true, 32, 32);
         animation.add('idle', [0]);
@@ -132,7 +139,7 @@ class Cheese extends FlxSprite
         );
     }
     
-    public function sendToCheckpoint(target:Checkpoint, onEat:()->Void):Void
+    public function sendToCheckpoint(target:Checkpoint, onEat:(Cheese)->Void):Void
     {
         solid = false;
         followTarget = target;
@@ -196,7 +203,7 @@ class Cheese extends FlxSprite
                 velocity.y = distance.y * 4;
                 if (distance.lengthSquared < 15*15)
                 {
-                    eatCallback();
+                    eatCallback(this);
                     if (follower != null)
                         follower.sendToCheckpoint(cast followTarget, eatCallback);
                     followTarget = null;
