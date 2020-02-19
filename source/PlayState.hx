@@ -75,6 +75,7 @@ class PlayState extends FlxState
 			// , AssetPaths.smartassLevel__json
 			);
 		level = new OgmoTilemap(ogmo, 'tiles', 0, 3);
+		level.setTilesCollisions(40, 4, FlxObject.UP);
 		#if debug level.ignoreDrawDebug = true; #end
 		var crack = new OgmoTilemap(ogmo, 'Crack', "assets/images/");
 		#if debug crack.ignoreDrawDebug = true; #end
@@ -208,6 +209,7 @@ class PlayState extends FlxState
 			}
 		);
 		
+		level.setTilesCollisions(40, 4, player.down ? FlxObject.NONE : FlxObject.UP);
 		FlxG.collide(level, player);
 
 		if (player.x > level.width && !ending)
