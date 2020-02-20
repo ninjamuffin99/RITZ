@@ -1,4 +1,4 @@
-package input;
+package ui;
 
 import flixel.FlxG;
 import flixel.input.gamepad.FlxGamepadInputID;
@@ -103,7 +103,7 @@ class Inputs extends flixel.FlxBasic {
 		
 		if (isUsingPad) {
 			
-			var pad = FlxG.gamepads.firstActive;
+			var pad = FlxG.gamepads.lastActive;
 			padPressed     .handler = inputToPadList(pad.anyPressed);
 			padJustPressed .handler = inputToPadList(pad.anyJustPressed);
 			padJustReleased.handler = inputToPadList(pad.anyJustReleased);

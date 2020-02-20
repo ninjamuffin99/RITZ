@@ -218,6 +218,22 @@ class Cheese extends FlxSprite
     }
 }
 
+@:forward
+abstract DisplayCheese(FlxSprite) to FlxSprite
+{
+    inline public function new(x:Float, y:Float)
+    {
+        this = new FlxSprite(x, y);
+        this.loadGraphic(AssetPaths.cheese_idle__png, true, 32, 32);
+        this.animation.add('idle', [0]);
+        // closer to graphic bounds than collectible cheese
+        this.offset.x = 3;
+        this.width -= 4;
+        this.height -= 5;
+        this.offset.y = 9;
+    }
+}
+
 enum CheeseState
 {
     Idle;

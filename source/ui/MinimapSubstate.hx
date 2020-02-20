@@ -1,7 +1,7 @@
 package ui;
 
-import input.Inputs;
 import ui.Minimap;
+import ui.Prompt;
 
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -11,10 +11,14 @@ import flixel.math.FlxRect;
 
 class MinimapSubstate extends flixel.FlxSubState
 {
+    var pauseReleased = false;
+    var state:MinimapMenuState = SelectingTile;
+    
     final map:Minimap;
     final mapCamera:FlxCamera;
     final cursor:MapCursor;
     final travelCallback:(x:Float, y:Float)->Void;
+    
     
     public function new (map:Minimap, player:Player, travelCallback)
     {
@@ -41,12 +45,36 @@ class MinimapSubstate extends flixel.FlxSubState
     {
         super.update(elapsed);
         
-        if (Inputs.justPressed.BACK)
-            close();
-        else if (Inputs.justPressed.ACCEPT && map.getMapTile(cursor.tileX, cursor.tileY) == EntityTile.Checkpoint)
+        if (!pauseReleased)
+            pauseReleased = Inputs.justReleased.PAUSE;
+        
+        switch (state)
         {
-            travelCallback(cursor.tileX * Minimap.OLD_TILE_SIZE, cursor.tileY * Minimap.OLD_TILE_SIZE);
-            close();
+            case SelectingTile:
+                if (Inputs.justPressed.BACK || (pauseReleased && Inputs.justPressed.PAUSE))
+                    close();
+                else if (Inputs.justPressed.ACCEPT && map.getMapTile(cursor.tileX, cursor.tileY) == EntityTile.Checkpoint)
+                {
+                    state = ConfirmingCheckpoint;
+                    cursor.active = false;
+                    var prompt = new Prompt();
+                    add(prompt);
+                    prompt.setup
+                        ( "Warp to this checkpoint?\n(Lose all trailing cheese)"
+                        ,   function onYes()
+                            {
+                                travelCallback(cursor.tileX * Minimap.OLD_TILE_SIZE, cursor.tileY * Minimap.OLD_TILE_SIZE);
+                                close();
+                            }
+                        ,   function onNo()
+                            {
+                                state = SelectingTile;
+                                cursor.active = true;
+                            }
+                        , remove.bind(prompt)
+                        );
+                }
+            case ConfirmingCheckpoint://nothing
         }
     }
     
@@ -63,20 +91,30 @@ class MapCursor extends flixel.FlxSprite
 {
     static inline var TILE_SIZE = Minimap.TILE_SIZE;
     static inline var BLINK_RATE = 0.5;
-    static inline var SPEED = 8;// tiles per second
+    static inline var SPEED = 12;// tiles per second
     static inline var MOVE_RATE = 1 / SPEED;
     
-    public var tileX(default, null):Int;
-    public var tileY(default, null):Int;
+    public var tileX(default, set):Int;
+    inline function set_tileX(value:Int)
+    {
+        x = value * TILE_SIZE;
+        return tileX = value;
+    }
+    public var tileY(default, set):Int;
+    inline function set_tileY(value:Int)
+    {
+        y = value * TILE_SIZE;
+        return tileY = value;
+    }
     
     var timer = 0.0;
     
     public function new (x = 0.0, y = 0.0)
     {
+        
+        super("assets/images/mapCursor.png");
         tileX = Math.floor(x / Minimap.OLD_TILE_SIZE);
         tileY = Math.floor(y / Minimap.OLD_TILE_SIZE);
-        
-        super(tileX * TILE_SIZE, tileY * TILE_SIZE, "assets/images/mapCursor.png");
         
         width = TILE_SIZE;
         height = TILE_SIZE;
@@ -131,4 +169,10 @@ class MapCursor extends flixel.FlxSprite
         
         visible = timer % BLINK_RATE < BLINK_RATE / 2;
     }
+}
+
+enum MinimapMenuState
+{
+    SelectingTile;
+    ConfirmingCheckpoint;
 }

@@ -1,8 +1,10 @@
 package;
 
+import Cheese;
 import OgmoTilemap;
-import input.Inputs;
+import ui.BitmapText;
 import ui.DialogueSubstate;
+import ui.Inputs;
 import ui.MinimapSubstate;
 import ui.Minimap;
 
@@ -11,19 +13,13 @@ import io.newgrounds.NG;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup;
-import flixel.group.FlxSpriteGroup;
-import flixel.math.FlxRect;
 import flixel.math.FlxPoint;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import flixel.util.FlxPath;
-import flixel.text.FlxText;
-import flixel.tile.FlxTilemap;
-import flixel.FlxState;
-import flixel.FlxObject;
 import flixel.tweens.FlxEase;
 
 import flixel.addons.display.FlxBackdrop;
@@ -33,7 +29,7 @@ using zero.flixel.utilities.FlxOgmoUtils;
 using StringTools;
 
 
-class PlayState extends FlxState
+class PlayState extends flixel.FlxState
 {
 	inline static var USE_NEW_CAMERA = true;
 	
@@ -56,7 +52,7 @@ class PlayState extends FlxState
 
 	private var curTalking:Bool = false;
 
-	var cheeseCountText:FlxText;
+	var cheeseCountText:BitmapText;
 	var dialogueBubble:FlxSprite;
 	var cheeseCount = 0;
 	var cheeseNeeded = 0;
@@ -72,14 +68,13 @@ class PlayState extends FlxState
 		bg.alpha = 0.75;
 		#if debug bg.ignoreDrawDebug = true; #end
 		add(bg);
-
-		var ogmo = FlxOgmoUtils.get_ogmo_package
-			( AssetPaths.levelProject__ogmo
-			// , AssetPaths.dumbassLevel__json
-			, AssetPaths.normassLevel__json
-			// , AssetPaths.smartassLevel__json
-			);
-		minimap = new Minimap(AssetPaths.normassLevel__json);
+		
+		var levelPath = 
+			// AssetPaths.dumbassLevel__json;
+			AssetPaths.normassLevel__json;
+			// AssetPaths.smartassLevel__json;
+		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, levelPath);
+		minimap = new Minimap(levelPath);
 		level = new OgmoTilemap(ogmo, 'tiles', 0, 3);
 		level.setTilesCollisions(40, 4, FlxObject.UP);
 		#if debug level.ignoreDrawDebug = true; #end
@@ -119,15 +114,13 @@ class PlayState extends FlxState
 			throw "player missing";
 		
 		var uiGroup = new FlxGroup();
-		var bigCheese:Cheese = new Cheese(10, 10);
+		var bigCheese = new DisplayCheese(10, 10);
 		bigCheese.scrollFactor.set();
 		#if debug bigCheese.ignoreDrawDebug = true; #end
 		uiGroup.add(bigCheese);
 		
-		cheeseCountText = new FlxText(40, 12, 0, "", 16);
-		cheeseCountText.scrollFactor.set(0, 0);
-		cheeseCountText.color = FlxColor.BLACK;
-		cheeseCountText.setFormat(null, 16, FlxColor.WHITE, null, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		cheeseCountText = new BitmapText(40, 12, "");
+		cheeseCountText.scrollFactor.set();
 		#if debug cheeseCountText.ignoreDrawDebug = true; #end
 		uiGroup.add(cheeseCountText);
 		add(uiGroup);
@@ -330,8 +323,7 @@ class PlayState extends FlxState
 			dialogueBubble.visible = true;
 			dialogueBubble.setPosition(checkpoint.x + 20, checkpoint.y - 10);
 			minimap.showCheckpointGet(checkpoint.id);
-
-			var gamepad = FlxG.gamepads.lastActive;
+			
 			if (Inputs.justPressed.TALK)
 			{
 				persistentUpdate = true;
@@ -414,12 +406,11 @@ class PlayState extends FlxState
 }
 
 @:forward
-abstract LockAmountText(FlxText) to FlxText
+abstract LockAmountText(BitmapText) to BitmapText
 {
 	inline public function new (x, y, amount:Int)
 	{
-		this = new FlxText(x, y, 0, Std.string(amount), 16);
-		this.setFormat(null, 16, FlxColor.WHITE, null, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		this = new BitmapText(x, y, Std.string(amount));
 		#if debug this.ignoreDrawDebug = true; #end
 		this.offset.x = this.width / 2;
 		this.offset.y = this.height / 2;

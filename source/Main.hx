@@ -21,6 +21,6 @@ class Main extends openfl.display.Sprite
 		);
 		
 		FlxG.mouse.useSystemCursor = true;
-        FlxG.plugins.add(new input.Inputs());
+        FlxG.plugins.add(new ui.Inputs());
 	}
 }

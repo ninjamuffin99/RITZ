@@ -1,6 +1,6 @@
 package;
 
-import input.Inputs;
+import ui.Inputs;
 import OgmoTilemap;
 
 import flixel.FlxG;

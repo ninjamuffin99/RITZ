@@ -1,7 +1,7 @@
 package;
 
 import Dust;
-import input.Inputs;
+import ui.Inputs;
 
 import flixel.FlxG;
 import flixel.FlxObject;

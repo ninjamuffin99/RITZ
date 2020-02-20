@@ -1,6 +1,7 @@
 package ui;
 
-import input.Inputs;
+import ui.Inputs;
+
 import flixel.FlxCamera;
 import flixel.system.FlxAssets;
 import flixel.tweens.FlxEase;
