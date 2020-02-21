@@ -1,5 +1,6 @@
 package;
 
+import flixel.math.FlxVelocity;
 import Dust;
 import ui.Inputs;
 
@@ -59,6 +60,8 @@ class Player extends FlxSprite
     private var jumpTimer:Float = 0;
     private var hovering:Bool = false;
     private var wallClimbing:Bool = false;
+    /** horizontal boost from being launched, usually by a moving platform */
+    private var xAirBoost:Float;
     public var onGround      (default, null):Bool = false;
     public var wasOnGround   (default, null):Bool = false;
     public var onCoyoteGround(default, null):Bool = false;
@@ -128,12 +131,38 @@ class Player extends FlxSprite
         {
             velocity.set();
             acceleration.set();
+            xAirBoost = 0;
+            
+            super.update(elapsed);
         }
         else
         {
             movement(elapsed);
+            
+            // prevent drag from reducing speed granted from moving platforms unless they accelerate
+            var oldDragX = drag.x;
+            var oldAccelX = acceleration.x;
+            var boosting = xAirBoost != 0;
+            if (boosting)
+            {
+                // apply acceleration to xBoost and adjust velocity/maxspeed from that
+                velocity.x -= xAirBoost;
+                xAirBoost = FlxVelocity.computeVelocity(xAirBoost, acceleration.x, 0, maxVelocity.x, elapsed);
+                velocity.x += xAirBoost;
+                var speed = Math.abs(velocity.x);
+                if (speed < maxVelocity.x)
+                    maxVelocity.x = Math.max(speed, MAXSPEED);
+                
+                drag.x = 0;
+                acceleration.x = 0;
+            }
+            super.update(elapsed);
+            if (boosting)
+            {
+                drag.x = oldDragX;
+                acceleration.x = oldAccelX;
+            }
         }
-        super.update(elapsed);
     }
     private function movement(elapsed:Float):Void
     {
@@ -224,6 +253,9 @@ class Player extends FlxSprite
             apexReached = false;
             jumpBoost = 0;
             jumpTimer = 0;
+            xAirBoost = 0;
+            if (maxVelocity.x > MAXSPEED)
+                maxVelocity.x = MAXSPEED;
 
             if (jumpP)
                 startJump();
@@ -317,13 +349,13 @@ class Player extends FlxSprite
         {
             if (platform.transferVelocity.y < 0)
                 maxVelocity.y += -platform.transferVelocity.y;
-            
-            // persistent x force after jumping from moving platform?
-            // if (maxVelocity.x < Math.abs(platform.transferVelocity.x))
-            //     maxVelocity.x = Math.abs(platform.transferVelocity.x);
-            
             velocity.y = platform.transferVelocity.y;
-            velocity.x += platform.transferVelocity.x;
+            
+            xAirBoost = platform.transferVelocity.x;
+            // persistent x force after jumping from moving platform?
+            if (maxVelocity.x < Math.abs(xAirBoost))
+                maxVelocity.x = Math.abs(xAirBoost);
+            velocity.x += xAirBoost;
             platform = null;
         }
         
