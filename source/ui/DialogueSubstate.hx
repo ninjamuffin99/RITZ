@@ -1,4 +1,6 @@
-package;
+package ui;
+
+import ui.Inputs;
 
 import flixel.FlxCamera;
 import flixel.system.FlxAssets;
@@ -62,9 +64,8 @@ class DialogueSubstate extends FlxSubState
 
     override function update(elapsed:Float) {
 
-        var gamepad = FlxG.gamepads.lastActive;
         if (dialogueText.visible
-        && (FlxG.keys.anyJustPressed([E, F, X, SPACE, Z, W, UP]) || (gamepad != null && gamepad.justPressed.ANY)))
+        && (Inputs.justPressed.BACK || Inputs.justPressed.ACCEPT || Inputs.justPressed.TALK))
         {
             if (dialogueText.isFinished)
                 startClose();

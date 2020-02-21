@@ -32,6 +32,19 @@ abstract OgmoTilemap(FlxTilemap) to FlxTilemap
 		}
 	}
 	
+	inline public function setTileCollisions(index:Int, allowCollisions:Int)
+	{
+		
+		@:privateAccess
+		this._tileObjects[index].allowCollisions = allowCollisions;
+	}
+	
+	inline public function setTilesCollisions(startIndex:Int, num:Int, allowCollisions:Int)
+	{
+		for (i in startIndex...startIndex + num)
+			setTileCollisions(i, allowCollisions);
+	}
+	
 	function loadOgmoCSVMap
 		( layer  :TileLayer
 		, tileset:ProjectTilesetData
