@@ -1,6 +1,12 @@
 package;
 
+import openfl.geom.Rectangle;
+
+import flixel.FlxSprite;
+import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
+import flixel.math.FlxVector;
 import flixel.util.FlxPath;
 
 import zero.utilities.OgmoUtils;
@@ -19,6 +25,11 @@ class OgmoPath extends FlxPath
     var wasFirstUpdate = false;
     
     function new () { super(); }
+    
+    inline public function createPathSprite()
+    {
+        return new PathSprite(this);
+    }
     
     override function update(elapsed:Float)
     {
@@ -105,5 +116,38 @@ enum abstract PathType(String) to String from String
             case YOYO         : FlxPath.YOYO;
             default: throw "Unhandled PathType:" + this;
         }
+    }
+}
+
+@:forward
+abstract PathSprite(FlxTypedSpriteGroup<PathSpriteLink>) to FlxTypedSpriteGroup<PathSpriteLink>
+{
+    inline public function new (path:OgmoPath)
+    {
+        this = new FlxTypedSpriteGroup<PathSpriteLink>(path.nodes[0].x, path.nodes[0].y, path.nodes.length);
+        for (i in 1...path.nodes.length)
+            this.add(new PathSpriteLink(path.nodes[0], path.nodes[i-1], path.nodes[i]));
+        if (path.nodes.length > 2 && (path.mode == FlxPath.LOOP_BACKWARD || path.mode == FlxPath.LOOP_FORWARD))
+            this.add(new PathSpriteLink(path.nodes[0], path.nodes[path.nodes.length-1], path.nodes[0]));
+    }
+}
+
+abstract PathSpriteLink(FlxSprite) to FlxSprite
+{
+    inline public function new (pathStart:FlxPoint, nodeStart:FlxPoint, nodeEnd:FlxPoint)
+    {
+        
+        this = new FlxSprite
+            ( nodeStart.x - pathStart.x
+            , nodeStart.y - pathStart.y
+            );
+        var dis = FlxVector.get(nodeEnd.x - nodeStart.x, nodeEnd.y - nodeStart.y);
+        // black line with white outline (crude)
+        this.makeGraphic(Std.int(Math.max(3, dis.length + 2)), 3, 0xFF39404a);
+        this.graphic.bitmap.fillRect(new Rectangle(1, 1, this.width - 2, 1), 0xFFffffff);
+        // rotate
+        this.angle = dis.degrees;
+        this.origin.set(1, 1);
+        dis.put();
     }
 }

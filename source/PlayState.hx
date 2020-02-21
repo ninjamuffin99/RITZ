@@ -1,6 +1,7 @@
 package;
 
 import Cheese;
+import OgmoPath;
 import OgmoTilemap;
 import ui.BitmapText;
 import ui.DialogueSubstate;
@@ -41,6 +42,7 @@ class PlayState extends flixel.FlxState
 	private var grpCheese = new FlxTypedGroup<Cheese>();
 	private var grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
 	private var grpMovingPlatformsPath = new FlxTypedGroup<PathSprite>();
+	private var grpOneWayMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
 
 	private var grpObstacles = new FlxTypedGroup<Obstacle>();
 	private var curCheckpoint:Checkpoint;
@@ -170,6 +172,8 @@ class PlayState extends flixel.FlxState
 				if (platform.visible)
 					grpMovingPlatformsPath.add(platform.createPathSprite());
 				grpMovingPlatforms.add(platform);
+				if (platform.oneWayPlatform)
+					grpOneWayMovingPlatforms.add(platform);
 			case "spike":
 				grpObstacles.add(new SpikeObstacle(e.x, e.y, e.rotation));
 			case "checkpoint":

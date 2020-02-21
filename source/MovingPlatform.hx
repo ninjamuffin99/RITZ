@@ -29,6 +29,14 @@ class MovingPlatform extends flixel.FlxSprite
         immovable = true;
     }
     
+    inline public function createPathSprite()
+    {
+        var path = ogmoPath.createPathSprite();
+        path.x += width / 2;
+        path.y += height / 2;
+        return path;
+    }
+    
     override function update(elapsed:Float)
     {
         if (ogmoPath != null && !path.active)
