@@ -40,6 +40,7 @@ class PlayState extends flixel.FlxState
 
 	private var grpCheese = new FlxTypedGroup<Cheese>();
 	private var grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
+	private var grpMovingPlatformsPath = new FlxTypedGroup<PathSprite>();
 
 	private var grpObstacles = new FlxTypedGroup<Obstacle>();
 	private var curCheckpoint:Checkpoint;
@@ -82,6 +83,7 @@ class PlayState extends flixel.FlxState
 		#if debug crack.ignoreDrawDebug = true; #end
 		
 		add(crack);
+		add(grpMovingPlatformsPath);
 		add(grpMovingPlatforms);
 		add(grpObstacles);
 		add(level);
@@ -164,7 +166,10 @@ class PlayState extends flixel.FlxState
 				grpCheese.add(new Cheese(e.x, e.y, true));
 				totalCheese++;
 			case "movingPlatform":
-				grpMovingPlatforms.add(MovingPlatform.fromOgmo(e));
+				var platform = MovingPlatform.fromOgmo(e);
+				if (platform.visible)
+					grpMovingPlatformsPath.add(platform.createPathSprite());
+				grpMovingPlatforms.add(platform);
 			case "spike":
 				grpObstacles.add(new SpikeObstacle(e.x, e.y, e.rotation));
 			case "checkpoint":
@@ -201,6 +206,10 @@ class PlayState extends flixel.FlxState
 			}
 		}
 		
+		// Disable one way platforms when pressing down
+		if (player.down)
+			grpOneWayMovingPlatforms.forEach((platform)->platform.allowCollisions = FlxObject.NONE);
+		
 		player.platform = null;
 		FlxG.collide(grpMovingPlatforms, player, 
 			function(platform:MovingPlatform, _)
@@ -209,6 +218,8 @@ class PlayState extends flixel.FlxState
 					player.platform = platform;
 			}
 		);
+		// Re-enable one way platforms in case other things collide
+		grpOneWayMovingPlatforms.forEach((platform)->platform.allowCollisions = FlxObject.UP);
 		
 		level.setTilesCollisions(40, 4, player.down ? FlxObject.NONE : FlxObject.UP);
 		FlxG.collide(level, player);

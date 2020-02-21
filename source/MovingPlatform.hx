@@ -20,6 +20,8 @@ class MovingPlatform extends flixel.FlxSprite
     inline function get_ogmoPath() return cast(path, OgmoPath);
     inline function set_ogmoPath(value:OgmoPath) return cast path = value;
     
+    public var oneWayPlatform(default, null) = false;
+    
     var trigger:Trigger = Load;
     public function new(x:Float, y:Float) {
         super(x, y);
@@ -52,6 +54,7 @@ class MovingPlatform extends flixel.FlxSprite
     inline function setOgmoProperties(data:EntityData)
     {
         var values:EntityValues = cast data.values;
+        oneWayPlatform = values.oneWayPlatform;
         trigger = values.trigger;
         
         var graphic = values.graphic;
@@ -82,7 +85,7 @@ class MovingPlatform extends flixel.FlxSprite
         }
         else
         {
-            graphic += "_" + (values.oneWayPlatform ? "cloud" : "solid");
+            graphic += "_" + (oneWayPlatform ? "cloud" : "solid");
             loadGraphic('assets/images/$graphic.png');
             setGraphicSize(data.width, data.height);
         }
