@@ -103,8 +103,9 @@ class PlayCamera extends FlxCamera
 				snapAmount = scroll.y - oldCam.y;
 				scroll.copyFrom(oldCam);
 				oldCam.put();
-				if (snapAmount + scroll.y + height > maxScrollY)
-					snapAmount = maxScrollY - (scroll.y + height);
+				// The following messes up at lthe bottom of the level, and only helps with visual debugging
+				// if (snapAmount + scroll.y + height + targetOffset.y > maxScrollY)
+				// 	snapAmount = maxScrollY - (scroll.y + height + targetOffset.y);
 				
 				snapEase = null;
 				if (fallTimer > FALL_LEAD_DELAY)
