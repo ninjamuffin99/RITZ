@@ -153,7 +153,7 @@ class PlayCamera extends FlxCamera
 		var leading = cameraTilemap.getTileTypeAt(player.x, player.y);
 		if (leading != MoreDown)
 		{
-			if (player.velocity.y > 0 && scroll.y > lastPos.y + 1)
+			if (!player.onCoyoteGround && player.velocity.y > 0 && scroll.y > lastPos.y + 1)
 			{
 				// Lead down when falling for some time
 				fallTimer += elapsed;
