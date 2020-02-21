@@ -15,7 +15,7 @@ class SpikeObstacle extends Obstacle
         
         loadGraphic(AssetPaths.spike__png, true, SIZE, SIZE);
         animation.add('idle', [0, 1, 2, 3], 10);
-        animation.play('idle', false, false, FlxMath.wrap(Std.int(x / SIZE * 2), 0, 3));
+        animation.play('idle', false, false, FlxMath.wrap(Std.int((x+y) / SIZE), 0, 3));
         
         switch(rotation)
         {

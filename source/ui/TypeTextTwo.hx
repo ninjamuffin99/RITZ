@@ -1,7 +1,6 @@
-package;
+package ui;
 
 import flixel.FlxG;
-import flixel.addons.text.FlxTypeText;
 import flixel.text.FlxText.FlxTextFormat;
 import flixel.text.FlxText.FlxTextFormatMarkerPair;
 import flixel.util.FlxColor;
@@ -14,7 +13,7 @@ using flixel.util.FlxStringUtil;
  * Shitty homemade extension bullshit of FlxTypeText lmaooo
  * @author ninjamuffin99
  */
-class TypeTextTwo extends FlxTypeText 
+class TypeTextTwo extends flixel.addons.text.FlxTypeText 
 {
 	/**
 	   Time in seconds that the text will pause for when encountering a period

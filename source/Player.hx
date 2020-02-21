@@ -1,6 +1,8 @@
 package;
 
 import Dust;
+import ui.Inputs;
+
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -66,11 +68,10 @@ class Player extends FlxSprite
     
     public var cheese = new List<Cheese>();
     
-    var left:Bool;
-    var right:Bool;
-    var jump:Bool;
-    var jumpP:Bool;
-    var down:Bool;
+    public var left (default, null):Bool;
+    public var right(default, null):Bool;
+    public var jump (default, null):Bool;
+    public var down (default, null):Bool;
 
     public function new(x:Float, y:Float):Void
     {
@@ -134,52 +135,22 @@ class Player extends FlxSprite
         }
         super.update(elapsed);
     }
-
-    static final leftButtons :Array<FlxGamepadInputID> = [DPAD_LEFT , LEFT_STICK_DIGITAL_LEFT ];
-    static final rightButtons:Array<FlxGamepadInputID> = [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT];
-    static final jumpButtons :Array<FlxGamepadInputID> = [A];
-    static final downButtons :Array<FlxGamepadInputID> = [DPAD_DOWN , LEFT_STICK_DIGITAL_DOWN ];
-    
-    static final jumpKeys :Array<FlxKey> = [SPACE, W, UP, Z, Y];
-    static final downKeys :Array<FlxKey> = [DOWN, S];
-    static final leftKeys :Array<FlxKey> = [LEFT, A];
-    static final rightKeys:Array<FlxKey> = [RIGHT, D];
     private function movement(elapsed:Float):Void
     {
+        jump  = Inputs.pressed.JUMP;
+        down  = Inputs.pressed.DOWN;
+        left  = Inputs.pressed.LEFT;
+        right = Inputs.pressed.RIGHT;
         
-        jump  = FlxG.keys.anyPressed(jumpKeys);
-        down  = FlxG.keys.anyPressed(downKeys);
-        left  = FlxG.keys.anyPressed(leftKeys);
-        right = FlxG.keys.anyPressed(rightKeys);
+        var jumpR  = Inputs.justReleased.JUMP;
+        var downR  = Inputs.justReleased.DOWN;
+        var leftR  = Inputs.justReleased.LEFT;
+        var rightR = Inputs.justReleased.RIGHT;
         
-        var jumpR  = FlxG.keys.anyJustReleased(jumpKeys);
-        var downR  = FlxG.keys.anyJustReleased(downKeys);
-        var leftR  = FlxG.keys.anyJustReleased(leftKeys);
-        var rightR = FlxG.keys.anyJustReleased(rightKeys);
-        
-        var jumpP  = FlxG.keys.anyJustPressed(jumpKeys);
-        var downP  = FlxG.keys.anyJustPressed(downKeys);
-        var leftP  = FlxG.keys.anyJustPressed(leftKeys);
-        var rightP = FlxG.keys.anyJustPressed(rightKeys);
-        
-        var gamepad = FlxG.gamepads.lastActive;
-        if (gamepad != null)
-        {
-            left  = left  || gamepad.anyPressed(leftButtons);
-            right = right || gamepad.anyPressed(rightButtons);
-            jump  = jump  || gamepad.anyPressed(jumpButtons);
-            down  = down  || gamepad.anyPressed(downButtons);
-            
-            leftP  = leftP  || gamepad.anyJustPressed(leftButtons);
-            rightP = rightP || gamepad.anyJustPressed(rightButtons);
-            jumpP  = jumpP  || gamepad.anyJustPressed(jumpButtons);
-            downP  = downP  || gamepad.anyJustPressed(downButtons);
-            
-            leftR  = leftR  || gamepad.anyJustReleased(leftButtons);
-            rightR = rightR || gamepad.anyJustReleased(rightButtons);
-            jumpR  = jumpR  || gamepad.anyJustReleased(jumpButtons);
-            downR  = downR  || gamepad.anyJustReleased(downButtons);
-        }
+        var jumpP  = Inputs.justPressed.JUMP;
+        var downP  = Inputs.justPressed.DOWN;
+        var leftP  = Inputs.justPressed.LEFT;
+        var rightP = Inputs.justPressed.RIGHT;
         
         if (velocity.y > 0)
             maxVelocity.y = FALL_SPEED;
