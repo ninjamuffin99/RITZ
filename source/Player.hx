@@ -246,7 +246,7 @@ class Player extends FlxSprite
             {
                 velocity.y = 0;
                 
-                if (USE_NEW_SETTINGS &&  left != right)
+                if (USE_NEW_SETTINGS && left != right)
                     velocity.x = maxVelocity.x * (left ? -1 : 1);
                 
                 // if ((velocity.x > 0 && left) || (velocity.x < 0 && right))
@@ -288,6 +288,20 @@ class Player extends FlxSprite
         }
     }
     
+    /**
+     *  This is super ad-hoc and probably going to cause a ton of bugs
+     * @param platform 
+     */
+    public function onSeparatePlatform(platform:MovingPlatform):Void
+    {
+        if (onGround && velocity.y < 0 && !jumped)
+        {
+            y = platform.y - height;
+            velocity.y = 0;
+            this.platform = platform;
+        }
+    }
+    
     function startJump()
     {
         if (USE_NEW_SETTINGS && acceleration.x != 0)
@@ -301,11 +315,15 @@ class Player extends FlxSprite
         maxVelocity.y = Math.max(-airJumpSpeed, -JUMP_SPEED);
         if (platform != null)
         {
-            if (platform.velocity.y < 0)
-                maxVelocity.y += -platform.velocity.y;
+            if (platform.transferVelocity.y < 0)
+                maxVelocity.y += -platform.transferVelocity.y;
             
-            velocity.y = platform.velocity.y;
-            velocity.x += platform.velocity.x;
+            // persistent x force after jumping from moving platform?
+            // if (maxVelocity.x < Math.abs(platform.transferVelocity.x))
+            //     maxVelocity.x = Math.abs(platform.transferVelocity.x);
+            
+            velocity.y = platform.transferVelocity.y;
+            velocity.x += platform.transferVelocity.x;
             platform = null;
         }
         

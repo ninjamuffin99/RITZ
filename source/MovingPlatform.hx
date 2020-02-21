@@ -3,6 +3,7 @@ package;
 import OgmoPath;
 
 import flixel.FlxObject;
+import flixel.math.FlxVector;
 import flixel.util.FlxTimer;
 
 import zero.utilities.OgmoUtils;
@@ -16,6 +17,12 @@ typedef EntityValues = {
 
 class MovingPlatform extends flixel.FlxSprite
 {
+    inline static var TRANSFER_DELAY = 0.1;
+    
+    /** The velocity it transfers to rits when he jumps */
+    public var transferVelocity(default, null):ReadonlyVector = FlxVector.get();
+    var timer = 0.0;
+    
     public var ogmoPath(get, set):Null<OgmoPath>;
     inline function get_ogmoPath() return cast(path, OgmoPath);
     inline function set_ogmoPath(value:OgmoPath) return cast path = value;
@@ -57,6 +64,18 @@ class MovingPlatform extends flixel.FlxSprite
         }
         
         super.update(elapsed);
+        
+        if (velocity.x != 0 || velocity.y != 0)
+        {
+            velocity.copyTo(cast transferVelocity);
+            timer = TRANSFER_DELAY;
+        }
+        else if (timer > 0)
+        {
+            timer -= elapsed;
+            if (timer <= 0)
+                velocity.copyTo(cast transferVelocity);
+        }
     }
     
     inline function setOgmoProperties(data:EntityData)
@@ -127,4 +146,10 @@ enum abstract Trigger(String) to String from String
     var OnScreen;
     var Collide;
     var Ground;
+}
+
+abstract ReadonlyVector(FlxVector) from FlxVector
+{
+    public var x(get, never):Float; inline function get_x() return this.x;
+    public var y(get, never):Float; inline function get_y() return this.y;
 }

@@ -214,6 +214,7 @@ class PlayState extends flixel.FlxState
 		if (player.down)
 			grpOneWayMovingPlatforms.forEach((platform)->platform.allowCollisions = FlxObject.NONE);
 		
+		var oldPlatform = player.platform;
 		player.platform = null;
 		FlxG.collide(grpMovingPlatforms, player, 
 			function(platform:MovingPlatform, _)
@@ -224,6 +225,9 @@ class PlayState extends flixel.FlxState
 		);
 		// Re-enable one way platforms in case other things collide
 		grpOneWayMovingPlatforms.forEach((platform)->platform.allowCollisions = FlxObject.UP);
+		
+		if (player.platform == null && oldPlatform != null)
+			player.onSeparatePlatform(oldPlatform);
 		
 		level.setTilesCollisions(40, 4, player.down ? FlxObject.NONE : FlxObject.UP);
 		FlxG.collide(level, player);
