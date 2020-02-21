@@ -88,7 +88,7 @@ class PlayState extends FlxState
 		add(grpSecretTriggers);
 		add(grpLockedDoors);
 
-		var decalGroup = ogmo.level.get_decal_layer('decals').get_decal_group('assets');
+		var decalGroup = ogmo.level.get_decal_layer('decals').get_decal_group('assets/images/decals');
 		#if debug
 		(cast decalGroup:FlxTypedGroup<FlxSprite>).forEach((decal)->decal.ignoreDrawDebug = true);
 		#end

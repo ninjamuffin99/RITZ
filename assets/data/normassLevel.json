@@ -29,7 +29,7 @@
       "gridCellsX": 200,
       "gridCellsY": 216,
       "decals": [],
-      "folder": ".."
+      "folder": "../images/decals"
     },
     {
       "name": "entities",

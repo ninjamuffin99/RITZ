@@ -31,7 +31,7 @@
       "name": "decals",
       "gridSize": {"x": 16, "y": 16},
       "exportID": "74736684",
-      "folder": "..",
+      "folder": "../images/decals",
       "includeImageSequence": true,
       "scaleable": true,
       "rotatable": true,
