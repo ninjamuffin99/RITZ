@@ -23,18 +23,14 @@ abstract DesktopButton(BitmapText) to BitmapText from BitmapText {
 	
 	inline public function deselect(colorDefault:Int, colorHilite:Int):Void {
 		
-		this.textColor = colorHilite;
-		this.useTextColor = true;
-		this.setBorderStyle(SHADOW, colorDefault, 2);
-		this.offset.set(-1, -1);
+		this.color = colorDefault;
+		this.useTextColor = false;
 	}
 	
 	inline public function select(colorDefault:Int, colorHilite:Int):Void {
 		
-		this.textColor = colorDefault;
+		this.color = colorHilite;
 		this.useTextColor = false;
-		this.setBorderStyle(SHADOW, colorHilite, 2);
-		this.offset.set(0, 0);
 	} 
 	
 	inline public function disable():Void {
@@ -51,14 +47,13 @@ class ButtonGroup extends TypedButtonGroup<DesktopButton> {
 		
 		super(maxSize, hideForIntro);
 		
-		// colorHilite = 0xFF050914;//doesn't work, not sure why
-		colorHilite = 0xFF000000;
-		colorDefault = 0xFFffffff;
+		colorHilite = 0xFFffce4e;
+		// colorDefault = 0xFF000000;
+		colorDefault = 0xFFffffff;//doesn't work, not sure why
 	}
 	
 	override function add(text:DesktopButton):DesktopButton {
 		
-		text.setBorderStyle(SHADOW, 0xFF050914);
 		text.deselect(colorDefault, colorHilite);
 		
 		return super.add(text);

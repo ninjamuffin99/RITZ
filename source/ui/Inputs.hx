@@ -37,6 +37,7 @@ class Inputs extends flixel.FlxBasic {
 	static public function checkPustPressed (input:Input):Bool { return justPressed .get(input); }
 	static public function checkPustReleased(input:Input):Bool { return justReleased.get(input); }
 	
+	static public var lastUsedKeyboard(default, null) = true;
 	static public var onInputChange(default, null) = new FlxSignal();
 	static public var acceptGesture(default, null) = new FlxSignal();
 	static public var analogDir(get, never):FlxVector;
@@ -99,6 +100,7 @@ class Inputs extends flixel.FlxBasic {
 	override function update(elapsed:Float) {
 		super.update(elapsed);
 		
+		
 		var isUsingPad = usingPad();
 		
 		if (isUsingPad) {
@@ -107,13 +109,21 @@ class Inputs extends flixel.FlxBasic {
 			padPressed     .handler = inputToPadList(pad.anyPressed);
 			padJustPressed .handler = inputToPadList(pad.anyJustPressed);
 			padJustReleased.handler = inputToPadList(pad.anyJustReleased);
-		}
-		
-		if (isUsingPad != wasUsingPad) {
 			
-			wasUsingPad = isUsingPad;
-			onInputChange.dispatch();
+			var padPress = pad.pressed.ANY;
+			if (FlxG.keys.pressed.ANY != padPress)
+			{
+				if (lastUsedKeyboard == padPress)
+				{
+					lastUsedKeyboard = !padPress;
+					onInputChange.dispatch();
+				}
+			}
 		}
+		else if (!lastUsedKeyboard)
+			onInputChange.dispatch();
+		
+		wasUsingPad = isUsingPad;
 	}
 	
 	inline static public function usingPad():Bool {

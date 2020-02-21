@@ -1,5 +1,7 @@
 package ui;
 
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import ui.Minimap;
 import ui.Prompt;
 
@@ -39,6 +41,10 @@ class MinimapSubstate extends flixel.FlxSubState
         mapCamera.maxScrollY = map.height;
         mapCamera.follow(cursor, TOPDOWN);
         FlxG.cameras.add(mapCamera);
+        
+        var help = new InputHelp();
+        help.scrollFactor.set();
+        add(help);
     }
     
     override function update(elapsed:Float)
@@ -168,6 +174,84 @@ class MapCursor extends flixel.FlxSprite
         }
         
         visible = timer % BLINK_RATE < BLINK_RATE / 2;
+    }
+}
+
+class InputHelp extends FlxSprite
+{
+    inline static var MOVE_TIME = 0.5;
+    inline static var HOLD_TIME = 2.0;
+    inline static var LEAVE_TIME = HOLD_TIME + MOVE_TIME;
+    inline static var TOTAL_TIME = LEAVE_TIME + MOVE_TIME;
+    
+    public var movement:FlxRect;
+    public var showTimer = TOTAL_TIME;
+    
+    public function new (?movement:FlxRect):Void
+    {
+        super();
+        autoLoadGraphic();
+        
+        if (movement == null)
+            movement = FlxRect.get((FlxG.width - width) / 2, -height, 0, height);
+        x = movement.x;
+        y = movement.y;
+        this.movement = movement;
+        
+        Inputs.onInputChange.add(onInputChange);
+        showIntro();
+    }
+    
+    function onInputChange():Void
+    {
+        autoLoadGraphic();
+        showIntro();
+    }
+    
+    inline function autoLoadGraphic()
+    {
+        loadGraphic("assets/images/ui/" + (Inputs.lastUsedKeyboard ? "keys" : "pad") + "_menu.png");
+    }
+    
+    inline function showIntro():Void
+    {
+        if (showTimer < MOVE_TIME)
+            return;// already animating
+        if (showTimer > TOTAL_TIME)
+            showTimer = 0;// start over
+        else if (showTimer > LEAVE_TIME)
+            showTimer = TOTAL_TIME - showTimer;// already leaving, reverse to intro equivalent
+        else
+            showTimer = MOVE_TIME;//Already showing, reset hold
+    }
+    
+    override function update(elapsed:Float)
+    {
+        super.update(elapsed);
+        
+        if (showTimer < TOTAL_TIME)
+        {
+            showTimer += elapsed;
+            if (showTimer > TOTAL_TIME)
+                showTimer = TOTAL_TIME;
+            
+            var lerp = showTimer / MOVE_TIME;
+            if (showTimer > LEAVE_TIME)
+                lerp = (TOTAL_TIME - showTimer) / MOVE_TIME;
+            else if(showTimer > MOVE_TIME)
+                lerp = 1;
+            lerp = FlxEase.backOut(lerp);
+            trace(lerp);
+            x = movement.x + lerp * movement.width;
+            y = movement.y + lerp * movement.height;
+        }
+    }
+    
+    override function destroy()
+    {
+        super.destroy();
+        
+        Inputs.onInputChange.remove(onInputChange);
     }
 }
 
