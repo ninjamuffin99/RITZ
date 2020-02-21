@@ -74,7 +74,7 @@ class PlayState extends FlxState
 			, AssetPaths.normassLevel__json
 			// , AssetPaths.smartassLevel__json
 			);
-		level = new OgmoTilemap(ogmo, 'tiles', 0, 4);
+		level = new OgmoTilemap(ogmo, 'tiles', 0, 3);
 		#if debug level.ignoreDrawDebug = true; #end
 		var crack = new OgmoTilemap(ogmo, 'Crack', "assets/images/");
 		#if debug crack.ignoreDrawDebug = true; #end
@@ -226,6 +226,7 @@ class PlayState extends FlxState
 				{
 					if (cheeseCount >= lock.amountNeeded)
 					{
+						// Open door
 						cheeseNeededText = new LockAmountText
 							( lock.x + lock.width  / 2
 							, lock.y + lock.height / 2
@@ -239,11 +240,14 @@ class PlayState extends FlxState
 							FlxG.camera.shake(0.05, 0.15);
 							cheeseNeededText.kill();
 							cheeseNeededText = null;
+							if (cheeseNeeded <= lock.amountNeeded)
+								cheeseNeeded = 0;
 						});
 						// FlxG.sound.music.volume = 0;
 					}
 					else if (cheeseNeeded != lock.amountNeeded)
 					{
+						// replace current goal with door's goal
 						cheeseNeededText = new LockAmountText
 							( lock.x + lock.width  / 2
 							, lock.y + lock.height / 2
@@ -323,14 +327,13 @@ class PlayState extends FlxState
 				persistentDraw = true;
 				player.active = false;
 				var oldZoom = FlxG.camera.zoom;
-				var subState = new DialogueSubstate(checkpoint.dialogue, false,
-					()->
-					{
-						persistentUpdate = false;
-						persistentDraw = false;
-						FlxTween.tween(FlxG.camera, { zoom: oldZoom }, 0.25, { onComplete: (_)->player.active = true } );
-					}
-				);
+				var subState = new DialogueSubstate(checkpoint.dialogue, false);
+				subState.closeCallback = ()->
+				{
+					persistentUpdate = false;
+					persistentDraw = false;
+					FlxTween.tween(FlxG.camera, { zoom: oldZoom }, 0.3, { onComplete: (_)->player.active = true } );
+				};
 				openSubState(subState);
 				FlxTween.tween(FlxG.camera, { zoom: oldZoom * 2 }, 0.25, {onComplete:(_)->subState.start() });
 			}
