@@ -145,15 +145,29 @@ class Player extends FlxSprite
             var boosting = xAirBoost != 0;
             if (boosting)
             {
+                // boosted but still able to make noticable adjustments in either direction
+                var slowBoosted = Math.abs(velocity.x) < MAXSPEED;
+                
                 // apply acceleration to xBoost and adjust velocity/maxspeed from that
                 velocity.x -= xAirBoost;
                 
                 // accelerating opposite to boost reduces boost
-                if (acceleration.x != 0 && !FlxMath.sameSign(acceleration.x, xAirBoost))
+                if (acceleration.x != 0)
                 {
-                    xAirBoost = FlxVelocity.computeVelocity(xAirBoost, acceleration.x, 0, 0, elapsed);
-                    maxVelocity.x = MAXSPEED + Math.abs(xAirBoost);
-                    acceleration.x = 0;
+                    if (!FlxMath.sameSign(acceleration.x, xAirBoost))
+                    {
+                        xAirBoost = FlxVelocity.computeVelocity(xAirBoost, acceleration.x, 0, 0, elapsed);
+                        acceleration.x = 0;
+                    }
+                    else if (slowBoosted)
+                    {
+                        // If the player is making air adjustments convert boost to normal speed, since the player
+                        // expects to stop when letting go of left right keys
+                        var delta = FlxVelocity.computeVelocity(xAirBoost, -acceleration.x, 0, 0, elapsed) - xAirBoost;
+                        xAirBoost += delta;
+                        velocity.x = FlxVelocity.computeVelocity(velocity.x, -delta, 0, MAXSPEED, elapsed);
+                    }
+                    // maxVelocity.x = MAXSPEED + Math.abs(xAirBoost);
                 }
                 // accelerating forward works like normal
                 if (oldAccelX == 0 || acceleration.x != 0)

@@ -1343,7 +1343,7 @@
           ],
           "values": {"speed": 180, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "auto", "oneWayPlatform": true, "trigger": "Load"}
         },
-        {"name": "player", "id": 663, "_eid": "29962948", "x": 960, "y": 2784, "originX": 0, "originY": 0}
+        {"name": "player", "id": 665, "_eid": "29962948", "x": 992, "y": 2784, "originX": 0, "originY": 0}
       ]
     },
     {
