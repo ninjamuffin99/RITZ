@@ -74,8 +74,8 @@ class PlayState extends flixel.FlxState
 		
 		var levelPath = 
 			// AssetPaths.dumbassLevel__json;
-			AssetPaths.normassLevel__json;
-			// AssetPaths.smartassLevel__json;
+			// AssetPaths.normassLevel__json;
+			AssetPaths.smartassLevel__json;
 		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, levelPath);
 		minimap = new Minimap(levelPath);
 		level = new OgmoTilemap(ogmo, 'tiles', 0, 3);
