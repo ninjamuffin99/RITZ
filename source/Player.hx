@@ -147,11 +147,19 @@ class Player extends FlxSprite
             {
                 // apply acceleration to xBoost and adjust velocity/maxspeed from that
                 velocity.x -= xAirBoost;
-                xAirBoost = FlxVelocity.computeVelocity(xAirBoost, acceleration.x, 0, maxVelocity.x, elapsed);
+                
+                // accelerating opposite to boost reduces boost
+                if (acceleration.x != 0 && !FlxMath.sameSign(acceleration.x, xAirBoost))
+                {
+                    xAirBoost = FlxVelocity.computeVelocity(xAirBoost, acceleration.x, 0, 0, elapsed);
+                    maxVelocity.x = MAXSPEED + Math.abs(xAirBoost);
+                    acceleration.x = 0;
+                }
+                // accelerating forward works like normal
+                if (oldAccelX == 0 || acceleration.x != 0)
+                    velocity.x = FlxVelocity.computeVelocity(velocity.x, acceleration.x, drag.x, MAXSPEED, elapsed);
+                // apply normal drag here
                 velocity.x += xAirBoost;
-                var speed = Math.abs(velocity.x);
-                if (speed < maxVelocity.x)
-                    maxVelocity.x = Math.max(speed, MAXSPEED);
                 
                 drag.x = 0;
                 acceleration.x = 0;
@@ -279,8 +287,15 @@ class Player extends FlxSprite
                 velocity.y = 0;
                 
                 if (USE_NEW_SETTINGS && left != right)
+                {
+                    // remove boost if reversing direction
+                    if (xAirBoost != 0 && !FlxMath.sameSign(acceleration.x, xAirBoost))
+                    {
+                        xAirBoost = 0;
+                        maxVelocity.x = MAXSPEED;
+                    }
                     velocity.x = maxVelocity.x * (left ? -1 : 1);
-                
+                }
                 // if ((velocity.x > 0 && left) || (velocity.x < 0 && right))
                 // {
                 //     sorta sidejump style boost thingie
@@ -332,6 +347,11 @@ class Player extends FlxSprite
             velocity.y = 0;
             this.platform = platform;
         }
+    }
+    
+    public function onLandPlatform(platform:MovingPlatform):Void
+    {
+        velocity.x -= platform.velocity.x;
     }
     
     function startJump()

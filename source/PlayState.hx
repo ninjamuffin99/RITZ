@@ -223,11 +223,13 @@ class PlayState extends flixel.FlxState
 					player.platform = platform;
 			}
 		);
-		// Re-enable one way platforms in case other things collide
-		grpOneWayMovingPlatforms.forEach((platform)->platform.allowCollisions = FlxObject.UP);
-		
 		if (player.platform == null && oldPlatform != null)
 			player.onSeparatePlatform(oldPlatform);
+		else if (player.platform != null && oldPlatform == null)
+			player.onLandPlatform(player.platform);
+		
+		// Re-enable one way platforms in case other things collide
+		grpOneWayMovingPlatforms.forEach((platform)->platform.allowCollisions = FlxObject.UP);
 		
 		level.setTilesCollisions(40, 4, player.down ? FlxObject.NONE : FlxObject.UP);
 		FlxG.collide(level, player);
