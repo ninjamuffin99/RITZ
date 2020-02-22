@@ -103,8 +103,9 @@ class PlayCamera extends FlxCamera
 				snapAmount = scroll.y - oldCam.y;
 				scroll.copyFrom(oldCam);
 				oldCam.put();
-				if (snapAmount + scroll.y + height > maxScrollY)
-					snapAmount = maxScrollY - (scroll.y + height);
+				// The following messes up at lthe bottom of the level, and only helps with visual debugging
+				// if (snapAmount + scroll.y + height + targetOffset.y > maxScrollY)
+				// 	snapAmount = maxScrollY - (scroll.y + height + targetOffset.y);
 				
 				snapEase = null;
 				if (fallTimer > FALL_LEAD_DELAY)
@@ -149,7 +150,7 @@ class PlayCamera extends FlxCamera
 		var leading = cameraTilemap.getTileTypeAt(player.x, player.y);
 		if (leading != MoreDown)
 		{
-			if (player.velocity.y > 0 && scroll.y > lastPos.y + 1)
+			if (!player.onCoyoteGround && player.velocity.y > 0 && scroll.y > lastPos.y + 1)
 			{
 				// Lead down when falling for some time
 				fallTimer += elapsed;

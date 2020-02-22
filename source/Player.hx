@@ -157,6 +157,7 @@ class Player extends FlxSprite
         
         wasOnGround = onGround;
         onGround = isTouching(FlxObject.FLOOR);
+        
         if (onGround)
         {
             coyoteTimer = 0;
@@ -289,10 +290,14 @@ class Player extends FlxSprite
     
     function startJump()
     {
-        //quick change jump dir
-        if (USE_NEW_SETTINGS && left != right)
-            velocity.x = maxVelocity.x * (left ? -1 : 1);
-        
+        if (USE_NEW_SETTINGS && acceleration.x != 0)
+        {
+            //quick change jump dir
+            final allowSkidJump = !onCoyoteGround
+                || (velocity.x != 0 && !FlxMath.sameSign(acceleration.x, velocity.x));
+            if (allowSkidJump)
+                velocity.x = maxVelocity.x * (left ? -1 : 1);
+        }
         maxVelocity.y = Math.max(-airJumpSpeed, -JUMP_SPEED);
         if (platform != null)
         {
