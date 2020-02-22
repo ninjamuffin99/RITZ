@@ -42,6 +42,12 @@ the desired direction. Works on ground jump and air hops
   * **Collide**: Starts when collides with the player
   * **Ground**: Starts when the player stands on it
 * Momentum transfer: Jumping off of a moving platform will add it's velocity to the player
+  * trasferred x velocity is maintained throughout the jump rather than being reduced through
+  friction like normal speed
+  * Landing n a moving platform removes it's velocity from the player
+  * The player's normal max speed does not cap speed gained from moving platforms
+  * When jumping off of a horizontally moving platform, the player will stay with
+  it assuming no external forces are applied to either
 * Auto-graphic: determines the correct graphic based on size
 
 ## Cheese & cheese doors

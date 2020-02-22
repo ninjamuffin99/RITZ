@@ -1,5 +1,6 @@
 package;
 
+import flixel.math.FlxVelocity;
 import Dust;
 import ui.Inputs;
 
@@ -59,6 +60,8 @@ class Player extends FlxSprite
     private var jumpTimer:Float = 0;
     private var hovering:Bool = false;
     private var wallClimbing:Bool = false;
+    /** horizontal boost from being launched, usually by a moving platform */
+    private var xAirBoost:Float;
     public var onGround      (default, null):Bool = false;
     public var wasOnGround   (default, null):Bool = false;
     public var onCoyoteGround(default, null):Bool = false;
@@ -128,12 +131,60 @@ class Player extends FlxSprite
         {
             velocity.set();
             acceleration.set();
+            xAirBoost = 0;
+            
+            super.update(elapsed);
         }
         else
         {
             movement(elapsed);
+            
+            // prevent drag from reducing speed granted from moving platforms unless they accelerate
+            var oldDragX = drag.x;
+            var oldAccelX = acceleration.x;
+            var boosting = xAirBoost != 0;
+            if (boosting)
+            {
+                // boosted but still able to make noticable adjustments in either direction
+                var slowBoosted = Math.abs(velocity.x) < MAXSPEED;
+                
+                // apply acceleration to xBoost and adjust velocity/maxspeed from that
+                velocity.x -= xAirBoost;
+                
+                // accelerating opposite to boost reduces boost
+                if (acceleration.x != 0)
+                {
+                    if (!FlxMath.sameSign(acceleration.x, xAirBoost))
+                    {
+                        xAirBoost = FlxVelocity.computeVelocity(xAirBoost, acceleration.x, 0, 0, elapsed);
+                        acceleration.x = 0;
+                    }
+                    else if (slowBoosted)
+                    {
+                        // If the player is making air adjustments convert boost to normal speed, since the player
+                        // expects to stop when letting go of left right keys
+                        var delta = FlxVelocity.computeVelocity(xAirBoost, -acceleration.x, 0, 0, elapsed) - xAirBoost;
+                        xAirBoost += delta;
+                        velocity.x = FlxVelocity.computeVelocity(velocity.x, -delta, 0, MAXSPEED, elapsed);
+                    }
+                    // maxVelocity.x = MAXSPEED + Math.abs(xAirBoost);
+                }
+                // accelerating forward works like normal
+                if (oldAccelX == 0 || acceleration.x != 0)
+                    velocity.x = FlxVelocity.computeVelocity(velocity.x, acceleration.x, drag.x, MAXSPEED, elapsed);
+                // apply normal drag here
+                velocity.x += xAirBoost;
+                
+                drag.x = 0;
+                acceleration.x = 0;
+            }
+            super.update(elapsed);
+            if (boosting)
+            {
+                drag.x = oldDragX;
+                acceleration.x = oldAccelX;
+            }
         }
-        super.update(elapsed);
     }
     private function movement(elapsed:Float):Void
     {
@@ -224,6 +275,9 @@ class Player extends FlxSprite
             apexReached = false;
             jumpBoost = 0;
             jumpTimer = 0;
+            xAirBoost = 0;
+            if (maxVelocity.x > MAXSPEED)
+                maxVelocity.x = MAXSPEED;
 
             if (jumpP)
                 startJump();
@@ -246,9 +300,16 @@ class Player extends FlxSprite
             {
                 velocity.y = 0;
                 
-                if (USE_NEW_SETTINGS &&  left != right)
+                if (USE_NEW_SETTINGS && left != right)
+                {
+                    // remove boost if reversing direction
+                    if (xAirBoost != 0 && !FlxMath.sameSign(acceleration.x, xAirBoost))
+                    {
+                        xAirBoost = 0;
+                        maxVelocity.x = MAXSPEED;
+                    }
                     velocity.x = maxVelocity.x * (left ? -1 : 1);
-                
+                }
                 // if ((velocity.x > 0 && left) || (velocity.x < 0 && right))
                 // {
                 //     sorta sidejump style boost thingie
@@ -288,6 +349,25 @@ class Player extends FlxSprite
         }
     }
     
+    /**
+     *  This is super ad-hoc and probably going to cause a ton of bugs
+     * @param platform 
+     */
+    public function onSeparatePlatform(platform:MovingPlatform):Void
+    {
+        if (onGround && velocity.y < 0 && !jumped)
+        {
+            y = platform.y - height;
+            velocity.y = 0;
+            this.platform = platform;
+        }
+    }
+    
+    public function onLandPlatform(platform:MovingPlatform):Void
+    {
+        velocity.x -= platform.velocity.x;
+    }
+    
     function startJump()
     {
         if (USE_NEW_SETTINGS && acceleration.x != 0)
@@ -301,11 +381,15 @@ class Player extends FlxSprite
         maxVelocity.y = Math.max(-airJumpSpeed, -JUMP_SPEED);
         if (platform != null)
         {
-            if (platform.velocity.y < 0)
-                maxVelocity.y += -platform.velocity.y;
+            if (platform.transferVelocity.y < 0)
+                maxVelocity.y += -platform.transferVelocity.y;
+            velocity.y = platform.transferVelocity.y;
             
-            velocity.y = platform.velocity.y;
-            velocity.x += platform.velocity.x;
+            xAirBoost = platform.transferVelocity.x;
+            // persistent x force after jumping from moving platform?
+            if (maxVelocity.x < Math.abs(xAirBoost))
+                maxVelocity.x = Math.abs(xAirBoost);
+            velocity.x += xAirBoost;
             platform = null;
         }
         
