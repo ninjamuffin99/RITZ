@@ -1,5 +1,6 @@
 package ui;
 
+import flixel.math.FlxVector;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import ui.Minimap;
@@ -32,7 +33,7 @@ class MinimapSubstate extends flixel.FlxSubState
         bg.scrollFactor.set();
         add(bg);
         add(map);
-        add(cursor = new MapCursor(player.x, player.y));
+        add(cursor = new MapCursor(player.x, player.y, map));
         
         mapCamera = new FlxCamera(0, 0, FlxG.camera.width, FlxG.camera.height, FlxG.camera.zoom);
         mapCamera.bgColor = 0xFFaad6e6;
@@ -97,8 +98,9 @@ class MapCursor extends flixel.FlxSprite
 {
     static inline var TILE_SIZE = Minimap.TILE_SIZE;
     static inline var BLINK_RATE = 0.5;
-    static inline var SPEED = 12;// tiles per second
+    static inline var SPEED = 16;// tiles per second
     static inline var MOVE_RATE = 1 / SPEED;
+    static inline var FIRST_MOVE_RATE = 0.25;
     
     public var tileX(default, set):Int;
     inline function set_tileX(value:Int)
@@ -115,9 +117,11 @@ class MapCursor extends flixel.FlxSprite
     
     var timer = 0.0;
     
-    public function new (x = 0.0, y = 0.0)
+    final map:Minimap;
+    
+    public function new (x = 0.0, y = 0.0, map:Minimap)
     {
-        
+        this.map = map;
         super("assets/images/mapCursor.png");
         tileX = Math.floor(x / Minimap.OLD_TILE_SIZE);
         tileY = Math.floor(y / Minimap.OLD_TILE_SIZE);
@@ -132,48 +136,44 @@ class MapCursor extends flixel.FlxSprite
     {
         super.update(elapsed);
         
-        timer += elapsed;
+        timer -= elapsed;
         
-        var moved = false;
-        final xPressed = (Inputs.pressed.RIGHT ? 1 : 0) - (Inputs.pressed.LEFT ? 1 : 0);
-        final yPressed = (Inputs.pressed.DOWN ? 1 : 0) - (Inputs.pressed.UP ? 1 : 0);
-        // check if direction chosen
-        if (xPressed != 0)
+        var moveX = 0;
+        var moveY = 0;
+        final pressedX = (Inputs.pressed.RIGHT ? 1 : 0) - (Inputs.pressed.LEFT ? 1 : 0);
+        final pressedY = (Inputs.pressed.DOWN ? 1 : 0) - (Inputs.pressed.UP ? 1 : 0);
+        
+        // Always Move if just pressed
+        if (pressedX != 0 && Inputs.justPressed.LEFT || Inputs.justPressed.RIGHT)
         {
-            // Always Move if just pressed
-            if (Inputs.justPressed.LEFT || Inputs.justPressed.RIGHT)
-            {
-                moved = true;
-                tileX += xPressed;
-            }
+            timer = FIRST_MOVE_RATE;
+            moveX = pressedX;
         }
         
-        if (yPressed != 0)
+        // Always Move if just pressed
+        if (pressedY != 0 && Inputs.justPressed.UP || Inputs.justPressed.DOWN)
         {
-            // Always Move if just pressed
-            if (Inputs.justPressed.UP || Inputs.justPressed.DOWN)
-            {
-                moved = true;
-                tileY += yPressed;
-            }
+            timer = FIRST_MOVE_RATE;
+            moveY = pressedY;
         }
         
         // Move if the button was held long enough without the the cursor moving
-        if (!moved && (xPressed != 0 || yPressed != 0) && timer > MOVE_RATE)
+        if (moveX == 0 && moveY == 0 && timer <= 0)
         {
-            moved = true;
-            tileX += xPressed;
-            tileY += yPressed;
+            timer = Math.max(timer, MOVE_RATE);
+            moveX = pressedX;
+            moveY = pressedY;
         }
         
-        if (moved)
+        if ((moveX != 0 || moveY != 0) && map.canHaveCursor(tileX + moveX, tileY + moveY))
         {
-            timer = 0;
+            tileX += moveX;
+            tileY += moveY;
             x = tileX * TILE_SIZE;
             y = tileY * TILE_SIZE;
         }
         
-        visible = timer % BLINK_RATE < BLINK_RATE / 2;
+        visible = timer > MOVE_RATE || (MOVE_RATE - timer) % BLINK_RATE < BLINK_RATE / 2;
     }
 }
 
