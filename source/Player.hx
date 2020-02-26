@@ -1,6 +1,5 @@
 package;
 
-import flixel.math.FlxVelocity;
 import Dust;
 import ui.Inputs;
 
@@ -8,9 +7,11 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
+import flixel.group.FlxSpriteGroup;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxMath;
+import flixel.math.FlxVelocity;
 import flixel.util.FlxTimer;
 
 class Player extends FlxSprite
@@ -20,7 +21,7 @@ class Player extends FlxSprite
     static inline var TILE_SIZE = 32;
     public static inline var MAX_APEX_TIME = USE_NEW_SETTINGS ? 0.35 : 0.35;
     public static inline var MIN_JUMP  = TILE_SIZE * (USE_NEW_SETTINGS ? 1.5 : 2.5);
-    public static inline var MAX_JUMP  = TILE_SIZE * (USE_NEW_SETTINGS ? 3.5 : 4.5);
+    public static inline var MAX_JUMP  = TILE_SIZE * (USE_NEW_SETTINGS ? 3.75 : 4.5);
     public static inline var AIR_JUMP  = TILE_SIZE * (USE_NEW_SETTINGS ? 2.0 : 2.0);
     
     static inline var MIN_APEX_TIME = 2 * MAX_APEX_TIME * MIN_JUMP / (MIN_JUMP + MAX_JUMP);
@@ -43,6 +44,11 @@ class Player extends FlxSprite
     inline static var AIRHOP_ACCEL = MAXSPEED / AIRHOP_SPEED_UP_TIME;
     inline static var GROUND_DRAG = MAXSPEED / GROUND_SLOW_DOWN_TIME;
     inline static var AIR_DRAG = MAXSPEED / AIR_SLOW_DOWN_TIME;
+    
+    #if debug
+    inline static var SHOW_JUMP_HEIGHT = false;
+    public var jumpSprite(default, never) = SHOW_JUMP_HEIGHT ? new JumpSprite(MAX_JUMP + AIR_JUMP) : null;
+    #end
     
     private var baseJumpStrength:Float = 120;
     private var apexReached:Bool = true;
@@ -285,8 +291,13 @@ class Player extends FlxSprite
         else
         {
             if (jumped)
+            {
                 animation.play(velocity.y < 0 ? 'jumping' : "falling");
-            
+                #if debug
+                if (jumpSprite != null)
+                    jumpSprite.updateHeight(jumpSprite.y - y - height);
+                #end
+            }
             if (USE_NEW_SETTINGS)
                 variableJump_new(elapsed);
             else
@@ -392,7 +403,14 @@ class Player extends FlxSprite
             velocity.x += xAirBoost;
             platform = null;
         }
-        
+        #if debug
+        if (jumpSprite != null)
+        {
+            jumpSprite.resetHeight();
+            jumpSprite.x = x;
+            jumpSprite.y = y + height;
+        }
+        #end
         velocity.y += JUMP_SPEED;
         jumped = true;
         onGround = false;
@@ -493,5 +511,76 @@ class Player extends FlxSprite
             newDust.drag.x = Math.abs(newDust.velocity.x) * 2;
         }
         return newDust;
+    }
+}
+
+abstract JumpSprite(FlxSpriteGroup) to FlxSprite
+{
+    static var colors = [0xFF123884, 0xFF69bcf3, 0xFF123884, 0xFFffffff];
+    inline static var TILE = 32 >> 2;
+    
+    public var x(get, set):Float;
+    inline function get_x() return this.x;
+    inline function set_x(value:Float) return this.x = value;
+    public var y(get, set):Float;
+    inline function get_y() return this.y;
+    inline function set_y(value:Float) return this.y = value;
+    public var height (get, set):Float;
+    function get_height()
+    {
+        final alive = this.countLiving();
+        return
+            if (alive == 0) 0;
+            else (alive - 1 + this.group.members[alive - 1].scale.y) * TILE;
+    }
+    function set_height(value:Float)
+    {
+        for (i in 0...this.length)
+        {
+            if ((i+1) * TILE < value)
+            {
+                this.members[i].revive();
+                this.members[i].scale.y = 1;
+            }
+            else if(i * TILE < value)
+            {
+                this.members[i].revive();
+                this.members[i].scale.y = (value % TILE) / TILE;
+            }
+            else
+                this.members[i].kill();
+        }
+        
+        return this.height = value;
+    }
+    
+    inline public function new (maxHeight:Float, x = 0.0, y = 0.0)
+    {
+        var size = Math.ceil(maxHeight / TILE);
+        this = new FlxSpriteGroup(x, y, size);
+        while (size-- > 0)
+        {
+            var sprite = new FlxSprite(0, -(this.maxSize - size + 1) * TILE);
+            sprite.makeGraphic(TILE, TILE, colors[size % colors.length]);
+            sprite.offset.x = sprite.origin.x;
+            sprite.offset.y = -TILE;
+            sprite.origin.y = TILE;
+            this.add(sprite);
+        }
+    }
+    
+    public function updateHeight(value:Float):Void
+    {
+        if (value > height)
+            height = value;
+    }
+    
+    public function resetHeight():Void
+    {
+        for (child in this.members)
+        {
+            child.scale.y = 1;
+            child.kill();
+        }
     }
 }

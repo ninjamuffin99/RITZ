@@ -160,6 +160,14 @@ class PlayState extends flixel.FlxState
 				player = new Player(e.x, e.y);
 				add(player.dust);
 				add(player);
+				#if debug
+				if (player.jumpSprite != null)
+				{
+					add(player.jumpSprite);
+					player.jumpSprite.x = player.x;
+					player.jumpSprite.y = player.y;
+				}
+				#end
 				curCheckpoint = new Checkpoint(e.x, e.y, "");
 			case "spider":
 				add(new Enemy(e.x, e.y, OgmoPath.fromEntity(e), e.values.speed));

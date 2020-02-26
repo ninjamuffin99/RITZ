@@ -86,6 +86,12 @@ class Minimap extends flixel.group.FlxGroup
     
     inline public function getMapTile(x, y):Int return map.getTile(x, y);
     inline public function isFog(x, y):Bool return fog.getTile(x, y) > 0;
+    inline public function canHaveCursor(x:Int, y:Int):Bool
+    {
+        return x >= 0 && y >= 0
+            && x < map.widthInTiles && y < map.heightInTiles
+            && !isFog(x, y);
+    }
 }
 
 @:forward
