@@ -1,8 +1,5 @@
 package ui;
 
-import flixel.math.FlxVector;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
 import ui.Minimap;
 import ui.Prompt;
 
@@ -11,6 +8,9 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
+import flixel.math.FlxVector;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 
 class MinimapSubstate extends flixel.FlxSubState
 {
