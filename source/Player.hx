@@ -19,7 +19,7 @@ class Player extends FlxSprite
     static inline var USE_NEW_SETTINGS = true;
     
     static inline var TILE_SIZE = 32;
-    public static inline var MAX_APEX_TIME = USE_NEW_SETTINGS ? 0.35 : 0.35;
+    public static inline var MAX_APEX_TIME = USE_NEW_SETTINGS ? 0.40 : 0.35;
     public static inline var MIN_JUMP  = TILE_SIZE * (USE_NEW_SETTINGS ? 1.5 : 2.5);
     public static inline var MAX_JUMP  = TILE_SIZE * (USE_NEW_SETTINGS ? 3.75 : 4.5);
     public static inline var AIR_JUMP  = TILE_SIZE * (USE_NEW_SETTINGS ? 2.0 : 2.0);
