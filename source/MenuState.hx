@@ -1,13 +1,14 @@
 package;
 
-import flixel.util.FlxColor;
-import flixel.FlxG;
-import flixel.effects.FlxFlicker;
-import flixel.FlxSprite;
-import flixel.graphics.frames.FlxAtlasFrames;
-import flixel.FlxState;
+import ui.Inputs;
 
-class MenuState extends FlxState
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.effects.FlxFlicker;
+import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.util.FlxColor;
+
+class MenuState extends flixel.FlxState
 {
     var pressStart:FlxSprite;
     var title:FlxSprite;
@@ -42,26 +43,7 @@ class MenuState extends FlxState
         
         if (title.animation.curAnim.name != 'ritz')
         {
-            var gamepad = FlxG.gamepads.lastActive;
-            if (gamepad != null)
-            {
-                if (gamepad.pressed.ANY && FlxG.sound.music != null)
-                {
-                    FlxFlicker.flicker(pressStart, 1, 0.04, false, true, function(flic:FlxFlicker)
-                    {
-                        FlxG.sound.play('assets/sounds/ritzstartjingle' + BootState.soundEXT);
-                        title.animation.play('ritz');
-                    });
-                    
-                    FlxG.sound.play('assets/sounds/startbleep' + BootState.soundEXT);
-                    if (FlxG.sound.music != null)
-                    {
-                        FlxG.sound.music.stop();
-                        FlxG.sound.music = null;
-                    }
-                }
-            }
-            if (FlxG.keys.justPressed.ANY && FlxG.sound.music != null)
+            if (Inputs.justPressed.ANY && FlxG.sound.music != null)
             {
                 FlxFlicker.flicker(pressStart, 1, 0.04, false, true, function(flic:FlxFlicker)
                 {

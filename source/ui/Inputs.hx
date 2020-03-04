@@ -2,7 +2,9 @@ package ui;
 
 import flixel.FlxG;
 import flixel.input.gamepad.FlxGamepadInputID;
+import flixel.input.gamepad.lists.FlxGamepadButtonList;
 import flixel.input.keyboard.FlxKey;
+import flixel.input.keyboard.FlxKeyList;
 import flixel.math.FlxVector;
 import flixel.util.FlxSignal;
 
@@ -17,6 +19,7 @@ enum Input
 	JUMP;
 	TALK;
 	PAUSE;
+	ANY;
 }
 
 class Inputs extends flixel.FlxBasic {
@@ -53,6 +56,7 @@ class Inputs extends flixel.FlxBasic {
 		, JUMP   => [Z, Y, UP, W, SPACE]
 		, TALK   => [E, F, X]
 		, PAUSE  => [P, ESCAPE, ENTER]
+		, ANY    => [ANY]
 		];
 	
 	static var padMap:Map<Input, Array<FlxGamepadInputID>> = 
@@ -65,6 +69,7 @@ class Inputs extends flixel.FlxBasic {
 		, JUMP   => [A]
 		, TALK   => [X]
 		, PAUSE  => [START, GUIDE]
+		, ANY    => [ANY]
 		];
 	
 	var wasUsingPad = false;
@@ -77,9 +82,9 @@ class Inputs extends flixel.FlxBasic {
 		keyPressed      = new InputList("key");
 		keyJustPressed  = new InputList("keyP");
 		keyJustReleased = new InputList("keyR");
-		keyPressed     .handler = inputToKeyList(FlxG.keys.anyPressed);
-		keyJustPressed .handler = inputToKeyList(FlxG.keys.anyJustPressed);
-		keyJustReleased.handler = inputToKeyList(FlxG.keys.anyJustReleased);
+		keyPressed     .handler = inputToKeyList(FlxG.keys.pressed);
+		keyJustPressed .handler = inputToKeyList(FlxG.keys.justPressed);
+		keyJustReleased.handler = inputToKeyList(FlxG.keys.justReleased);
 		
 		padPressed      = new InputList("pad");
 		padJustPressed  = new InputList("padP");
@@ -106,9 +111,9 @@ class Inputs extends flixel.FlxBasic {
 		if (isUsingPad) {
 			
 			var pad = FlxG.gamepads.lastActive;
-			padPressed     .handler = inputToPadList(pad.anyPressed);
-			padJustPressed .handler = inputToPadList(pad.anyJustPressed);
-			padJustReleased.handler = inputToPadList(pad.anyJustReleased);
+			padPressed     .handler = inputToPadList(pad.pressed);
+			padJustPressed .handler = inputToPadList(pad.justPressed);
+			padJustReleased.handler = inputToPadList(pad.justReleased);
 			
 			var padPress = pad.pressed.ANY;
 			if (FlxG.keys.pressed.ANY != padPress)
@@ -130,14 +135,32 @@ class Inputs extends flixel.FlxBasic {
 		return FlxG.gamepads.numActiveGamepads > 0;
 	}
 	
-	static function inputToKeyList(handler:Array<FlxKey>->Bool):Input->Bool {
+	static function inputToKeyList(handler:FlxKeyList):Input->Bool {
 		
-		return function (input:Input):Bool { return handler(getKeys(input)); };
+		return function (input:Input):Bool
+		{
+			for (key in getKeys(input))
+			{
+				@:privateAccess
+				if (key == ANY ? handler.ANY : handler.check(key))
+					return true;
+			}
+			return false;
+		};
 	}
 	
-	static function inputToPadList(handler:Array<FlxGamepadInputID>->Bool):Input->Bool {
+	static function inputToPadList(handler:FlxGamepadButtonList):Input->Bool {
 		
-		return function (input:Input):Bool { return handler(getPadButtons(input)); };
+		return function (input:Input):Bool
+		{
+			for (button in getPadButtons(input))
+			{
+				@:privateAccess
+				if (button == ANY ? handler.ANY : handler.check(button))
+					return true;
+			}
+			return false;
+		};
 	}
 	
 	inline static public function getKeys(input) {
@@ -163,12 +186,12 @@ class InputList {
 		this.logId = logId;
 	}
 	
-	public function get(input:Input):Bool {
+	inline public function get(input:Input):Bool {
 		
 		var value = get_actual(input);
 		if (LOG) {
 			trace('$logId handler:${handler != null}'
-				+ ' input:${inputToString(input)}'
+				+ ' input:${input.getName()}'
 				+ ' value:$value'
 				);
 		}
@@ -181,20 +204,6 @@ class InputList {
 		return handler != null && handler(input);
 	}
 	
-	function inputToString(input:Input):String {
-		return switch(input) {
-			case UP    : "UP";
-			case DOWN  : "DOWN";
-			case LEFT  : "LEFT";
-			case RIGHT : "RIGHT";
-			case BACK  : "BACK";
-			case PAUSE : "PAUSE";
-			case JUMP  : "JUMP";
-			case TALK  : "TALK";
-			case ACCEPT: "ACCEPT";
-		}
-	}
-	
 	public var ACCEPT(get, never):Bool; inline function get_ACCEPT() { return get(Input.ACCEPT); };
 	public var BACK  (get, never):Bool; inline function get_BACK  () { return get(Input.BACK  ); };
 	public var UP    (get, never):Bool; inline function get_UP    () { return get(Input.UP    ); };
@@ -204,4 +213,5 @@ class InputList {
 	public var JUMP  (get, never):Bool; inline function get_JUMP  () { return get(Input.JUMP  ); };
 	public var TALK  (get, never):Bool; inline function get_TALK  () { return get(Input.TALK  ); };
 	public var PAUSE (get, never):Bool; inline function get_PAUSE () { return get(Input.PAUSE ); };
+	public var ANY   (get, never):Bool; inline function get_ANY   () { return get(Input.ANY   ); };
 }
