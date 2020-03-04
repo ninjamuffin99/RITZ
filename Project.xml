@@ -14,7 +14,7 @@
 	<!-- ____________________________ Window Settings ___________________________ -->
 
 	<!--These window settings apply to all targets-->
-	<window width="960" height="576" fps="60" background="#000000" hardware="true" vsync="false" />
+	<window width="960" height="576" fps="60" background="#3d73a2" hardware="true" vsync="false" />
 
 	<!--HTML5-specific-->
 	<window if="html5" resizable="true" />
@@ -31,7 +31,8 @@
 	<set name="BUILD_DIR" value="export/release" unless="debug" />
 	
 	<classpath name="source" />
-	<assets path="assets" />
+	<assets path="assets" exclude="*.mp3" if="desktop"/>
+	<assets path="assets" exclude="*.ogg" unless="desktop"/>
 
 	<!-- _______________________________ Libraries ______________________________ -->
 
@@ -44,7 +45,11 @@
 	<haxelib name="flixel-ui" />
 	<haxelib name="zerolib" />
 	<haxelib name="zerolib-flixel" />
-
+	
+	<!-- Uncomment/comment to toggle -->
+	<haxedef name="SKIP_TO_PLAYSTATE" if="debug" />
+	<!-- <haxedef name="NG_LOGIN" /> -->
+	
 	<!--In case you want to use nape with flixel-->
 	<!--<haxelib name="nape-haxe4" />-->
 
