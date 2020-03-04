@@ -1,9 +1,26 @@
-# Ritz
+# RITZ
 
-Originally coded by [@ninjamuffin99](https://github.com/ninjamuffin99) for pixel day,
-Edited by [@Geokureli](https://github.com/Geokureli)
+Ritz is a platforming game
 
-Changes are as follows
+![](https://img.itch.zone/aW1hZ2UvNTUxNDI1LzI5MjExNTguZ2lm/347x500/9zonXN.gif)
+
+This should be it's entire source code. It uses [OGMO 3](https://ogmo-editor-3.github.io/) for it's map editing, and HaxeFlixel for framework and shit.
+
+You can play the game on Newgrounds: https://www.newgrounds.com/portal/view/746874
+
+
+# CREDS
+### ART
+MKMAFFO
+
+DEEGEEMIN
+### MUSIC
+KAWAISPRITE
+### PROGRAMMING
+NINJAMUFFIN99
+GEOKURELI
+
+# Changes From the Pixel day version
 
 ## Camera
 * Attempted to remove blind jumps, and decrease total camera movement during jumps
@@ -95,5 +112,3 @@ top right is through the same entrance.
 * Generate a minimap substate from the ogmo level data. show it when they press a button.
 * Show areas they have been
 * Reveal hidden platforms when they come back from the ending
-
-
