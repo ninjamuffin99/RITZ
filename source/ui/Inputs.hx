@@ -175,22 +175,20 @@ class Inputs extends flixel.FlxBasic {
 	}
 }
 
-class InputList {
-	
+class TypedInputList<T:EnumValue>
+{
 	inline static var LOG
 		= false;
 		// = true;
 	
-	public var handler:Null<Input->Bool>;
+	public var handler:Null<T->Bool>;
 	public var logId:String;
 	
-	public function new(logId:String) {
-		
+	public function new(logId:String)
 		this.logId = logId;
-	}
 	
-	inline public function get(input:Input):Bool {
-		
+	inline public function get(input:T):Bool
+	{
 		var value = get_actual(input);
 		if (LOG) {
 			trace('$logId handler:${handler != null}'
@@ -202,20 +200,26 @@ class InputList {
 		return value;
 	}
 	
-	inline function get_actual(input:Input):Bool {
-		
+	inline function get_actual(input:T):Bool
+	{
 		return handler != null && handler(input);
 	}
+}
+
+@:forward
+abstract InputList(TypedInputList<Input>)
+{
+	inline public function new (logId:String) this = new TypedInputList<Input>(logId);
 	
-	public var ACCEPT(get, never):Bool; inline function get_ACCEPT() { return get(Input.ACCEPT); };
-	public var BACK  (get, never):Bool; inline function get_BACK  () { return get(Input.BACK  ); };
-	public var UP    (get, never):Bool; inline function get_UP    () { return get(Input.UP    ); };
-	public var DOWN  (get, never):Bool; inline function get_DOWN  () { return get(Input.DOWN  ); };
-	public var LEFT  (get, never):Bool; inline function get_LEFT  () { return get(Input.LEFT  ); };
-	public var RIGHT (get, never):Bool; inline function get_RIGHT () { return get(Input.RIGHT ); };
-	public var JUMP  (get, never):Bool; inline function get_JUMP  () { return get(Input.JUMP  ); };
-	public var TALK  (get, never):Bool; inline function get_TALK  () { return get(Input.TALK  ); };
-	public var PAUSE (get, never):Bool; inline function get_PAUSE () { return get(Input.PAUSE ); };
-	public var MAP   (get, never):Bool; inline function get_MAP   () { return get(Input.MAP   ); };
-	public var ANY   (get, never):Bool; inline function get_ANY   () { return get(Input.ANY   ); };
+	public var ACCEPT(get, never):Bool; inline function get_ACCEPT() return this.get(Input.ACCEPT);
+	public var BACK  (get, never):Bool; inline function get_BACK  () return this.get(Input.BACK  );
+	public var UP    (get, never):Bool; inline function get_UP    () return this.get(Input.UP    );
+	public var DOWN  (get, never):Bool; inline function get_DOWN  () return this.get(Input.DOWN  );
+	public var LEFT  (get, never):Bool; inline function get_LEFT  () return this.get(Input.LEFT  );
+	public var RIGHT (get, never):Bool; inline function get_RIGHT () return this.get(Input.RIGHT );
+	public var JUMP  (get, never):Bool; inline function get_JUMP  () return this.get(Input.JUMP  );
+	public var TALK  (get, never):Bool; inline function get_TALK  () return this.get(Input.TALK  );
+	public var PAUSE (get, never):Bool; inline function get_PAUSE () return this.get(Input.PAUSE );
+	public var MAP   (get, never):Bool; inline function get_MAP   () return this.get(Input.MAP   );
+	public var ANY   (get, never):Bool; inline function get_ANY   () return this.get(Input.ANY   );
 }
