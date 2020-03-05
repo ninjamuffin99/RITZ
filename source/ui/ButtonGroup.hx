@@ -6,7 +6,7 @@ import ui.Inputs;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
-import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxTween.TweenOptions;
@@ -91,7 +91,7 @@ class ButtonGroup extends TypedButtonGroup<DesktopButton> {
 }
 
 class TypedButtonGroup<T:FlxSprite>
-	extends FlxTypedGroup<T>
+	extends FlxTypedSpriteGroup<T>
 	implements ITransitionable {
 	
 	public var colorHilite:FlxColor = 0xFFfff540;
