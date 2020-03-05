@@ -6,6 +6,7 @@ import OgmoTilemap;
 import ui.BitmapText;
 import ui.DialogueSubstate;
 import ui.Inputs;
+import ui.PauseSubstate;
 import ui.MinimapSubstate;
 import ui.Minimap;
 
@@ -411,6 +412,9 @@ class PlayState extends flixel.FlxState
 		
 		if (Inputs.justPressed.MAP)
 			openSubState(new MinimapSubstate(minimap, player, player.hurtAndRespawn));
+		
+		if (Inputs.justPressed.PAUSE)
+			openSubState(new PauseSubstate());
 		
 		#if debug
 		if (FlxG.keys.justPressed.B)
