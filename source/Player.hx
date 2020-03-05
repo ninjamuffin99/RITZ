@@ -86,7 +86,7 @@ class Player extends FlxSprite
     {
         super(x, y);
 
-        loadGraphic(AssetPaths.ritz_spritesheet__PNG, true, 32, 32);
+        loadGraphic(AssetPaths.ritz_spritesheet__png, true, 32, 32);
         animation.add('idle', [0]);
         animation.add('walk', [1, 2, 2, 0], 12);
         animation.add('jumping', [2]);
