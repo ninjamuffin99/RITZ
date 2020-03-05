@@ -409,7 +409,7 @@ class PlayState extends flixel.FlxState
 			});
 		}
 		
-		if (Inputs.justPressed.PAUSE)
+		if (Inputs.justPressed.MAP)
 			openSubState(new MinimapSubstate(minimap, player, player.hurtAndRespawn));
 		
 		#if debug

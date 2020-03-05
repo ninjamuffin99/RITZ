@@ -19,6 +19,7 @@ enum Input
 	JUMP;
 	TALK;
 	PAUSE;
+	MAP;
 	ANY;
 }
 
@@ -56,6 +57,7 @@ class Inputs extends flixel.FlxBasic {
 		, JUMP   => [Z, Y, UP, W, SPACE]
 		, TALK   => [E, F, X]
 		, PAUSE  => [P, ESCAPE, ENTER]
+		, MAP    => [M]
 		, ANY    => [ANY]
 		];
 	
@@ -68,7 +70,8 @@ class Inputs extends flixel.FlxBasic {
 		, RIGHT  => [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT]
 		, JUMP   => [A]
 		, TALK   => [X]
-		, PAUSE  => [START, GUIDE]
+		, PAUSE  => [START]
+		, MAP    => [GUIDE, Y]
 		, ANY    => [ANY]
 		];
 	
@@ -213,5 +216,6 @@ class InputList {
 	public var JUMP  (get, never):Bool; inline function get_JUMP  () { return get(Input.JUMP  ); };
 	public var TALK  (get, never):Bool; inline function get_TALK  () { return get(Input.TALK  ); };
 	public var PAUSE (get, never):Bool; inline function get_PAUSE () { return get(Input.PAUSE ); };
+	public var MAP   (get, never):Bool; inline function get_MAP   () { return get(Input.MAP   ); };
 	public var ANY   (get, never):Bool; inline function get_ANY   () { return get(Input.ANY   ); };
 }
