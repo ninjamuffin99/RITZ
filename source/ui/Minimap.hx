@@ -76,11 +76,23 @@ class Minimap extends flixel.group.FlxGroup
     
     inline public function showCheeseGet(id:Int)
     {
+        #if debug
+        if (id > cheese.length)
+            throw 'Invalid cheese id:$id, max:${cheese.length}';
+        else if (cheese[id] == null)
+            throw 'Invalid cheese id:$id null cheese';
+        #end
         map.setTile(Std.int(cheese[id].x), Std.int(cheese[id].y), Cheese);
     }
     
     inline public function showCheckpointGet(id:Int)
     {
+        #if debug
+        if (id > checkpoints.length)
+            throw 'Invalid checkpoint id:$id, max:${checkpoints.length}';
+        else if (checkpoints[id] == null)
+            throw 'Invalid checkpoint id:$id null checkpoint';
+        #end
         map.setTile(Std.int(checkpoints[id].x), Std.int(checkpoints[id].y), Checkpoint);
     }
     
