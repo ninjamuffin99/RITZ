@@ -59,7 +59,7 @@
           "y": 4032,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "Woah nice job gettin' over those spikes Ritz! You are such a great gamer!"}
+          "values": {"dialogue": "Woah nice job gettin' over those spikes Ritz! Did you know you can double jump?? Try it out!"}
         },
         {
           "name": "checkpoint",
@@ -142,7 +142,7 @@
           "y": 3648,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "How did all this cheese get here in the first place? Who's been leaving good cheese out here??"}
+          "values": {"dialogue": ""}
         },
         {"name": "spike", "id": 63, "_eid": "62782057", "x": 1152, "y": 1920, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 67, "_eid": "62782057", "x": 864, "y": 2240, "originX": 0, "originY": 0, "rotation": 0},
@@ -284,7 +284,7 @@
           "y": 2976,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "Ritz, I've got something to tell you... Did you know you can double jump?? Try it out!"}
+          "values": {"dialogue": "How did all this cheese get here in the first place? Who's been leaving good cheese out here??"}
         },
         {"name": "coins", "id": 112, "_eid": "46479631", "x": 1504, "y": 2688, "originX": 0, "originY": 0},
         {"name": "coins", "id": 113, "_eid": "46479631", "x": 1440, "y": 2464, "originX": 0, "originY": 0},
@@ -820,7 +820,7 @@
           "y": 3584,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "It's a pretty tight squeeze in here, glad you could join me, Ritz."}
+          "values": {"dialogue": "It's a pretty tight squeeze in here, glad you could join me, Ritz. You can press {PAUSE} to see all the controls and settings! Bet'cha didn't know that, Rits!"}
         },
         {"name": "spike", "id": 534, "_eid": "62782057", "x": 1056, "y": 3648, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 535, "_eid": "62782057", "x": 1088, "y": 3648, "originX": 0, "originY": 0, "rotation": 0},
