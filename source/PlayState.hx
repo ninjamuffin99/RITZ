@@ -1,5 +1,6 @@
 package;
 
+import Checkpoint;
 import Cheese;
 import OgmoPath;
 import OgmoTilemap;
@@ -186,7 +187,7 @@ class PlayState extends flixel.FlxState
 			case "spike":
 				grpObstacles.add(new SpikeObstacle(e.x, e.y, e.rotation));
 			case "checkpoint":
-				grpCheckpoint.add(new Checkpoint(e.x, e.y, e.values.dialogue, true));
+				grpCheckpoint.add(CheckpointRat.fromOgmo(e));
 			case "musicTrigger":
 				grpMusicTriggers.add(new MusicTrigger(e.x, e.y, e.width, e.height, e.values.song, e.values.fadetime));
 			case "secretTrigger":
@@ -354,8 +355,10 @@ class PlayState extends flixel.FlxState
 			dialogueBubble.setPosition(checkpoint.x + 20, checkpoint.y - 10);
 			minimap.showCheckpointGet(checkpoint.id);
 			
-			if (Inputs.justPressed.TALK)
+			if (Inputs.justPressed.TALK || (checkpoint.autoTalk && player.onGround))
 			{
+				
+				checkpoint.onTalk();
 				persistentUpdate = true;
 				persistentDraw = true;
 				player.active = false;
@@ -365,10 +368,16 @@ class PlayState extends flixel.FlxState
 				{
 					persistentUpdate = false;
 					persistentDraw = false;
-					FlxTween.tween(FlxG.camera, { zoom: oldZoom }, 0.3, { onComplete: (_)->player.active = true } );
+					final tweenTime = 0.3;
+					FlxTween.tween(FlxG.camera, { zoom: oldZoom }, tweenTime, { onComplete: (_)->player.active = true } );
+					if (checkpoint.cameraOffsetX != 0)
+						FlxTween.tween(FlxG.camera.targetOffset, { x:0 }, tweenTime);
 				};
 				openSubState(subState);
-				FlxTween.tween(FlxG.camera, { zoom: oldZoom * 2 }, 0.25, {onComplete:(_)->subState.start() });
+				final tweenTime = 0.25;
+				FlxTween.tween(FlxG.camera, { zoom: oldZoom * 2 }, tweenTime, {onComplete:(_)->subState.start() });
+				if (checkpoint.cameraOffsetX != 0)
+					FlxTween.tween(FlxG.camera.targetOffset, { x:checkpoint.cameraOffsetX }, tweenTime);
 			}
 			
 			if (checkpoint != curCheckpoint)

@@ -55,7 +55,7 @@
           "y": 3776,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "Woah nice job gettin' over those spikes Ritz! You are such a great gamer!"}
+          "values": {"dialogue": "Woah nice job gettin' over those spikes Ritz! You are such a great gamer!", "autoTalk": false, "cameraOffsetX": 0}
         },
         {"name": "spike", "id": 14, "_eid": "62782057", "x": 288, "y": 3488, "originX": 0, "originY": 0, "rotation": 0},
         {
@@ -66,7 +66,7 @@
           "y": 3488,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "Oh yeah, if you haven't noticed yet... BRING ME CHEESE!!!"}
+          "values": {"dialogue": "Oh yeah, if you haven't noticed yet... BRING ME CHEESE!!!", "autoTalk": false, "cameraOffsetX": 0}
         },
         {
           "name": "checkpoint",
@@ -76,7 +76,7 @@
           "y": 3779,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "Woah watch out for those spikes over there Ritz, you don't wanna be messin with those..."}
+          "values": {"dialogue": "Woah watch out for those spikes over there Ritz, you don't wanna be messin with those...", "autoTalk": false, "cameraOffsetX": 0}
         },
         {"name": "coins", "id": 18, "_eid": "46479631", "x": 728, "y": 3464, "originX": 0, "originY": 0},
         {"name": "spike", "id": 19, "_eid": "62782057", "x": 1056, "y": 3168, "originX": 0, "originY": 0, "rotation": 0},
@@ -99,7 +99,7 @@
           "y": 3168,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "Ah man I gotta FART Ritz. I really need to FART...get me some cheese man...ooough"}
+          "values": {"dialogue": "Ah man I gotta FART Ritz. I really need to FART...get me some cheese man...ooough", "autoTalk": false, "cameraOffsetX": 0}
         },
         {
           "name": "checkpoint",
@@ -109,7 +109,7 @@
           "y": 2880,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "I'm so fat and I can't move..help me Ritz. If you get me cheese I will be free of the curse. Oooooog..."}
+          "values": {"dialogue": "I'm so fat and I can't move..help me Ritz. If you get me cheese I will be free of the curse. Oooooog...", "autoTalk": false, "cameraOffsetX": 0}
         },
         {"name": "spike", "id": 34, "_eid": "62782057", "x": 1152, "y": 4000, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 35, "_eid": "62782057", "x": 1216, "y": 4000, "originX": 0, "originY": 0, "rotation": 0},
@@ -126,7 +126,7 @@
           "y": 2016,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "If it ever seems like you can't jump over something, maybe find another way around!"}
+          "values": {"dialogue": "If it ever seems like you can't jump over something, maybe find another way around!", "autoTalk": false, "cameraOffsetX": 0}
         },
         {
           "name": "checkpoint",
@@ -136,7 +136,7 @@
           "y": 2752,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "What's up with this craze for stinky cheese. I heard it nasty but all cheese is good to me. Tell me when you find some."}
+          "values": {"dialogue": "What's up with this craze for stinky cheese. I heard it nasty but all cheese is good to me. Tell me when you find some.", "autoTalk": false, "cameraOffsetX": 0}
         },
         {
           "name": "checkpoint",
@@ -146,7 +146,7 @@
           "y": 2304,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "How did all this cheese get here in the first place? Who's been leaving good cheese out here??"}
+          "values": {"dialogue": "How did all this cheese get here in the first place? Who's been leaving good cheese out here??", "autoTalk": false, "cameraOffsetX": 0}
         },
         {
           "name": "musicTrigger",
@@ -290,7 +290,7 @@
           "y": 2560,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "Insert cheese based pun here."}
+          "values": {"dialogue": "Insert cheese based pun here.", "autoTalk": false, "cameraOffsetX": 0}
         },
         {"name": "spike", "id": 102, "_eid": "62782057", "x": 1376, "y": 3424, "originX": 0, "originY": 0, "rotation": 180},
         {"name": "spike", "id": 103, "_eid": "62782057", "x": 1344, "y": 3040, "originX": 0, "originY": 0, "rotation": 0},
@@ -323,7 +323,7 @@
           "y": 3584,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "Ritz, I've got something to tell you... Did you know you can double jump?? Try it out!"}
+          "values": {"dialogue": "Ritz, I've got something to tell you... Did you know you can double jump?? Try it out!", "autoTalk": false, "cameraOffsetX": 0}
         },
         {"name": "coins", "id": 112, "_eid": "46479631", "x": 1344, "y": 3328, "originX": 0, "originY": 0},
         {"name": "coins", "id": 113, "_eid": "46479631", "x": 1272, "y": 3120, "originX": 0, "originY": 0},
@@ -336,7 +336,7 @@
           "y": 2560,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "Yo Ritz! Did you know that there are secret areas?? I hear you can only access them via invisible platforms..."}
+          "values": {"dialogue": "Yo Ritz! Did you know that there are secret areas?? I hear you can only access them via invisible platforms...", "autoTalk": false, "cameraOffsetX": 0}
         },
         {"name": "coins", "id": 116, "_eid": "46479631", "x": 1144, "y": 1096, "originX": 0, "originY": 0},
         {"name": "coins", "id": 117, "_eid": "46479631", "x": 1216, "y": 1472, "originX": 0, "originY": 0},
@@ -375,7 +375,7 @@
           "y": 3328,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "How about that drop huh? I might loop around and try it again just for fun!"}
+          "values": {"dialogue": "How about that drop huh? I might loop around and try it again just for fun!", "autoTalk": false, "cameraOffsetX": 0}
         },
         {
           "name": "checkpoint",
@@ -385,7 +385,7 @@
           "y": 3040,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "You could say that this part is 'hard'.... I wouldn't know really, I can't even jump."}
+          "values": {"dialogue": "You could say that this part is 'hard'.... I wouldn't know really, I can't even jump.", "autoTalk": false, "cameraOffsetX": 0}
         },
         {"name": "coins", "id": 138, "_eid": "46479631", "x": 1216, "y": 1632, "originX": 0, "originY": 0},
         {"name": "coins", "id": 140, "_eid": "46479631", "x": 952, "y": 1632, "originX": 0, "originY": 0},
@@ -397,7 +397,7 @@
           "y": 1504,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "Did you know you can press A and D to move left and right?? The arrow keys work too! Try it out!"}
+          "values": {"dialogue": "Did you know you can press A and D to move left and right?? The arrow keys work too! Try it out!", "autoTalk": false, "cameraOffsetX": 0}
         },
         {"name": "coins", "id": 142, "_eid": "46479631", "x": 880, "y": 1080, "originX": 0, "originY": 0},
         {"name": "coins", "id": 143, "_eid": "46479631", "x": 984, "y": 1120, "originX": 0, "originY": 0},
@@ -439,7 +439,7 @@
           "y": 2080,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "Samuel 17:18"}
+          "values": {"dialogue": "Samuel 17:18", "autoTalk": false, "cameraOffsetX": 0}
         },
         {"name": "spike", "id": 181, "_eid": "62782057", "x": 2240, "y": 2240, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 182, "_eid": "62782057", "x": 2336, "y": 2240, "originX": 0, "originY": 0, "rotation": 0},
@@ -451,7 +451,7 @@
           "y": 2400,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "Be careful Ritz! The spikes' hitboxes can also hurt you from the side!"}
+          "values": {"dialogue": "Be careful Ritz! The spikes' hitboxes can also hurt you from the side!", "autoTalk": false, "cameraOffsetX": 0}
         },
         {
           "name": "movingPlatform",
@@ -524,7 +524,7 @@
           "y": 1600,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "Sometimes cheese is right next to spikes. Life is all about that danger baby"}
+          "values": {"dialogue": "Sometimes cheese is right next to spikes. Life is all about that danger baby", "autoTalk": false, "cameraOffsetX": 0}
         },
         {"name": "spike", "id": 192, "_eid": "62782057", "x": 2624, "y": 2272, "originX": 0, "originY": 0, "rotation": -90},
         {"name": "spike", "id": 193, "_eid": "62782057", "x": 2592, "y": 2112, "originX": 0, "originY": 0, "rotation": 90},
@@ -539,7 +539,7 @@
           "y": 1344,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "Heyo! Ritz, if things get too hard, just keep trying!"}
+          "values": {"dialogue": "Heyo! Ritz, if things get too hard, just keep trying!", "autoTalk": false, "cameraOffsetX": 0}
         },
         {"name": "spike", "id": 198, "_eid": "62782057", "x": 1600, "y": 1440, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "coins", "id": 199, "_eid": "46479631", "x": 1512, "y": 1376, "originX": 0, "originY": 0},
@@ -552,7 +552,7 @@
           "y": 1664,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "Damn this song is pretty bumpin! Beats to eat cheese/cook food/relax to."}
+          "values": {"dialogue": "Damn this song is pretty bumpin! Beats to eat cheese/cook food/relax to.", "autoTalk": false, "cameraOffsetX": 0}
         },
         {
           "name": "locked",
@@ -574,7 +574,7 @@
           "y": 2624,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "This place is locked until you get about 32 or so pieces of cheese... I wonder what's below..."}
+          "values": {"dialogue": "This place is locked until you get about 32 or so pieces of cheese... I wonder what's below...", "autoTalk": false, "cameraOffsetX": 0}
         },
         {"name": "spike", "id": 204, "_eid": "62782057", "x": 2368, "y": 2144, "originX": 0, "originY": 0, "rotation": -90},
         {"name": "spike", "id": 205, "_eid": "62782057", "x": 2272, "y": 2112, "originX": 0, "originY": 0, "rotation": 90},
@@ -600,7 +600,7 @@
           "y": 2400,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "What's up with all those spikes huh? What's their problem???"}
+          "values": {"dialogue": "What's up with all those spikes huh? What's their problem???", "autoTalk": false, "cameraOffsetX": 0}
         },
         {
           "name": "checkpoint",
@@ -610,7 +610,7 @@
           "y": 2016,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "That jump was pretty easy huh?"}
+          "values": {"dialogue": "That jump was pretty easy huh?", "autoTalk": false, "cameraOffsetX": 0}
         },
         {
           "name": "checkpoint",
@@ -620,7 +620,7 @@
           "y": 1120,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "WOAH!! We're so high up right now Ritz! Good thing you don't take any fall damage."}
+          "values": {"dialogue": "WOAH!! We're so high up right now Ritz! Good thing you don't take any fall damage.", "autoTalk": false, "cameraOffsetX": 0}
         },
         {"name": "spike", "id": 214, "_eid": "62782057", "x": 1664, "y": 2112, "originX": 0, "originY": 0, "rotation": -90},
         {"name": "spike", "id": 215, "_eid": "62782057", "x": 1944, "y": 3968, "originX": 0, "originY": 0, "rotation": 0},

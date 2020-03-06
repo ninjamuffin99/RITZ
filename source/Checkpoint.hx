@@ -3,6 +3,9 @@ package;
 import flixel.util.FlxColor;
 import flixel.FlxSprite;
 
+import zero.utilities.OgmoUtils;
+
+typedef CheckpointRat = Checkpoint;
 class Checkpoint extends FlxSprite
 {
     static var counter = 0;
@@ -10,9 +13,13 @@ class Checkpoint extends FlxSprite
     public var isCurCheckpoint:Bool = false;
     public var id(default, null) = -1;
     public var dialogue(default, null):String = "";
+    public var autoTalk(default, null) = false;
+    public var cameraOffsetX(default, null) = 0.0;
 
-    public function new(x:Float, y:Float, dialogue:String, collectible = false) {
+    public function new(x:Float, y:Float, dialogue:String, autoTalk = false, cameraOffsetX = 0, collectible = false) {
         this.dialogue = dialogue;
+        this.autoTalk = autoTalk;
+        this.cameraOffsetX = cameraOffsetX;
         if (collectible)
             id = counter++;
         super(x, y + 2);
@@ -21,7 +28,6 @@ class Checkpoint extends FlxSprite
         animation.add('idle', [0, 1, 2, 3], 10);
         animation.add('play', [4, 5, 6, 7], 10);
         animation.play('idle');
-
     }
 
     override function update(elapsed:Float) {
@@ -30,5 +36,19 @@ class Checkpoint extends FlxSprite
         else
             animation.play('idle');
         super.update(elapsed);
+    }
+    
+    public function onTalk() autoTalk = false;
+    
+    inline static public function fromOgmo(entity:EntityData)
+    {
+        return new Checkpoint
+            ( entity.x
+            , entity.y
+            , entity.values.dialogue
+            , entity.values.autoTalk
+            , entity.values.cameraOffsetX
+            , true
+            );
     }
 }
