@@ -5,7 +5,6 @@ import flixel.FlxSprite;
 
 import zero.utilities.OgmoUtils;
 
-typedef CheckpointRat = Checkpoint;
 class Checkpoint extends FlxSprite
 {
     static var counter = 0;

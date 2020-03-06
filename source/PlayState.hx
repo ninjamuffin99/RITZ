@@ -1,6 +1,5 @@
 package;
 
-import Checkpoint;
 import Cheese;
 import OgmoPath;
 import OgmoTilemap;
@@ -187,7 +186,7 @@ class PlayState extends flixel.FlxState
 			case "spike":
 				grpObstacles.add(new SpikeObstacle(e.x, e.y, e.rotation));
 			case "checkpoint":
-				grpCheckpoint.add(CheckpointRat.fromOgmo(e));
+				grpCheckpoint.add(Checkpoint.fromOgmo(e));
 			case "musicTrigger":
 				grpMusicTriggers.add(new MusicTrigger(e.x, e.y, e.width, e.height, e.values.song, e.values.fadetime));
 			case "secretTrigger":

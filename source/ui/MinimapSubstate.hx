@@ -60,7 +60,7 @@ class MinimapSubstate extends flixel.FlxSubState
             case SelectingTile:
                 if (Inputs.justPressed.BACK || (mapButtonReleased && Inputs.justPressed.MAP))
                     close();
-                else if (Inputs.justPressed.ACCEPT && map.getMapTile(cursor.tileX, cursor.tileY) == EntityTile.Checkpoint)
+                else if (Inputs.justPressed.ACCEPT && map.getMapTile(cursor.tileX, cursor.tileY) == EntityTile.RAT)
                 {
                     state = ConfirmingCheckpoint;
                     cursor.active = false;
