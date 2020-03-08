@@ -23,8 +23,8 @@ enum Input
 	ANY;
 }
 
-class Inputs extends flixel.FlxBasic {
-	
+class Inputs extends flixel.FlxBasic
+{
 	static public var keyPressed       (default, null):InputList;
 	static public var keyJustPressed   (default, null):InputList;
 	static public var keyJustReleased  (default, null):InputList;
@@ -77,7 +77,8 @@ class Inputs extends flixel.FlxBasic {
 	
 	var wasUsingPad = false;
 	
-	public function new () {
+	public function new ()
+	{
 		super();
 		
 		FlxG.gamepads.globalDeadZone = 0.1;
@@ -105,7 +106,8 @@ class Inputs extends flixel.FlxBasic {
 		justReleased.handler = combine(padJustReleased, keyJustReleased);
 	}
 	
-	override function update(elapsed:Float) {
+	override function update(elapsed:Float)
+	{
 		super.update(elapsed);
 		
 		
@@ -134,12 +136,13 @@ class Inputs extends flixel.FlxBasic {
 		wasUsingPad = isUsingPad;
 	}
 	
-	inline static public function usingPad():Bool {
+	inline static public function usingPad():Bool
+	{
 		return FlxG.gamepads.numActiveGamepads > 0;
 	}
 	
-	static function inputToKeyList(handler:FlxKeyList):Input->Bool {
-		
+	static function inputToKeyList(handler:FlxKeyList):Input->Bool
+	{
 		return function (input:Input):Bool
 		{
 			for (key in getKeys(input))
@@ -152,8 +155,8 @@ class Inputs extends flixel.FlxBasic {
 		};
 	}
 	
-	static function inputToPadList(handler:FlxGamepadButtonList):Input->Bool {
-		
+	static function inputToPadList(handler:FlxGamepadButtonList):Input->Bool
+	{
 		return function (input:Input):Bool
 		{
 			for (button in getPadButtons(input))
@@ -166,12 +169,24 @@ class Inputs extends flixel.FlxBasic {
 		};
 	}
 	
-	inline static public function getKeys(input) {
+	inline static public function getKeys(input)
+	{
 		return keyMap.get(input);
 	}
 	
-	inline static public function getPadButtons(input) {
+	inline static public function getPadButtons(input)
+	{
 		return padMap.get(input);
+	}
+	
+	inline static public function getDialogueName(input:Input):String
+	{
+		return lastUsedKeyboard ? ("[" + getKeys(input)[0] + "]") : ("(" + getPadButtons(input)[0] + ")");
+	}
+	
+	static public function getDialogueNameFromToken(inputName:String):String
+	{
+		return getDialogueName(Input.createByName(inputName));
 	}
 }
 

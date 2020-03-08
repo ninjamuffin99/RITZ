@@ -820,7 +820,7 @@
           "y": 3584,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "It's a pretty tight squeeze in here, glad you could join me, Ritz. You can press {PAUSE} to see all the controls and settings! Bet'cha didn't know that, Rits!", "autoTalk": true, "cameraOffsetX": 0}
+          "values": {"dialogue": "I'm glad you could join me here in this tight squeeze, Ritz. You can press {PAUSE} to see all the controls and settings! Bet'cha didn't know that, Rits!", "autoTalk": true, "cameraOffsetX": 0}
         },
         {"name": "spike", "id": 534, "_eid": "62782057", "x": 1056, "y": 3648, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 535, "_eid": "62782057", "x": 1088, "y": 3648, "originX": 0, "originY": 0, "rotation": 0},
