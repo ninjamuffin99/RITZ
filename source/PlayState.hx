@@ -115,7 +115,6 @@ class PlayState extends flixel.FlxState
 
 		ogmo.level.get_entity_layer('entities').load_entities(entity_loader);
 		trace('Total cheese: $totalCheese');
-		trace('Total checkpoints: ${Checkpoint.counter}');
 		if (player == null)
 			throw "player missing";
 		
@@ -175,7 +174,7 @@ class PlayState extends flixel.FlxState
 				add(new Enemy(e.x, e.y, OgmoPath.fromEntity(e), e.values.speed));
 				trace('spider added');
 			case "coins" | "cheese":
-				grpCheese.add(new Cheese(e.x, e.y, true));
+				grpCheese.add(new Cheese(e.x, e.y, e.id, true));
 				totalCheese++;
 			case "movingPlatform":
 				var platform = MovingPlatform.fromOgmo(e);
@@ -188,8 +187,10 @@ class PlayState extends flixel.FlxState
 				grpObstacles.add(new SpikeObstacle(e.x, e.y, e.rotation));
 			case "checkpoint":
 				var rat = Checkpoint.fromOgmo(e);
-				if (rat.id > minimap.checkpoints.length)
-					throw 'invalic checkpoint id:${rat.id} max:${minimap.checkpoints.length}';
+				#if debug
+				if (!minimap.checkpoints.exists(rat.ID))
+					throw "Non-existent checkpoint id:" + rat.ID;
+				#end
 				grpCheckpoint.add(rat);
 			case "musicTrigger":
 				grpMusicTriggers.add(new MusicTrigger(e.x, e.y, e.width, e.height, e.values.song, e.values.fadetime));
@@ -356,7 +357,7 @@ class PlayState extends flixel.FlxState
 		{
 			dialogueBubble.visible = true;
 			dialogueBubble.setPosition(checkpoint.x + 20, checkpoint.y - 10);
-			minimap.showCheckpointGet(checkpoint.id);
+			minimap.showCheckpointGet(checkpoint.ID);
 			
 			if (Inputs.justPressed.TALK || (checkpoint.autoTalk && player.onGround))
 			{
@@ -397,7 +398,7 @@ class PlayState extends flixel.FlxState
 					(cheese)->
 					{
 						cheeseCount++;
-						minimap.showCheeseGet(cheese.id);
+						minimap.showCheeseGet(cheese.ID);
 					}
 				);
 				player.cheese.clear();

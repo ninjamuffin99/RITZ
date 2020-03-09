@@ -5,22 +5,17 @@ import flixel.FlxSprite;
 
 import zero.utilities.OgmoUtils;
 
+typedef OgmoValues = { autoTalk:Bool, cameraOffsetX:Float };
+
 class Checkpoint extends FlxSprite
 {
-    public static var counter(default, null) = 0;
-    
     public var isCurCheckpoint:Bool = false;
-    public var id(default, null) = -1;
-    public var dialogue(default, null):String = "";
-    public var autoTalk(default, null) = false;
-    public var cameraOffsetX(default, null) = 0.0;
+    public var dialogue = "";
+    public var autoTalk = false;
+    public var cameraOffsetX = 0.0;
 
-    public function new(x:Float, y:Float, dialogue:String, autoTalk = false, cameraOffsetX = 0, collectible = false) {
+    public function new(x:Float, y:Float, dialogue:String, collectible = false) {
         this.dialogue = dialogue;
-        this.autoTalk = autoTalk;
-        this.cameraOffsetX = cameraOffsetX;
-        if (collectible)
-            id = counter++;
         super(x, y + 2);
         
         loadGraphic(AssetPaths.checkpoint_rat__png, true, 32, 32);
@@ -37,6 +32,15 @@ class Checkpoint extends FlxSprite
         super.update(elapsed);
     }
     
+    inline function setOgmoProperties(data:EntityData):Checkpoint
+    {
+        this.ID = data.id;
+        var values:OgmoValues = cast data.values;
+        this.autoTalk = values.autoTalk;
+        this.cameraOffsetX = values.cameraOffsetX;
+        return this;
+    }
+    
     public function onTalk() autoTalk = false;
     
     inline static public function fromOgmo(entity:EntityData)
@@ -45,9 +49,7 @@ class Checkpoint extends FlxSprite
             ( entity.x
             , entity.y
             , entity.values.dialogue
-            , entity.values.autoTalk
-            , entity.values.cameraOffsetX
             , true
-            );
+            ).setOgmoProperties(entity);
     }
 }
