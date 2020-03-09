@@ -18,7 +18,7 @@ class DialogueSubstate extends FlxSubState
     private var blackBarBottom:FlxSprite;
     private var uiCamera:FlxCamera;
 
-    public function new(d:String, startNow = true) {
+    public function new(dialogue:String, startNow = true) {
         super();
         
         uiCamera = new FlxCamera();
@@ -27,7 +27,7 @@ class DialogueSubstate extends FlxSubState
         FlxG.cameras.add(uiCamera);
         
         blackBarTop = new FlxSprite();
-        blackBarTop.makeGraphic(FlxG.width, Std.int(FlxG.height * 0.22), FlxColor.BLACK);
+        blackBarTop.makeGraphic(FlxG.width, Std.int(FlxG.height * 0.3), FlxColor.BLACK);
         blackBarTop.scrollFactor.set();
         blackBarTop.y = -blackBarTop.height;
         blackBarTop.camera = uiCamera;
@@ -43,7 +43,7 @@ class DialogueSubstate extends FlxSubState
         FlxTween.tween(blackBarTop, {y: 0}, 0.25, {ease:FlxEase.quadIn});
         FlxTween.tween(blackBarBottom, {y: Std.int(FlxG.height - blackBarBottom.height)}, 0.25, {ease:FlxEase.quadIn});
 
-        dialogueText = new TypeTextTwo(0, 0, FlxG.width, d, 16);
+        dialogueText = new TypeTextTwo(0, 0, FlxG.width, parseDialogue(dialogue), 16);
         dialogueText.scrollFactor.set();
         dialogueText.sounds = [FlxG.sound.load('assets/sounds/talksound' + BootState.soundEXT), FlxG.sound.load('assets/sounds/talksound1' + BootState.soundEXT)];
         dialogueText.finishSounds = true;
@@ -54,6 +54,30 @@ class DialogueSubstate extends FlxSubState
 
         if (startNow)
             start(0.25);
+    }
+    
+    function parseDialogue(d:String):String
+    {
+        if (~/\{.+\}/.match(d))
+        {
+            var start = d.indexOf("{");
+            while(start != -1)
+            {
+                var end = d.indexOf("}", start);
+                if (end == -1)
+                    throw '"{" token found with no matching "}" token';
+                trace("token" + d.substring(start + 1, end));
+                switch(d.substring(start + 1, end))
+                {
+                    case inputName if(Input.createByName(inputName) != null):
+                        d = d.split('{$inputName}')
+                            .join(Inputs.getDialogueNameFromToken(inputName));
+                    case token: throw 'Unhandled dialog token: $token';
+                }
+                start = d.indexOf("{", end + 1);
+            }
+        }
+        return d;
     }
     
     inline public function start(delay = 0.05):Void

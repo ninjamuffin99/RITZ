@@ -13,6 +13,8 @@ import zero.utilities.OgmoUtils;
 using zero.utilities.OgmoUtils;
 using zero.flixel.utilities.FlxOgmoUtils;
 
+typedef PositionMap = Map<Int, FlxPoint>;
+
 class Minimap extends flixel.group.FlxGroup
 {
     inline public static var OLD_TILE_SIZE = 32;
@@ -24,10 +26,10 @@ class Minimap extends flixel.group.FlxGroup
     public var width (get, never):Float; inline function get_width () return map.width ;
     public var height(get, never):Float; inline function get_height() return map.height;
     
+    public final checkpoints:PositionMap = [];
+    public final cheese:PositionMap = [];
     final map:MiniTilemap;
     final fog:FlxTilemap;
-    final cheese:Array<FlxPoint> = [];
-    final checkpoints:Array<FlxPoint> = [];
     
     public function new (levelPath:String)
     {
@@ -76,12 +78,24 @@ class Minimap extends flixel.group.FlxGroup
     
     inline public function showCheeseGet(id:Int)
     {
-        map.setTile(Std.int(cheese[id].x), Std.int(cheese[id].y), Cheese);
+        #if debug
+        if (!cheese.exists(id))
+            throw 'Non-existent cheese id:$id';
+        else if (cheese[id] == null)
+            throw 'Null cheese id:$id';
+        #end
+        map.setTile(Std.int(cheese[id].x), Std.int(cheese[id].y), CHEESE);
     }
     
     inline public function showCheckpointGet(id:Int)
     {
-        map.setTile(Std.int(checkpoints[id].x), Std.int(checkpoints[id].y), Checkpoint);
+        #if debug
+        if (!checkpoints.exists(id))
+            throw 'Non-exentist checkpoint id:$id';
+        else if (checkpoints[id] == null)
+            throw 'Null checkpoint id:$id';
+        #end
+        map.setTile(Std.int(checkpoints[id].x), Std.int(checkpoints[id].y), RAT);
     }
     
     inline public function getMapTile(x, y):Int return map.getTile(x, y);
@@ -100,7 +114,7 @@ abstract MiniTilemap(OgmoTilemap) to OgmoTilemap
     inline static var OLD_TILE_SIZE = Minimap.OLD_TILE_SIZE;
     inline static var TILE_SIZE = Minimap.TILE_SIZE;
     
-    inline public function new(levelPath:String, cheese:Array<FlxPoint>, checkpoints:Array<FlxPoint>):MiniTilemap
+    inline public function new(levelPath:String, cheese:PositionMap, checkpoints:PositionMap):MiniTilemap
     {
         var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, levelPath);
         // -- replace map tiles with minimap
@@ -120,41 +134,41 @@ abstract MiniTilemap(OgmoTilemap) to OgmoTilemap
         ogmo.level.get_entity_layer('entities').load_entities(stampEntities.bind(_, cheese, checkpoints));
     }
     
-    public function stampEntities(entity:EntityData, cheese:Array<FlxPoint>, checkpoints:Array<FlxPoint>)
+    public function stampEntities(entity:EntityData, cheese:PositionMap, checkpoints:PositionMap)
     {
         switch(entity.name)
         {
             case "coins" | "cheese":
                 var p = new FlxPoint(Math.floor(entity.x / OLD_TILE_SIZE), Math.floor(entity.y / OLD_TILE_SIZE));
-                cheese.push(p);
-                stampMap(this, Std.int(p.x), Std.int(p.y), Cheese_X);
+                cheese[entity.id] = p;
+                stampMap(this, Std.int(p.x), Std.int(p.y), CHEESE_X);
             case "spike":
                 var graphic = 0;
                 switch(entity.rotation)
                 {
                     case 0:
-                        graphic = Spike_U;
+                        graphic = SPIKE_U;
                     case 90:
-                        graphic = Spike_R;
+                        graphic = SPIKE_R;
                         entity.x -= OLD_TILE_SIZE;
                     case 180:
-                        graphic = Spike_D;
+                        graphic = SPIKE_D;
                         entity.x -= OLD_TILE_SIZE;
                         entity.y -= OLD_TILE_SIZE;
                     case -90 | 270:
-                        graphic = Spike_L;
+                        graphic = SPIKE_L;
                         entity.y -= OLD_TILE_SIZE;
                 }
                 stampMapOf(this, entity, graphic);
             case "checkpoint":
                 var p = new FlxPoint(Math.floor(entity.x / OLD_TILE_SIZE), Math.floor(entity.y / OLD_TILE_SIZE));
-                checkpoints.push(p);
-                stampMap(this, Std.int(p.x), Std.int(p.y), Checkpoint_X);
+                checkpoints[entity.id] = p;
+                stampMap(this, Std.int(p.x), Std.int(p.y), RAT_X);
             case "movingPlatform":
                 if (entity.values.graphic != "none")
-                    stampAllMapOf(this, entity, Platform);
+                    stampAllMapOf(this, entity, PLATFORM);
             case 'locked' | 'locked_tall':
-                stampAllMapOf(this, entity, Door);
+                stampAllMapOf(this, entity, DOOR);
             case "player" | "spider" | "musicTrigger" | "secretTrigger"://unusued
             case type: throw 'Unhandled entirty type: $type';
         }
@@ -196,14 +210,14 @@ abstract MiniTilemap(OgmoTilemap) to OgmoTilemap
 
 enum abstract EntityTile(Int) from Int to Int
 {
-    var Spike_U      = 56;
-    var Spike_R      = 57;
-    var Spike_D      = 58;
-    var Spike_L      = 59;
-    var Cheese       = 60;
-    var Cheese_X     = 61;
-    var Checkpoint   = 62;
-    var Checkpoint_X = 63;
-    var Door         = 64;
-    var Platform     = 43;
+    var SPIKE_U  = 56;
+    var SPIKE_R  = 57;
+    var SPIKE_D  = 58;
+    var SPIKE_L  = 59;
+    var CHEESE   = 60;
+    var CHEESE_X = 61;
+    var RAT      = 62;
+    var RAT_X    = 63;
+    var DOOR     = 64;
+    var PLATFORM = 43;
 }

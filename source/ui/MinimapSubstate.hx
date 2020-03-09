@@ -14,7 +14,7 @@ import flixel.tweens.FlxTween;
 
 class MinimapSubstate extends flixel.FlxSubState
 {
-    var pauseReleased = false;
+    var mapButtonReleased = false;
     var state:MinimapMenuState = SelectingTile;
     
     final map:Minimap;
@@ -52,15 +52,15 @@ class MinimapSubstate extends flixel.FlxSubState
     {
         super.update(elapsed);
         
-        if (!pauseReleased)
-            pauseReleased = Inputs.justReleased.PAUSE;
+        if (!mapButtonReleased)
+            mapButtonReleased = Inputs.justReleased.MAP;
         
         switch (state)
         {
             case SelectingTile:
-                if (Inputs.justPressed.BACK || (pauseReleased && Inputs.justPressed.PAUSE))
+                if (Inputs.justPressed.BACK || (mapButtonReleased && Inputs.justPressed.MAP))
                     close();
-                else if (Inputs.justPressed.ACCEPT && map.getMapTile(cursor.tileX, cursor.tileY) == EntityTile.Checkpoint)
+                else if (Inputs.justPressed.ACCEPT && map.getMapTile(cursor.tileX, cursor.tileY) == EntityTile.RAT)
                 {
                     state = ConfirmingCheckpoint;
                     cursor.active = false;
@@ -241,7 +241,6 @@ class InputHelp extends FlxSprite
             else if(showTimer > MOVE_TIME)
                 lerp = 1;
             lerp = FlxEase.backOut(lerp);
-            trace(lerp);
             x = movement.x + lerp * movement.width;
             y = movement.y + lerp * movement.height;
         }

@@ -6,6 +6,7 @@ import OgmoTilemap;
 import ui.BitmapText;
 import ui.DialogueSubstate;
 import ui.Inputs;
+import ui.PauseSubstate;
 import ui.MinimapSubstate;
 import ui.Minimap;
 
@@ -173,7 +174,7 @@ class PlayState extends flixel.FlxState
 				add(new Enemy(e.x, e.y, OgmoPath.fromEntity(e), e.values.speed));
 				trace('spider added');
 			case "coins" | "cheese":
-				grpCheese.add(new Cheese(e.x, e.y, true));
+				grpCheese.add(new Cheese(e.x, e.y, e.id, true));
 				totalCheese++;
 			case "movingPlatform":
 				var platform = MovingPlatform.fromOgmo(e);
@@ -185,7 +186,12 @@ class PlayState extends flixel.FlxState
 			case "spike":
 				grpObstacles.add(new SpikeObstacle(e.x, e.y, e.rotation));
 			case "checkpoint":
-				grpCheckpoint.add(new Checkpoint(e.x, e.y, e.values.dialogue, true));
+				var rat = Checkpoint.fromOgmo(e);
+				#if debug
+				if (!minimap.checkpoints.exists(rat.ID))
+					throw "Non-existent checkpoint id:" + rat.ID;
+				#end
+				grpCheckpoint.add(rat);
 			case "musicTrigger":
 				grpMusicTriggers.add(new MusicTrigger(e.x, e.y, e.width, e.height, e.values.song, e.values.fadetime));
 			case "secretTrigger":
@@ -351,10 +357,12 @@ class PlayState extends flixel.FlxState
 		{
 			dialogueBubble.visible = true;
 			dialogueBubble.setPosition(checkpoint.x + 20, checkpoint.y - 10);
-			minimap.showCheckpointGet(checkpoint.id);
+			minimap.showCheckpointGet(checkpoint.ID);
 			
-			if (Inputs.justPressed.TALK)
+			if (Inputs.justPressed.TALK || (checkpoint.autoTalk && player.onGround))
 			{
+				
+				checkpoint.onTalk();
 				persistentUpdate = true;
 				persistentDraw = true;
 				player.active = false;
@@ -364,16 +372,22 @@ class PlayState extends flixel.FlxState
 				{
 					persistentUpdate = false;
 					persistentDraw = false;
-					FlxTween.tween(FlxG.camera, { zoom: oldZoom }, 0.3, { onComplete: (_)->player.active = true } );
+					final tweenTime = 0.3;
+					FlxTween.tween(FlxG.camera, { zoom: oldZoom }, tweenTime, { onComplete: (_)->player.active = true } );
+					if (checkpoint.cameraOffsetX != 0)
+						FlxTween.tween(FlxG.camera.targetOffset, { x:0 }, tweenTime);
 				};
 				openSubState(subState);
-				FlxTween.tween(FlxG.camera, { zoom: oldZoom * 2 }, 0.25, {onComplete:(_)->subState.start() });
+				final tweenTime = 0.25;
+				FlxTween.tween(FlxG.camera, { zoom: oldZoom * 2 }, tweenTime, {onComplete:(_)->subState.start() });
+				if (checkpoint.cameraOffsetX != 0)
+					FlxTween.tween(FlxG.camera.targetOffset, { x:checkpoint.cameraOffsetX }, tweenTime);
 			}
 			
 			if (checkpoint != curCheckpoint)
 			{
-				curCheckpoint.isCurCheckpoint = false;
-				checkpoint.isCurCheckpoint = true;
+				curCheckpoint.deactivate();
+				checkpoint.activate();
 				curCheckpoint = checkpoint;
 				FlxG.sound.play('assets/sounds/checkpoint' + BootState.soundEXT, 0.8);
 			}
@@ -384,7 +398,7 @@ class PlayState extends flixel.FlxState
 					(cheese)->
 					{
 						cheeseCount++;
-						minimap.showCheeseGet(cheese.id);
+						minimap.showCheeseGet(cheese.ID);
 					}
 				);
 				player.cheese.clear();
@@ -409,8 +423,11 @@ class PlayState extends flixel.FlxState
 			});
 		}
 		
-		if (Inputs.justPressed.PAUSE)
+		if (Inputs.justPressed.MAP)
 			openSubState(new MinimapSubstate(minimap, player, player.hurtAndRespawn));
+		
+		if (Inputs.justPressed.PAUSE)
+			openSubState(new PauseSubstate());
 		
 		#if debug
 		if (FlxG.keys.justPressed.B)

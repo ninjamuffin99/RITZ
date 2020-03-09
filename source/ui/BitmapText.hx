@@ -23,6 +23,7 @@ abstract Nokia8Text(BitmapText) to BitmapText
 				( "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&*()-_+=[]',.|:?/"
 				, "Nokia8"
 				, 4
+				, 2
 				);
 		}
 		return font;
@@ -47,6 +48,7 @@ abstract Nokia16Text(BitmapText) to BitmapText
 				( "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&*()-_+=[]',.|:?/"
 				, "Nokia16"
 				, 8
+				, 4
 				);
 		}
 		return font;
@@ -67,7 +69,7 @@ abstract GravText(BitmapText) to BitmapText
 		if (font == null)
 		{
 			@:privateAccess
-			font = Font.fromImage("1234567890", "Grav5", 4);
+			font = Font.fromImage("1234567890", "Grav5", 4, 1);
 		}
 		return font;
 	}
@@ -91,6 +93,7 @@ class BitmapText extends flixel.text.FlxBitmapText
 		if (borderColor >= 0xFF000000)
 		{
 			setBorderStyle(OUTLINE, borderColor, borderSize, 0);
+			@:privateAccess
 			lineHeight = font.lineHeight + borderSize * 2;
 		}
 	}
@@ -130,7 +133,7 @@ abstract Font(FlxBitmapFont) to FlxBitmapFont
         }
     }
     
-    static function fromImage(chars:String, name:String, spaceWidth:Int, separatorColor = 0xfbf236):Font
+    static function fromImage(chars:String, name:String, spaceWidth:Int, leading = 0, separatorColor = 0xfbf236):Font
     {
         final widths = [];
         final path = 'assets/images/ui/fonts/$name.png';
@@ -151,6 +154,6 @@ abstract Font(FlxBitmapFont) to FlxBitmapFont
         if (curWidth > 0)
             widths.push(curWidth + 1);
         
-        return new Font(chars, widths, path, bmd.height - 1, 8);
+        return new Font(chars, widths, path, bmd.height - 1 + leading, 8);
     }
 }

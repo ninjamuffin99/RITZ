@@ -13,10 +13,6 @@ import flixel.tweens.FlxTween;
 
 class Cheese extends FlxSprite
 {
-    static var counter = 0;
-    
-    public var id(default, null) = -1;
-    
     var followTarget:FlxObject = null;
     var follower:Cheese = null;
     var startPos = new FlxPoint();
@@ -24,13 +20,11 @@ class Cheese extends FlxSprite
     var flickerTimer = 0.0;
     var eatCallback:(Cheese)->Void;
     
-    public function new(x:Float, y:Float, collectible = false)
+    public function new(x:Float, y:Float, id:Int, collectible = false)
     {
         super(x, y);
         startPos.set(x, y);
-        
-        if (collectible)
-            id = counter++;
+        ID = id;
 
         loadGraphic(AssetPaths.cheese_idle__png, true, 32, 32);
         animation.add('idle', [0]);

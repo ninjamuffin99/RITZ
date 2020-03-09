@@ -309,7 +309,9 @@
       "nodeGhost": true,
       "tags": [],
       "values": [
-        {"name": "dialogue", "definition": "String", "defaults": "This is default dialogue text. Jump over shit!!! I don't know what else to put here.", "maxLength": 0, "trimWhitespace": true}
+        {"name": "dialogue", "definition": "String", "defaults": "This is default dialogue text. Jump over shit!!! I don't know what else to put here.", "maxLength": 0, "trimWhitespace": true},
+        {"name": "autoTalk", "definition": "Boolean", "defaults": false},
+        {"name": "cameraOffsetX", "definition": "Float", "defaults": 0, "bounded": false, "min": 0, "max": 100}
       ],
       "texture": "checkpoint_ogmo.png",
       "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1LwAA6l8AADqXAAAXcHwVugEAAAKESURBVFiF7ZbBaxNBFMa/aP+DHrrrpof8DY0nL7mXgOZQSEgrCG0uBkI9aBNyEgUPSQrJwaosVEUxwiooaVovoa3gQXpSr9vDphuMd4/roX3D7M7sZjaKIvrBwu7szPt+895jdoH/+ttlaLpnaLr3x8zD7vnrtwMZmu6ZpumZpjkR4lyc4NPs6vbdO771wfczquYA8PT5MzZWzBc8ABiO3EQU0MH+IZy2BQBIlnPCe+UMOG0Lj7efsGeCCcLxMAf7hzAXV30xgrBKGSCZi6u4tv0QK1eXUcwXfBkhCNu2Ua/WlGPGAgCAvf4O9vo7gjkvqvsvBeDrF2VOqldrrPayGLEAhiM3AUCo3yTJDCkWKSHMOJN1ueIzK394AeB091T/YB/Yti2NVa/WBGNSZAauvGrh+4NdAMD79ALsS0kGwcOQ4tReCYDMv47HzJxXMV+A455gMBiwMT4Lncb96QFyrzcTFuABZ+nvyJuPNw+aNlbOn4K2pgAgCLo3NN3LZDIAgKR+wQdz4/pN3zoyBoCj4QaAEgxN92R9ENqEUR0/NzsvjPGmxdYxu19f2gIANLslaSNGZsBpW0iWc3B6F6OmAQAG78Y4Gm6g2S2Fnv2yLEQCUIAvb19Gmve/7UrX8Vpf2kKzWxJgQktAk1R3r6Ji65h9PSkToRkwNN2bm53HwvJIKfi0iixBo3NPOVDYKciLvpJ8FmYAsePDjk3+1AP850IqlYoFQxDshySbriCbrkAGxAfl5wWBeBgeKErCH5HjngjGsh0F58UVlUAA6Kz1cCv7iJmHqbPWi2VI9aefUyozA3jzcRMA8Nn9pBRw0jwZ/HDkJuiiMd9Zr+T8Ewpr7n9bPwCC9z/9At/9FAAAAABJRU5ErkJggg=="

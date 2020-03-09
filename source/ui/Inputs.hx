@@ -19,11 +19,12 @@ enum Input
 	JUMP;
 	TALK;
 	PAUSE;
+	MAP;
 	ANY;
 }
 
-class Inputs extends flixel.FlxBasic {
-	
+class Inputs extends flixel.FlxBasic
+{
 	static public var keyPressed       (default, null):InputList;
 	static public var keyJustPressed   (default, null):InputList;
 	static public var keyJustReleased  (default, null):InputList;
@@ -56,6 +57,7 @@ class Inputs extends flixel.FlxBasic {
 		, JUMP   => [Z, Y, UP, W, SPACE]
 		, TALK   => [E, F, X]
 		, PAUSE  => [P, ESCAPE, ENTER]
+		, MAP    => [M]
 		, ANY    => [ANY]
 		];
 	
@@ -68,13 +70,15 @@ class Inputs extends flixel.FlxBasic {
 		, RIGHT  => [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT]
 		, JUMP   => [A]
 		, TALK   => [X]
-		, PAUSE  => [START, GUIDE]
+		, PAUSE  => [START]
+		, MAP    => [GUIDE, Y]
 		, ANY    => [ANY]
 		];
 	
 	var wasUsingPad = false;
 	
-	public function new () {
+	public function new ()
+	{
 		super();
 		
 		FlxG.gamepads.globalDeadZone = 0.1;
@@ -102,7 +106,8 @@ class Inputs extends flixel.FlxBasic {
 		justReleased.handler = combine(padJustReleased, keyJustReleased);
 	}
 	
-	override function update(elapsed:Float) {
+	override function update(elapsed:Float)
+	{
 		super.update(elapsed);
 		
 		
@@ -131,12 +136,13 @@ class Inputs extends flixel.FlxBasic {
 		wasUsingPad = isUsingPad;
 	}
 	
-	inline static public function usingPad():Bool {
+	inline static public function usingPad():Bool
+	{
 		return FlxG.gamepads.numActiveGamepads > 0;
 	}
 	
-	static function inputToKeyList(handler:FlxKeyList):Input->Bool {
-		
+	static function inputToKeyList(handler:FlxKeyList):Input->Bool
+	{
 		return function (input:Input):Bool
 		{
 			for (key in getKeys(input))
@@ -149,8 +155,8 @@ class Inputs extends flixel.FlxBasic {
 		};
 	}
 	
-	static function inputToPadList(handler:FlxGamepadButtonList):Input->Bool {
-		
+	static function inputToPadList(handler:FlxGamepadButtonList):Input->Bool
+	{
 		return function (input:Input):Bool
 		{
 			for (button in getPadButtons(input))
@@ -163,31 +169,41 @@ class Inputs extends flixel.FlxBasic {
 		};
 	}
 	
-	inline static public function getKeys(input) {
+	inline static public function getKeys(input)
+	{
 		return keyMap.get(input);
 	}
 	
-	inline static public function getPadButtons(input) {
+	inline static public function getPadButtons(input)
+	{
 		return padMap.get(input);
+	}
+	
+	inline static public function getDialogueName(input:Input):String
+	{
+		return lastUsedKeyboard ? ("[" + getKeys(input)[0] + "]") : ("(" + getPadButtons(input)[0] + ")");
+	}
+	
+	static public function getDialogueNameFromToken(inputName:String):String
+	{
+		return getDialogueName(Input.createByName(inputName));
 	}
 }
 
-class InputList {
-	
+class TypedInputList<T:EnumValue>
+{
 	inline static var LOG
 		= false;
 		// = true;
 	
-	public var handler:Null<Input->Bool>;
+	public var handler:Null<T->Bool>;
 	public var logId:String;
 	
-	public function new(logId:String) {
-		
+	public function new(logId:String)
 		this.logId = logId;
-	}
 	
-	inline public function get(input:Input):Bool {
-		
+	inline public function get(input:T):Bool
+	{
 		var value = get_actual(input);
 		if (LOG) {
 			trace('$logId handler:${handler != null}'
@@ -199,19 +215,26 @@ class InputList {
 		return value;
 	}
 	
-	inline function get_actual(input:Input):Bool {
-		
+	inline function get_actual(input:T):Bool
+	{
 		return handler != null && handler(input);
 	}
+}
+
+@:forward
+abstract InputList(TypedInputList<Input>)
+{
+	inline public function new (logId:String) this = new TypedInputList<Input>(logId);
 	
-	public var ACCEPT(get, never):Bool; inline function get_ACCEPT() { return get(Input.ACCEPT); };
-	public var BACK  (get, never):Bool; inline function get_BACK  () { return get(Input.BACK  ); };
-	public var UP    (get, never):Bool; inline function get_UP    () { return get(Input.UP    ); };
-	public var DOWN  (get, never):Bool; inline function get_DOWN  () { return get(Input.DOWN  ); };
-	public var LEFT  (get, never):Bool; inline function get_LEFT  () { return get(Input.LEFT  ); };
-	public var RIGHT (get, never):Bool; inline function get_RIGHT () { return get(Input.RIGHT ); };
-	public var JUMP  (get, never):Bool; inline function get_JUMP  () { return get(Input.JUMP  ); };
-	public var TALK  (get, never):Bool; inline function get_TALK  () { return get(Input.TALK  ); };
-	public var PAUSE (get, never):Bool; inline function get_PAUSE () { return get(Input.PAUSE ); };
-	public var ANY   (get, never):Bool; inline function get_ANY   () { return get(Input.ANY   ); };
+	public var ACCEPT(get, never):Bool; inline function get_ACCEPT() return this.get(Input.ACCEPT);
+	public var BACK  (get, never):Bool; inline function get_BACK  () return this.get(Input.BACK  );
+	public var UP    (get, never):Bool; inline function get_UP    () return this.get(Input.UP    );
+	public var DOWN  (get, never):Bool; inline function get_DOWN  () return this.get(Input.DOWN  );
+	public var LEFT  (get, never):Bool; inline function get_LEFT  () return this.get(Input.LEFT  );
+	public var RIGHT (get, never):Bool; inline function get_RIGHT () return this.get(Input.RIGHT );
+	public var JUMP  (get, never):Bool; inline function get_JUMP  () return this.get(Input.JUMP  );
+	public var TALK  (get, never):Bool; inline function get_TALK  () return this.get(Input.TALK  );
+	public var PAUSE (get, never):Bool; inline function get_PAUSE () return this.get(Input.PAUSE );
+	public var MAP   (get, never):Bool; inline function get_MAP   () return this.get(Input.MAP   );
+	public var ANY   (get, never):Bool; inline function get_ANY   () return this.get(Input.ANY   );
 }
