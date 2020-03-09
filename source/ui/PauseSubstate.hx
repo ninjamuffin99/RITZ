@@ -90,7 +90,7 @@ class PauseSubstate extends flixel.FlxSubState
         if (Inputs.justReleased.PAUSE)
             pauseReleased = true;
         
-        if (Inputs.justPressed.BACK || (Inputs.pressed.PAUSE && pauseReleased))
+        if (buttons.active && (Inputs.justPressed.BACK || (Inputs.pressed.PAUSE && pauseReleased)))
             close();
     }
     
