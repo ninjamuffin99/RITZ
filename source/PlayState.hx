@@ -386,8 +386,8 @@ class PlayState extends flixel.FlxState
 			
 			if (checkpoint != curCheckpoint)
 			{
-				curCheckpoint.isCurCheckpoint = false;
-				checkpoint.isCurCheckpoint = true;
+				curCheckpoint.deactivate();
+				checkpoint.activate();
 				curCheckpoint = checkpoint;
 				FlxG.sound.play('assets/sounds/checkpoint' + BootState.soundEXT, 0.8);
 			}
