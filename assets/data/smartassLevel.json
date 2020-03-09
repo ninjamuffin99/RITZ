@@ -417,7 +417,7 @@
           "nodes": [
             {"x": 2016, "y": 672}
           ],
-          "values": {"speed": 120, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "auto", "oneWayPlatform": false, "trigger": "Load"}
+          "values": {"speed": 250, "holdPerNode": 1, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "auto", "oneWayPlatform": false, "trigger": "Load"}
         },
         {
           "name": "movingPlatform",
