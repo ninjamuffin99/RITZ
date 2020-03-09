@@ -24,10 +24,10 @@ class Minimap extends flixel.group.FlxGroup
     public var width (get, never):Float; inline function get_width () return map.width ;
     public var height(get, never):Float; inline function get_height() return map.height;
     
+    public final checkpoints:Array<FlxPoint> = [];
+    public final cheese:Array<FlxPoint> = [];
     final map:MiniTilemap;
     final fog:FlxTilemap;
-    final cheese:Array<FlxPoint> = [];
-    final checkpoints:Array<FlxPoint> = [];
     
     public function new (levelPath:String)
     {

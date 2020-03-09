@@ -7,7 +7,7 @@ import zero.utilities.OgmoUtils;
 
 class Checkpoint extends FlxSprite
 {
-    static var counter = 0;
+    public static var counter(default, null) = 0;
     
     public var isCurCheckpoint:Bool = false;
     public var id(default, null) = -1;

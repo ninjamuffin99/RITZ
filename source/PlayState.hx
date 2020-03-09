@@ -115,6 +115,7 @@ class PlayState extends flixel.FlxState
 
 		ogmo.level.get_entity_layer('entities').load_entities(entity_loader);
 		trace('Total cheese: $totalCheese');
+		trace('Total checkpoints: ${Checkpoint.counter}');
 		if (player == null)
 			throw "player missing";
 		
@@ -186,7 +187,10 @@ class PlayState extends flixel.FlxState
 			case "spike":
 				grpObstacles.add(new SpikeObstacle(e.x, e.y, e.rotation));
 			case "checkpoint":
-				grpCheckpoint.add(Checkpoint.fromOgmo(e));
+				var rat = Checkpoint.fromOgmo(e);
+				if (rat.id > minimap.checkpoints.length)
+					throw 'invalic checkpoint id:${rat.id} max:${minimap.checkpoints.length}';
+				grpCheckpoint.add(rat);
 			case "musicTrigger":
 				grpMusicTriggers.add(new MusicTrigger(e.x, e.y, e.width, e.height, e.values.song, e.values.fadetime));
 			case "secretTrigger":
