@@ -17,7 +17,7 @@ typedef EntityValues = {
 
 class MovingPlatform extends flixel.FlxSprite
 {
-    inline static var TRANSFER_DELAY = 0.1;
+    inline static var TRANSFER_DELAY = 0.2;
     
     /** The velocity it transfers to rits when he jumps */
     public var transferVelocity(default, null):ReadonlyVector = FlxVector.get();
@@ -101,6 +101,7 @@ class MovingPlatform extends flixel.FlxSprite
                 case 2: graphic = "movingShort";
                 case 3: graphic = "movingLongside";
                 case 4: graphic = "movingLongside";
+                case 5: graphic = "movingLongerside";
                 case _: throw 'Cannot autodetermine graphics from size (${data.width}x${data.height})';
             }
         }
