@@ -40,15 +40,20 @@ class OgmoPath extends FlxPath
     
     override function advancePath(Snap:Bool = true):FlxPoint
     {
+        // don't reset hold from restart call
+        if (holdTimer > 0)
+            return super.advancePath(Snap);
+        
+        holdTimer = 0;
         if (!wasFirstUpdate)
             holdTimer = holdPerNode;
         
         var oldIndex = nodeIndex;
         var point = super.advancePath(Snap);
-        if (oldIndex == 0 && !wasFirstUpdate)
+        if ((oldIndex == 0 && !wasFirstUpdate) || (mode == FlxPath.YOYO && oldIndex == nodes.length - 1))
         {
             holdTimer += holdPerLoop;
-            if (onLoopComplete != null)
+            if (oldIndex == 0 && onLoopComplete != null)
                 onLoopComplete(this);
         }
         return point;
@@ -60,6 +65,13 @@ class OgmoPath extends FlxPath
             super.calculateVelocity(node, horizontalOnly, verticalOnly);
         else
             object.velocity.set();
+    }
+    
+    override function restart()
+    {
+        super.restart();
+        holdTimer = holdPerNode + holdPerLoop;
+        return this;
     }
     
     inline public function resume():Void { active = true; }
