@@ -255,7 +255,7 @@ class Player extends FlxSprite
                 drag.x = AIR_DRAG;
         }
         
-        if (isTouching(FlxObject.CEILING) || jumpR)
+        if (!onGround && (isTouching(FlxObject.CEILING) || jumpR))
             apexReached = true;
         
         if (left != right)
