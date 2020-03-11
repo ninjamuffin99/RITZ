@@ -100,6 +100,17 @@ top right is through the same entrance.
 * Made the downward pit harder and give more cheese
 * Made the TopLeft's final downward fall harder but hopefully more clear
 
+## Minimap
+* Generates a minimap substate from the ogmo level data. show it when they press a button.
+* Shows areas they have been, cheese and checkpoints they've collected
+* M key or Select/Y gamepad button to show
+* able to warp to any checkpoint you've already reached
+* *TODO:*Reveal hidden platforms when they come back from the ending
+
+## Pause Screes
+* Mute and restart button
+* Show all game controls (keyboard and gamepad)
+
 # To Do
 * Save progress
 * Tweaks to Top middle area difficulty
@@ -108,7 +119,3 @@ top right is through the same entrance.
 * (?) make ending level in ogmo, where player can move around and see credits and player stats
 * Reveal total cheese count, allow them to go back and get more
 * Enable speedrun mode
-## Minimap (Maybe)
-* Generate a minimap substate from the ogmo level data. show it when they press a button.
-* Show areas they have been
-* Reveal hidden platforms when they come back from the ending
