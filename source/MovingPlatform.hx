@@ -28,8 +28,8 @@ class MovingPlatform extends flixel.FlxSprite
     inline function set_ogmoPath(value:OgmoPath) return cast path = value;
     
     public var oneWayPlatform(default, null) = false;
+    public var trigger(default, null):Trigger = Load;
     
-    var trigger:Trigger = Load;
     public function new(x:Float, y:Float) {
         super(x, y);
         
@@ -131,6 +131,16 @@ class MovingPlatform extends flixel.FlxSprite
         
         if (values.oneWayPlatform)
             allowCollisions = FlxObject.UP;
+    }
+    
+    public function resetPath()
+    {
+        if (path.active && trigger != Load)
+        {
+            path.restart();
+            path.active = false;
+            reset(path.nodes[path.nodeIndex].x, path.nodes[path.nodeIndex].y);
+        }
     }
     
     inline static public function fromOgmo(data:EntityData)

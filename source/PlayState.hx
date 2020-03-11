@@ -159,6 +159,7 @@ class PlayState extends flixel.FlxState
 		{
 			case "player": 
 				player = new Player(e.x, e.y);
+				player.onRespawn.add(onPlayerRespawn);
 				add(player.dust);
 				add(player);
 				#if debug
@@ -436,6 +437,16 @@ class PlayState extends flixel.FlxState
 		if (FlxG.keys.justPressed.T)
 			cheeseCount++;
 		#end
+	}
+	
+	function onPlayerRespawn():Void
+	{
+		// Reset moving platform
+		for (i in 0...grpMovingPlatforms.members.length)
+		{
+			if (grpMovingPlatforms.members[i] != null)
+				grpMovingPlatforms.members[i].resetPath();
+		}
 	}
 	
 	private function musicHandling():Void

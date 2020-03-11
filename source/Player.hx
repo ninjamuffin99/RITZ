@@ -12,6 +12,7 @@ import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxMath;
 import flixel.math.FlxVelocity;
+import flixel.util.FlxSignal;
 import flixel.util.FlxTimer;
 
 class Player extends FlxSprite
@@ -81,6 +82,8 @@ class Player extends FlxSprite
     public var right(default, null):Bool;
     public var jump (default, null):Bool;
     public var down (default, null):Bool;
+    
+    public var onRespawn = new FlxSignal();
 
     public function new(x:Float, y:Float):Void
     {
@@ -129,6 +132,7 @@ class Player extends FlxSprite
         platform = null;
         gettingHurt = false;
         acceleration.y = GRAVITY;
+        onRespawn.dispatch();
     }
 
     override public function update(elapsed:Float):Void
