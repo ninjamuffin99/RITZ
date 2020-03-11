@@ -236,7 +236,24 @@ class Player extends FlxSprite
             onCoyoteGround = false;
         
         if (onGround != wasOnGround)
-            drag.x = onGround ? GROUND_DRAG : AIR_DRAG;
+        {
+            if (onGround)
+            {
+                // Just landed
+                drag.x = GROUND_DRAG;
+                airHopped = false;
+                jumped = false;
+                hovering = false;
+                apexReached = false;
+                jumpBoost = 0;
+                jumpTimer = 0;
+                xAirBoost = 0;
+                if (maxVelocity.x > MAXSPEED)
+                    maxVelocity.x = MAXSPEED;
+            }
+            else
+                drag.x = AIR_DRAG;
+        }
         
         if (isTouching(FlxObject.CEILING) || jumpR)
             apexReached = true;
@@ -279,16 +296,6 @@ class Player extends FlxSprite
         
         if (onCoyoteGround)
         {
-            airHopped = false;
-            jumped = false;
-            hovering = false;
-            apexReached = false;
-            jumpBoost = 0;
-            jumpTimer = 0;
-            xAirBoost = 0;
-            if (maxVelocity.x > MAXSPEED)
-                maxVelocity.x = MAXSPEED;
-
             if (jumpP)
                 startJump();
         }
@@ -370,17 +377,31 @@ class Player extends FlxSprite
      */
     public function onSeparatePlatform(platform:MovingPlatform):Void
     {
-        if (onGround && velocity.y < 0 && !jumped)
+        if (!jumped)
         {
-            y = platform.y - height;
-            velocity.y = 0;
-            this.platform = platform;
+            if (onGround && velocity.y < 0)
+            {
+                y = platform.y - height;
+                velocity.y = 0;
+                this.platform = platform;
+            }
+            else
+                xBoostFromPlatform(platform);
         }
     }
     
     public function onLandPlatform(platform:MovingPlatform):Void
     {
         velocity.x -= platform.velocity.x;
+    }
+    
+    function xBoostFromPlatform(platform:MovingPlatform)
+    {
+        xAirBoost = platform.transferVelocity.x;
+        // persistent x force after jumping from moving platform?
+        if (maxVelocity.x < Math.abs(xAirBoost))
+            maxVelocity.x = Math.abs(xAirBoost);
+        velocity.x += xAirBoost;
     }
     
     function startJump()
@@ -399,12 +420,7 @@ class Player extends FlxSprite
             if (platform.transferVelocity.y < 0)
                 maxVelocity.y += -platform.transferVelocity.y;
             velocity.y = platform.transferVelocity.y;
-            
-            xAirBoost = platform.transferVelocity.x;
-            // persistent x force after jumping from moving platform?
-            if (maxVelocity.x < Math.abs(xAirBoost))
-                maxVelocity.x = Math.abs(xAirBoost);
-            velocity.x += xAirBoost;
+            xBoostFromPlatform(platform);
             platform = null;
         }
         #if debug
