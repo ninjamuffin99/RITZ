@@ -356,58 +356,59 @@ class PlayState extends flixel.FlxState
 			player.hurtAndRespawn(curCheckpoint.x, curCheckpoint.y - 16);
 		
 		dialogueBubble.visible = false;
-
-		FlxG.overlap(grpCheckpoint, player, function(checkpoint:Checkpoint, _)
+		if (player.onGround)
 		{
-			dialogueBubble.visible = true;
-			dialogueBubble.setPosition(checkpoint.x + 20, checkpoint.y - 10);
-			minimap.showCheckpointGet(checkpoint.ID);
-			
-			if (Inputs.justPressed.TALK || (checkpoint.autoTalk && player.onGround))
+			FlxG.overlap(grpCheckpoint, player, function(checkpoint:Checkpoint, _)
 			{
+				dialogueBubble.visible = true;
+				dialogueBubble.setPosition(checkpoint.x + 20, checkpoint.y - 10);
+				minimap.showCheckpointGet(checkpoint.ID);
 				
-				checkpoint.onTalk();
-				persistentUpdate = true;
-				persistentDraw = true;
-				player.active = false;
-				var oldZoom = FlxG.camera.zoom;
-				var subState = new DialogueSubstate(checkpoint.dialogue, false);
-				subState.closeCallback = ()->
+				if (Inputs.justPressed.TALK || checkpoint.autoTalk)
 				{
-					persistentUpdate = false;
-					persistentDraw = false;
-					final tweenTime = 0.3;
-					FlxTween.tween(FlxG.camera, { zoom: oldZoom }, tweenTime, { onComplete: (_)->player.active = true } );
-					if (checkpoint.cameraOffsetX != 0)
-						FlxTween.tween(FlxG.camera.targetOffset, { x:0 }, tweenTime);
-				};
-				openSubState(subState);
-				final tweenTime = 0.25;
-				FlxTween.tween(FlxG.camera, { zoom: oldZoom * 2 }, tweenTime, {onComplete:(_)->subState.start() });
-				if (checkpoint.cameraOffsetX != 0)
-					FlxTween.tween(FlxG.camera.targetOffset, { x:checkpoint.cameraOffsetX }, tweenTime);
-			}
-			
-			if (checkpoint != curCheckpoint)
-			{
-				curCheckpoint.deactivate();
-				checkpoint.activate();
-				curCheckpoint = checkpoint;
-				FlxG.sound.play('assets/sounds/checkpoint' + BootState.soundEXT, 0.8);
-			}
-
-			if (!player.cheese.isEmpty())
-			{
-				player.cheese.first().sendToCheckpoint(checkpoint,
-					(cheese)->
+					checkpoint.onTalk();
+					persistentUpdate = true;
+					persistentDraw = true;
+					player.active = false;
+					var oldZoom = FlxG.camera.zoom;
+					var subState = new DialogueSubstate(checkpoint.dialogue, false);
+					subState.closeCallback = ()->
 					{
-						cheeseCount++;
-						minimap.showCheeseGet(cheese.ID);
-					}
-				);
-				player.cheese.clear();
-			}
-		});
+						persistentUpdate = false;
+						persistentDraw = false;
+						final tweenTime = 0.3;
+						FlxTween.tween(FlxG.camera, { zoom: oldZoom }, tweenTime, { onComplete: (_)->player.active = true } );
+						if (checkpoint.cameraOffsetX != 0)
+							FlxTween.tween(FlxG.camera.targetOffset, { x:0 }, tweenTime);
+					};
+					openSubState(subState);
+					final tweenTime = 0.25;
+					FlxTween.tween(FlxG.camera, { zoom: oldZoom * 2 }, tweenTime, {onComplete:(_)->subState.start() });
+					if (checkpoint.cameraOffsetX != 0)
+						FlxTween.tween(FlxG.camera.targetOffset, { x:checkpoint.cameraOffsetX }, tweenTime);
+				}
+				
+				if (checkpoint != curCheckpoint)
+				{
+					curCheckpoint.deactivate();
+					checkpoint.activate();
+					curCheckpoint = checkpoint;
+					FlxG.sound.play('assets/sounds/checkpoint' + BootState.soundEXT, 0.8);
+				}
+				
+				if (!player.cheese.isEmpty())
+				{
+					player.cheese.first().sendToCheckpoint(checkpoint,
+						(cheese)->
+						{
+							cheeseCount++;
+							minimap.showCheeseGet(cheese.ID);
+						}
+					);
+					player.cheese.clear();
+				}
+			});
+		}
 
 
 		if (player.state == Alive)
