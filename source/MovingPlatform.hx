@@ -16,8 +16,8 @@ import zero.utilities.OgmoUtils;
 
 @:noCompletion
 typedef EntityValues = {
-    graphic       :String,
-    oneWayPlatform:Bool,
+    ?graphic       :String,
+    ?oneWayPlatform:Bool,
     trigger       :Trigger
 }
 
@@ -87,12 +87,12 @@ class MovingPlatform extends flixel.FlxSprite
     inline function setOgmoProperties(data:EntityData)
     {
         var values:EntityValues = cast data.values;
-        oneWayPlatform = values.oneWayPlatform;
         trigger = values.trigger;
+        oneWayPlatform = values.oneWayPlatform != null ? values.oneWayPlatform : data.name == "cloudPlatform";
         
         switch (values.graphic)
         {
-            case "auto":
+            case null|"auto":
                 loadGraphic(getImage(data.width, data.height, oneWayPlatform ? "cloud" : "solid"));
             case "none":
                 makeGraphic(data.width, data.height);

@@ -177,7 +177,7 @@ class PlayState extends flixel.FlxState
 			case "coins" | "cheese":
 				grpCheese.add(new Cheese(e.x, e.y, e.id, true));
 				totalCheese++;
-			case "movingPlatform":
+			case "movingPlatform"|"solidPlatform"|"cloudPlatform":
 				var platform = MovingPlatform.fromOgmo(e);
 				if (platform.visible)
 					grpMovingPlatformsPath.add(platform.createPathSprite());

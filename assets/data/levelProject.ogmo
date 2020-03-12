@@ -159,7 +159,7 @@
           {"x": 1, "y": 1}
         ]
       },
-      "color": "#ff00f5ff",
+      "color": "#ffffffff",
       "tileX": false,
       "tileY": false,
       "tileSize": {"x": 32, "y": 32},
@@ -192,6 +192,110 @@
           "defaults": 0
         },
         {"name": "oneWayPlatform", "definition": "Boolean", "defaults": true},
+        {
+          "name": "trigger",
+          "definition": "Enum",
+          "choices": ["Load", "OnScreen", "Collide", "Ground"],
+          "defaults": 0
+        }
+      ]
+    },
+    {
+      "exportID": "97687877",
+      "name": "cloudPlatform",
+      "limit": -1,
+      "size": {"x": 32, "y": 32},
+      "origin": {"x": 0, "y": 0},
+      "originAnchored": true,
+      "shape": {
+        "label": "Rectangle",
+        "points": [
+          {"x": -1, "y": -1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": 1}
+        ]
+      },
+      "color": "#ff00ffff",
+      "tileX": false,
+      "tileY": false,
+      "tileSize": {"x": 32, "y": 32},
+      "resizeableX": true,
+      "resizeableY": true,
+      "rotatable": false,
+      "rotationDegrees": 360,
+      "canFlipX": false,
+      "canFlipY": false,
+      "canSetColor": false,
+      "hasNodes": true,
+      "nodeLimit": 0,
+      "nodeDisplay": 0,
+      "nodeGhost": true,
+      "tags": [],
+      "values": [
+        {"name": "speed", "definition": "Float", "defaults": 70, "bounded": false, "min": 0, "max": 100},
+        {"name": "holdPerNode", "definition": "Float", "defaults": 0.5, "bounded": false, "min": 0, "max": 100},
+        {"name": "holdPerLoop", "definition": "Float", "defaults": 0, "bounded": false, "min": 0, "max": 100},
+        {
+          "name": "type",
+          "definition": "Enum",
+          "choices": ["LOOP_FORWARD", "LOOP_BACKWARD", "FORWARD", "BACKWARD", "YOYO"],
+          "defaults": 0
+        },
+        {
+          "name": "trigger",
+          "definition": "Enum",
+          "choices": ["Load", "OnScreen", "Collide", "Ground"],
+          "defaults": 0
+        }
+      ]
+    },
+    {
+      "exportID": "97715593",
+      "name": "solidPlatform",
+      "limit": -1,
+      "size": {"x": 32, "y": 32},
+      "origin": {"x": 0, "y": 0},
+      "originAnchored": true,
+      "shape": {
+        "label": "Rectangle",
+        "points": [
+          {"x": -1, "y": -1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": 1}
+        ]
+      },
+      "color": "#004dffff",
+      "tileX": false,
+      "tileY": false,
+      "tileSize": {"x": 32, "y": 32},
+      "resizeableX": true,
+      "resizeableY": true,
+      "rotatable": false,
+      "rotationDegrees": 360,
+      "canFlipX": false,
+      "canFlipY": false,
+      "canSetColor": false,
+      "hasNodes": true,
+      "nodeLimit": 0,
+      "nodeDisplay": 0,
+      "nodeGhost": true,
+      "tags": [],
+      "values": [
+        {"name": "speed", "definition": "Float", "defaults": 70, "bounded": false, "min": 0, "max": 100},
+        {"name": "holdPerNode", "definition": "Float", "defaults": 0.5, "bounded": false, "min": 0, "max": 100},
+        {"name": "holdPerLoop", "definition": "Float", "defaults": 0, "bounded": false, "min": 0, "max": 100},
+        {
+          "name": "type",
+          "definition": "Enum",
+          "choices": ["LOOP_FORWARD", "LOOP_BACKWARD", "FORWARD", "BACKWARD", "YOYO"],
+          "defaults": 0
+        },
         {
           "name": "trigger",
           "definition": "Enum",
