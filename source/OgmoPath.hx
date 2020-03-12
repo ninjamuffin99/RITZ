@@ -2,6 +2,8 @@ package;
 
 import openfl.geom.Rectangle;
 
+import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxPoint;
@@ -131,16 +133,38 @@ enum abstract PathType(String) to String from String
     }
 }
 
-@:forward
-abstract PathSprite(FlxTypedSpriteGroup<PathSpriteLink>) to FlxTypedSpriteGroup<PathSpriteLink>
+class PathSprite extends FlxTypedSpriteGroup<FlxSprite>
 {
-    inline public function new (path:OgmoPath)
+    var target:FlxObject;
+    public final bolt = new FlxSprite();
+    
+    public function new (path:OgmoPath)
     {
-        this = new FlxTypedSpriteGroup<PathSpriteLink>(path.nodes[0].x, path.nodes[0].y, path.nodes.length);
+        target = path.object;
+        super(path.nodes[0].x, path.nodes[0].y, path.nodes.length);
         for (i in 1...path.nodes.length)
-            this.add(new PathSpriteLink(path.nodes[0], path.nodes[i-1], path.nodes[i]));
+            add(new PathSpriteLink(path.nodes[0], path.nodes[i-1], path.nodes[i]));
         if (path.nodes.length > 2 && (path.mode == FlxPath.LOOP_BACKWARD || path.mode == FlxPath.LOOP_FORWARD))
-            this.add(new PathSpriteLink(path.nodes[0], path.nodes[path.nodes.length-1], path.nodes[0]));
+            add(new PathSpriteLink(path.nodes[0], path.nodes[path.nodes.length-1], path.nodes[0]));
+        
+        bolt.loadGraphic("assets/images/pathBolt.png", true, 7, 7);
+        bolt.animation.add("stopped", [0]); 
+        bolt.animation.add("moving", [0, 1, 2, 3], 8); 
+        bolt.offset.set(Math.floor(bolt.width / 2), Math.floor(bolt.height / 2));
+    }
+    
+    override function update(elapsed:Float)
+    {
+        super.update(elapsed);
+        bolt.x = target.x + target.width  / 2;
+        bolt.y = target.y + target.height / 2;
+        bolt.animation.play(bolt.x == bolt.last.x && bolt.y == bolt.last.y ? "stopped" : "moving");
+    }
+    
+    override function destroy()
+    {
+        super.destroy();
+        target = null;
     }
 }
 
@@ -148,15 +172,21 @@ abstract PathSpriteLink(FlxSprite) to FlxSprite
 {
     inline public function new (pathStart:FlxPoint, nodeStart:FlxPoint, nodeEnd:FlxPoint)
     {
-        
         this = new FlxSprite
             ( nodeStart.x - pathStart.x
             , nodeStart.y - pathStart.y
             );
         var dis = FlxVector.get(nodeEnd.x - nodeStart.x, nodeEnd.y - nodeStart.y);
         // black line with white outline (crude)
-        this.makeGraphic(Std.int(Math.max(3, dis.length + 2)), 3, 0xFF39404a);
-        this.graphic.bitmap.fillRect(new Rectangle(1, 1, this.width - 2, 1), 0xFFffffff);
+        final width = Std.int(Math.max(3, dis.length + 2));
+        final key = 'path_$width';
+        if (FlxG.bitmap.checkCache(key))
+            this.loadGraphic(FlxG.bitmap.get(key));
+        else
+        {
+            this.makeGraphic(width, 3, 0xFF39404a, false, key);
+            this.graphic.bitmap.fillRect(new Rectangle(1, 1, this.width - 2, 1), 0xFFffffff);
+        }
         // rotate
         this.angle = dis.degrees;
         this.origin.set(1, 1);

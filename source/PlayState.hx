@@ -42,7 +42,8 @@ class PlayState extends flixel.FlxState
 
 	private var grpCheese = new FlxTypedGroup<Cheese>();
 	private var grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
-	private var grpMovingPlatformsPath = new FlxTypedGroup<PathSprite>();
+	private var grpMovingPlatformPaths = new FlxTypedGroup<PathSprite>();
+	private var grpMovingPlatformBolts = new FlxTypedGroup<FlxSprite>();
 	private var grpOneWayMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
 
 	private var grpObstacles = new FlxTypedGroup<Obstacle>();
@@ -86,8 +87,9 @@ class PlayState extends flixel.FlxState
 		#if debug crack.ignoreDrawDebug = true; #end
 		
 		add(crack);
-		add(grpMovingPlatformsPath);
+		add(grpMovingPlatformPaths);
 		add(grpMovingPlatforms);
+		add(grpMovingPlatformBolts);
 		add(grpObstacles);
 		add(level);
 		add(grpCheckpoint);
@@ -180,7 +182,11 @@ class PlayState extends flixel.FlxState
 			case "movingPlatform"|"solidPlatform"|"cloudPlatform":
 				var platform = MovingPlatform.fromOgmo(e);
 				if (platform.visible)
-					grpMovingPlatformsPath.add(platform.createPathSprite());
+				{
+					var path = platform.createPathSprite();
+					grpMovingPlatformPaths.add(path);
+					grpMovingPlatformBolts.add(path.bolt);
+				}
 				grpMovingPlatforms.add(platform);
 				if (platform.oneWayPlatform)
 					grpOneWayMovingPlatforms.add(platform);
