@@ -349,7 +349,10 @@ class PlayState extends flixel.FlxState
 			}
 		});
 
-		if (!player.gettingHurt && Obstacle.overlap(grpObstacles, player))
+		if (player.state == Alive && Obstacle.overlap(grpObstacles, player))
+			player.state = Hurt;
+		
+		if (player.state == Hurt)
 			player.hurtAndRespawn(curCheckpoint.x, curCheckpoint.y - 16);
 		
 		dialogueBubble.visible = false;
@@ -407,7 +410,7 @@ class PlayState extends flixel.FlxState
 		});
 
 
-		if (!player.gettingHurt)
+		if (player.state == Alive)
 		{
 			FlxG.overlap(player, grpCheese, function(_, cheese:Cheese)
 			{

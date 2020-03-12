@@ -56,8 +56,9 @@ class Player extends FlxSprite
 
     // Not a boost per se, simply a counter for the cos wave thing
     private var jumpBoost:Int = 0;
-
-    public var gettingHurt:Bool = false;
+    
+    public var state:PlayerState = Alive;
+    public var onRespawn = new FlxSignal();
     
     /** Input buffering, allow normal jump slightly after walking off a ledge */
     static inline var COYOTE_TIME = 8/60;
@@ -83,8 +84,6 @@ class Player extends FlxSprite
     public var jump (default, null):Bool;
     public var down (default, null):Bool;
     
-    public var onRespawn = new FlxSignal();
-
     public function new(x:Float, y:Float):Void
     {
         super(x, y);
@@ -119,7 +118,7 @@ class Player extends FlxSprite
             c.resetToSpawn();
         cheese.clear();
         
-        gettingHurt = true;
+        state = Respawning;
         animation.play('fucking died lmao');
         FlxG.sound.play('assets/sounds/damageTaken' + BootState.soundEXT, 0.6);
 
@@ -130,74 +129,82 @@ class Player extends FlxSprite
     {
         reset(x, y);
         platform = null;
-        gettingHurt = false;
+        state = Alive;
         acceleration.y = GRAVITY;
         onRespawn.dispatch();
     }
 
     override public function update(elapsed:Float):Void
     {
-        if (gettingHurt)
+        switch (state)
         {
-            velocity.set();
-            acceleration.set();
-            xAirBoost = 0;
-            
-            super.update(elapsed);
-        }
-        else
-        {
-            movement(elapsed);
-            
-            // prevent drag from reducing speed granted from moving platforms unless they accelerate
-            var oldDragX = drag.x;
-            var oldAccelX = acceleration.x;
-            var boosting = xAirBoost != 0;
-            if (boosting)
-            {
-                // boosted but still able to make noticable adjustments in either direction
-                var slowBoosted = Math.abs(velocity.x) < MAXSPEED;
+            case Hurt:
+            case Respawning:
+                velocity.set();
+                acceleration.set();
+                xAirBoost = 0;
                 
-                // apply acceleration to xBoost and adjust velocity/maxspeed from that
-                velocity.x -= xAirBoost;
+                super.update(elapsed);
+            case Alive:
+                movement(elapsed);
                 
-                // accelerating opposite to boost reduces boost
-                if (acceleration.x != 0)
+                // prevent drag from reducing speed granted from moving platforms unless they accelerate
+                var oldDragX = drag.x;
+                var oldAccelX = acceleration.x;
+                var boosting = xAirBoost != 0;
+                if (boosting)
                 {
-                    if (!FlxMath.sameSign(acceleration.x, xAirBoost))
+                    // boosted but still able to make noticable adjustments in either direction
+                    var slowBoosted = Math.abs(velocity.x) < MAXSPEED;
+                    
+                    // apply acceleration to xBoost and adjust velocity/maxspeed from that
+                    velocity.x -= xAirBoost;
+                    
+                    // accelerating opposite to boost reduces boost
+                    if (acceleration.x != 0)
                     {
-                        xAirBoost = FlxVelocity.computeVelocity(xAirBoost, acceleration.x, 0, 0, elapsed);
-                        acceleration.x = 0;
+                        if (!FlxMath.sameSign(acceleration.x, xAirBoost))
+                        {
+                            xAirBoost = FlxVelocity.computeVelocity(xAirBoost, acceleration.x, 0, 0, elapsed);
+                            acceleration.x = 0;
+                        }
+                        else if (slowBoosted)
+                        {
+                            // If the player is making air adjustments convert boost to normal speed, since the player
+                            // expects to stop when letting go of left right keys
+                            var delta = FlxVelocity.computeVelocity(xAirBoost, -acceleration.x, 0, 0, elapsed) - xAirBoost;
+                            xAirBoost += delta;
+                            velocity.x = FlxVelocity.computeVelocity(velocity.x, -delta, 0, MAXSPEED, elapsed);
+                        }
+                        // maxVelocity.x = MAXSPEED + Math.abs(xAirBoost);
                     }
-                    else if (slowBoosted)
-                    {
-                        // If the player is making air adjustments convert boost to normal speed, since the player
-                        // expects to stop when letting go of left right keys
-                        var delta = FlxVelocity.computeVelocity(xAirBoost, -acceleration.x, 0, 0, elapsed) - xAirBoost;
-                        xAirBoost += delta;
-                        velocity.x = FlxVelocity.computeVelocity(velocity.x, -delta, 0, MAXSPEED, elapsed);
-                    }
-                    // maxVelocity.x = MAXSPEED + Math.abs(xAirBoost);
+                    // accelerating forward works like normal
+                    if (oldAccelX == 0 || acceleration.x != 0)
+                        velocity.x = FlxVelocity.computeVelocity(velocity.x, acceleration.x, drag.x, MAXSPEED, elapsed);
+                    // apply normal drag here
+                    velocity.x += xAirBoost;
+                    
+                    drag.x = 0;
+                    acceleration.x = 0;
                 }
-                // accelerating forward works like normal
-                if (oldAccelX == 0 || acceleration.x != 0)
-                    velocity.x = FlxVelocity.computeVelocity(velocity.x, acceleration.x, drag.x, MAXSPEED, elapsed);
-                // apply normal drag here
-                velocity.x += xAirBoost;
-                
-                drag.x = 0;
-                acceleration.x = 0;
-            }
-            super.update(elapsed);
-            if (boosting)
-            {
-                drag.x = oldDragX;
-                acceleration.x = oldAccelX;
-            }
+                super.update(elapsed);
+                if (boosting)
+                {
+                    drag.x = oldDragX;
+                    acceleration.x = oldAccelX;
+                }
         }
     }
+    
     private function movement(elapsed:Float):Void
     {
+        if (isTouching(FlxObject.FLOOR) && isTouching(FlxObject.CEILING) && (platform == null || !platform.oneWayPlatform))
+        {
+            // crushed
+            state = Hurt;
+            return;
+        }
+        
         jump  = Inputs.pressed.JUMP;
         down  = Inputs.pressed.DOWN;
         left  = Inputs.pressed.LEFT;
@@ -603,4 +610,11 @@ abstract JumpSprite(FlxSpriteGroup) to FlxSprite
             child.kill();
         }
     }
+}
+
+enum PlayerState
+{
+    Alive;
+    Hurt;
+    Respawning;
 }
