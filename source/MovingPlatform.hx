@@ -89,16 +89,30 @@ class MovingPlatform extends flixel.FlxSprite
         var values:EntityValues = cast data.values;
         trigger = values.trigger;
         oneWayPlatform = values.oneWayPlatform != null ? values.oneWayPlatform : data.name == "cloudPlatform";
+        final type = oneWayPlatform ? "cloud" : "solid";
         
         switch (values.graphic)
         {
             case null|"auto":
-                loadGraphic(getImage(data.width, data.height, oneWayPlatform ? "cloud" : "solid"));
+                loadGraphic(getImage(data.width, data.height, type));
             case "none":
                 makeGraphic(data.width, data.height);
                 visible = false;
+            // Deprecated
             case graphic:
-                loadGraphic('assets/images/${graphic}_${oneWayPlatform ? "cloud" : "solid"}.png');
+                loadGraphic
+                (
+                    switch(graphic)
+                    {
+                        case "movingSingle"    : getImage( 32,  32, type);
+                        case "movingShort"     : getImage( 64,  32, type);
+                        case "movingLongside"  : getImage( 96,  32, type);
+                        case "movingLongerside": getImage(128,  32, type);
+                        case "movingLong"      : getImage( 32,  96, type);
+                        case "movingLonger"    : getImage( 32, 128, type);
+                        default: throw 'Unhandled graphic:$graphic';
+                    }
+                );
                 setGraphicSize(data.width, data.height);
         }
         updateHitbox();
@@ -134,18 +148,17 @@ class MovingPlatform extends flixel.FlxSprite
         return platform;
     }
     
-    static var sourceTiles = new Map<String, FlxGraphic>();
     static function getImage(width:Int, height:Int, type:String)
     {
         final key = '${type}Platform${width}x${height}';
         
-        if (FlxG.bitmap.checkCache('${type}Platform${width}x${height}'))
+        if (FlxG.bitmap.checkCache(key))
             return FlxG.bitmap.get(key);
         
-        if (!sourceTiles.exists(type))
-            sourceTiles[type] = FlxG.bitmap.add('assets/images/${type}Platform.png');
+        if (!FlxG.bitmap.checkCache('source_$key'))
+            FlxG.bitmap.add('assets/images/${type}Platform.png', 'source_$key');
         
-        final source = sourceTiles[type];
+        final source = FlxG.bitmap.get('source_$key');
         final graphic = FlxG.bitmap.create(width, height, 0, false, key);
         
         var sourceRect = new Rectangle(0, 0, 32, 32);
