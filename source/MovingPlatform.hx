@@ -2,7 +2,13 @@ package;
 
 import OgmoPath;
 
+import openfl.display.Bitmap;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
+
+import flixel.FlxG;
 import flixel.FlxObject;
+import flixel.graphics.FlxGraphic;
 import flixel.math.FlxVector;
 import flixel.util.FlxTimer;
 
@@ -84,38 +90,16 @@ class MovingPlatform extends flixel.FlxSprite
         oneWayPlatform = values.oneWayPlatform;
         trigger = values.trigger;
         
-        var graphic = values.graphic;
-        if (graphic == "auto")
+        switch (values.graphic)
         {
-            switch(data.width >> 5)
-            {
-                case 1:
-                    switch(data.height >> 5)
-                    {
-                        case 1: graphic = "movingSingle";
-                        case 3: graphic = "movingLong";
-                        case 4: graphic = "movingLong";//<--stretched
-                        case 5: graphic = "movingLonger";
-                        case _: throw 'Cannot autodetermine graphics from size (32x${data.height})';
-                    }
-                case 2: graphic = "movingShort";
-                case 3: graphic = "movingLongside";
-                case 4: graphic = "movingLongside";
-                case 5: graphic = "movingLongerside";
-                case _: throw 'Cannot autodetermine graphics from size (${data.width}x${data.height})';
-            }
-        }
-        
-        if (graphic == "none")
-        {
-            makeGraphic(data.width, data.height);
-            visible = false;
-        }
-        else
-        {
-            graphic += "_" + (oneWayPlatform ? "cloud" : "solid");
-            loadGraphic('assets/images/$graphic.png');
-            setGraphicSize(data.width, data.height);
+            case "auto":
+                loadGraphic(getImage(data.width, data.height, oneWayPlatform ? "cloud" : "solid"));
+            case "none":
+                makeGraphic(data.width, data.height);
+                visible = false;
+            case graphic:
+                loadGraphic('assets/images/${graphic}_${oneWayPlatform ? "cloud" : "solid"}.png');
+                setGraphicSize(data.width, data.height);
         }
         updateHitbox();
         
@@ -148,6 +132,45 @@ class MovingPlatform extends flixel.FlxSprite
         var platform = new MovingPlatform(data.x, data.y);
         platform.setOgmoProperties(data);
         return platform;
+    }
+    
+    static var sourceTiles = new Map<String, FlxGraphic>();
+    static function getImage(width:Int, height:Int, type:String)
+    {
+        final key = '${type}Platform${width}x${height}';
+        
+        if (FlxG.bitmap.checkCache('${type}Platform${width}x${height}'))
+            return FlxG.bitmap.get(key);
+        
+        if (!sourceTiles.exists(type))
+            sourceTiles[type] = FlxG.bitmap.add('assets/images/${type}Platform.png');
+        
+        final source = sourceTiles[type];
+        final graphic = FlxG.bitmap.create(width, height, 0, false, key);
+        
+        var sourceRect = new Rectangle(0, 0, 32, 32);
+        var destPoint = new Point();
+        inline function stamp(sourceTileX:Int, sourceTileY:Int, destTileX:Int, destTileY:Int):Void
+        {
+            sourceRect.x = sourceTileX << 5;
+            sourceRect.y = sourceTileY << 5;
+            destPoint.x  = destTileX << 5;
+            destPoint.y  = destTileY << 5;
+            graphic.bitmap.copyPixels(source.bitmap, sourceRect, destPoint);
+        }
+        
+        inline function getSourceTile(pos:Int, size:Int)
+            return size == 1 ? 0 : switch(pos) { case 0: 1; case _ if (pos == size - 1): 3; default: 2; }
+        
+        final tilesX = width  >> 5;
+        final tilesY = height >> 5;
+        for (y in 0...tilesY)
+        {
+            var sourceY = getSourceTile(y, tilesY);
+            for (x in 0...tilesX)
+                stamp(getSourceTile(x, tilesX), sourceY, x, y);
+        }
+        return graphic;
     }
 }
 
