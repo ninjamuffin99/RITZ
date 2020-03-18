@@ -46,7 +46,7 @@ class PlayState extends flixel.FlxState
 	private var grpMovingPlatformBolts = new FlxTypedGroup<FlxSprite>();
 	private var grpOneWayMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
 
-	private var grpObstacles = new FlxTypedGroup<Obstacle>();
+	private var grpSpikes = new FlxTypedGroup<SpikeObstacle>();
 	private var curCheckpoint:Checkpoint;
 	private var grpCheckpoint = new FlxTypedGroup<Checkpoint>();
 	private var grpLockedDoors = new FlxTypedGroup<Lock>();
@@ -90,7 +90,7 @@ class PlayState extends flixel.FlxState
 		add(grpMovingPlatformPaths);
 		add(grpMovingPlatforms);
 		add(grpMovingPlatformBolts);
-		add(grpObstacles);
+		add(grpSpikes);
 		add(level);
 		add(grpCheckpoint);
 		add(grpMusicTriggers);
@@ -191,7 +191,7 @@ class PlayState extends flixel.FlxState
 				if (platform.oneWayPlatform)
 					grpOneWayMovingPlatforms.add(platform);
 			case "spike":
-				grpObstacles.add(new SpikeObstacle(e.x, e.y, e.rotation));
+				grpSpikes.add(new SpikeObstacle(e.x, e.y, e.rotation));
 			case "checkpoint":
 				var rat = Checkpoint.fromOgmo(e);
 				#if debug
@@ -355,7 +355,10 @@ class PlayState extends flixel.FlxState
 			}
 		});
 
-		if (player.state == Alive && Obstacle.overlap(grpObstacles, player))
+		// collide with sides but die by the point, didn't like it but keeping the code
+		// if (player.state == Alive && SpikeObstacle.checkKillOrCollide(grpSpikes, player))
+		// 	player.state = Hurt;
+		if (player.state == Alive && SpikeObstacle.overlap(grpSpikes, player))
 			player.state = Hurt;
 		
 		if (player.state == Hurt)

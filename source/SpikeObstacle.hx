@@ -1,8 +1,10 @@
 package;
 
-import flixel.FlxObject;
-import flixel.math.FlxMath;
+import flixel.FlxBasic;
 import flixel.FlxG;
+import flixel.FlxObject;
+import flixel.group.FlxGroup;
+import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 
 class SpikeObstacle extends Obstacle
@@ -12,6 +14,8 @@ class SpikeObstacle extends Obstacle
     public function new(x:Float, y:Float, rotation:Float) {
         super(x, y);
         angle = rotation;
+        immovable = true;
+        moves = false;
         
         loadGraphic(AssetPaths.spike__png, true, SIZE, SIZE);
         animation.add('idle', [0, 1, 2, 3], 10);
@@ -44,10 +48,32 @@ class SpikeObstacle extends Obstacle
                 // offset.y = 6;
                 // height -= (offset.y * 2) + 1;
             default:
-                trace('unhandled angle: $rotation @($x,$y)');
+                throw 'unhandled angle: $rotation @($x,$y)';
         }
         this.x += offset.x;
         this.y += offset.y;
+    }
+    
+    inline function setKillMode():Void
+    {
+        allowCollisions = switch(angle)
+        {
+            case   0: FlxObject.UP;
+            case  90: FlxObject.RIGHT;
+            case 180: FlxObject.DOWN;
+            case -90: FlxObject.LEFT;
+            default: throw 'unhandled angle: $angle';
+        }
+    }
+    
+    inline function setCollideMode():Void
+    {
+        allowCollisions = switch(angle)
+        {
+            case   0|180: FlxObject.RIGHT | FlxObject.LEFT;
+            case  90|-90: FlxObject.UP    | FlxObject.DOWN;
+            default: throw 'unhandled angle: $angle';
+        }
     }
     
     inline static var HALF_SIZE = SIZE / 2;
@@ -58,6 +84,15 @@ class SpikeObstacle extends Obstacle
     override function hitObject(obj:FlxObject):Bool
     {
         //Note: this is called after a simple bounding box check, obj's rect overlaps with this rect
+        inline function checkCollision(moving:Bool, dir:Int):Bool
+            return moving && (allowCollisions & dir) > 0;
+        
+        if (allowCollisions != FlxObject.ANY
+        &&  !checkCollision(obj.velocity.y > 0, FlxObject.UP)
+        &&  !checkCollision(obj.velocity.x < 0, FlxObject.RIGHT)
+        &&  !checkCollision(obj.velocity.y < 0, FlxObject.DOWN)
+        &&  !checkCollision(obj.velocity.x > 0, FlxObject.LEFT))
+            return false;
         
         /** distance from base of spike */
         var normDis = 0.0;
@@ -99,4 +134,36 @@ class SpikeObstacle extends Obstacle
         
         return normDis <= SIZE - disFromCenter * 2;
     }
+    
+    /** Reused group for collide calls */
+    static var collideGroup = new FlxTypedGroup<SpikeObstacle>();
+    static public function checkKillOrCollide(spikes:FlxTypedGroup<SpikeObstacle>, objectOrGroup, ?notifyCallback):Bool
+    {
+        if (FlxG.overlap(spikes, objectOrGroup, (spike, _)->collideGroup.add(spike)))
+        {
+            inline collideGroup.forEach(spike->spike.setKillMode());
+            var touching = Obstacle.overlap(cast collideGroup, objectOrGroup, notifyCallback);
+            if (!touching)
+            {
+                inline collideGroup.forEach(spike->spike.setCollideMode());
+                //TODO: collide and process via cone shape
+                FlxG.collide(collideGroup, objectOrGroup, notifyCallback);
+            }
+            inline collideGroup.forEach(spike->
+                {
+                    spike.allowCollisions = FlxObject.ANY;
+                    collideGroup.remove(spike);
+                }
+            );
+            return touching;
+        }
+        return false;
+    }
+    
+    inline static public function overlap
+        ( spikes:FlxTypedGroup<SpikeObstacle>
+        , objectOrGroup
+        , ?notifyCallback:(SpikeObstacle, Dynamic)->Void
+        ):Bool
+        return Obstacle.overlap(cast spikes, objectOrGroup, cast notifyCallback);
 }
