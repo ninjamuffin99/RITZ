@@ -1,11 +1,13 @@
 package;
 
+import ui.DialogueSubstate;
+
 import io.newgrounds.NG;
+
 import flixel.FlxG;
 import flixel.text.FlxText;
-import flixel.FlxState;
 
-class EndState extends FlxState
+class EndState extends flixel.FlxState
 {
     private var creds:Array<String> =
     [

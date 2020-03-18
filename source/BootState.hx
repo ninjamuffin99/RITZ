@@ -10,7 +10,6 @@ class BootState extends FlxState
 {
     public static var soundEXT:String = ".mp3";
     override function create() {
-        FlxG.mouse.visible = false;
 
         #if desktop
             soundEXT = ".ogg";
