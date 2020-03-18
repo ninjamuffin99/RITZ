@@ -98,9 +98,13 @@ class PlayState extends flixel.FlxState
 		add(grpLockedDoors);
 
 		var decalGroup = ogmo.level.get_decal_layer('decals').get_decal_group('assets/images/decals');
-		#if debug
-		(cast decalGroup:FlxTypedGroup<FlxSprite>).forEach((decal)->decal.ignoreDrawDebug = true);
-		#end
+		for (decal in decalGroup)
+		{
+			(cast decal:FlxObject).moves = false;
+			#if debug
+			(cast decal:FlxSprite).ignoreDrawDebug = true;
+			#end
+		}
 		add(decalGroup);
 
 		grpCheese = new FlxTypedGroup<Cheese>();

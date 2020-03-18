@@ -76,6 +76,7 @@ class Cheese extends FlxSprite
                 animFrame += leadCheese.animation.curAnim.numFrames;
         }
         mode = GetAnim;
+        moves = true;
         solid = false;
         
         // make it start moving a little so it's really clear we just touched it
@@ -128,6 +129,7 @@ class Cheese extends FlxSprite
                 {
                     solid = true;
                     mode = Idle;
+                    moves = false;
                 }
             }
         );

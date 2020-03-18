@@ -16,6 +16,7 @@ class Checkpoint extends FlxSprite
     public function new(x:Float, y:Float, dialogue:String, collectible = false) {
         this.dialogue = dialogue;
         super(x, y + 2);
+        moves = false;
         
         loadGraphic(AssetPaths.checkpoint_rat__png, true, 32, 32);
         animation.add('idle', [0, 1, 2, 3], 10);
