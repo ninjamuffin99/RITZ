@@ -34,6 +34,7 @@ using StringTools;
 class PlayState extends flixel.FlxState
 {
 	inline static var USE_NEW_CAMERA = true;
+	inline static var FIRST_CHEESE_MSG = "Thanks for the cheese, buddy! ";
 	
 	var level:OgmoTilemap;
 	var minimap:Minimap;
@@ -55,8 +56,7 @@ class PlayState extends flixel.FlxState
 	private var grpSecretTriggers = new FlxTypedGroup<SecretTrigger>();
 	private var musicQueue:String = "pillow";
 
-	private var curTalking:Bool = false;
-
+	var gaveCheese = false;
 	var cheeseCountText:BitmapText;
 	var dialogueBubble:FlxSprite;
 	var cheeseCount = 0;
@@ -373,18 +373,28 @@ class PlayState extends flixel.FlxState
 		{
 			FlxG.overlap(grpCheckpoint, player, function(checkpoint:Checkpoint, _)
 			{
+				
+				var autoTalk = checkpoint.autoTalk;
+				var dialogue = checkpoint.dialogue;
+				if (!gaveCheese && player.cheese.length > 0)
+				{
+					gaveCheese = true;
+					autoTalk = true;
+					dialogue = FIRST_CHEESE_MSG + dialogue;
+				}
+				
 				dialogueBubble.visible = true;
 				dialogueBubble.setPosition(checkpoint.x + 20, checkpoint.y - 10);
 				minimap.showCheckpointGet(checkpoint.ID);
 				
-				if (Inputs.justPressed.TALK || checkpoint.autoTalk)
+				if (Inputs.justPressed.TALK || autoTalk)
 				{
 					checkpoint.onTalk();
 					persistentUpdate = true;
 					persistentDraw = true;
 					player.active = false;
 					var oldZoom = FlxG.camera.zoom;
-					var subState = new DialogueSubstate(checkpoint.dialogue, false);
+					var subState = new DialogueSubstate(dialogue, false);
 					subState.closeCallback = ()->
 					{
 						persistentUpdate = false;
