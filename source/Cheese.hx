@@ -87,9 +87,11 @@ class Cheese extends FlxSprite
         final moveTime = animDuration * 0.8;// have some still time
         final amount = 64;
         maxVelocity.set();
-        velocity.copyFrom(target.velocity).normalize();
-        if (velocity.isZero())
+        velocity.copyFrom(target.velocity);
+        if (velocity.x == 0 && velocity.y == 0)
             velocity.y = -1;//straight up
+        else
+            velocity.scale(1 / Math.sqrt(velocity.x * velocity.x + velocity.y * velocity.y));
         velocity.scale(2 * amount / moveTime);
         drag.copyFrom(velocity).scale(1 / moveTime);
         if (drag.x < 0) drag.x = -drag.x;
