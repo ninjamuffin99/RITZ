@@ -88,7 +88,7 @@ class PlayCamera extends FlxCamera
 	override function update(elapsed:Float)
 	{
 		// Deadzone: taller when jumping, but snap to center when on the ground
-		if (!player.gettingHurt && player.onGround != player.wasOnGround)
+		if (player.state == Alive && player.onGround != player.wasOnGround)
 		{
 			deadzone.copyFrom(player.onGround ? groundRect : airRect);
 			

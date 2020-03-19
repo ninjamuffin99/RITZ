@@ -17,7 +17,11 @@ class Obstacle extends FlxSprite
     
     public function hitObject(obj:FlxObject):Bool { return true; }
     
-    public static function overlap(obstacles:FlxTypedGroup<Obstacle>, objectOrGroup:FlxBasic, ?notifyCallback):Bool
+    public static function overlap
+        ( obstacles:FlxTypedGroup<Obstacle>
+        , objectOrGroup:FlxBasic
+        , ?notifyCallback:(Obstacle, Dynamic)->Void
+        ):Bool
     {
         return FlxG.overlap(obstacles, objectOrGroup, notifyCallback, processCallback);
     }

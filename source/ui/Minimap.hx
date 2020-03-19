@@ -164,13 +164,13 @@ abstract MiniTilemap(OgmoTilemap) to OgmoTilemap
                 var p = new FlxPoint(Math.floor(entity.x / OLD_TILE_SIZE), Math.floor(entity.y / OLD_TILE_SIZE));
                 checkpoints[entity.id] = p;
                 stampMap(this, Std.int(p.x), Std.int(p.y), RAT_X);
-            case "movingPlatform":
+            case "movingPlatform"|"solidPlatform"|"cloudPlatform":
                 if (entity.values.graphic != "none")
                     stampAllMapOf(this, entity, PLATFORM);
             case 'locked' | 'locked_tall':
                 stampAllMapOf(this, entity, DOOR);
             case "player" | "spider" | "musicTrigger" | "secretTrigger"://unusued
-            case type: throw 'Unhandled entirty type: $type';
+            case type: throw 'Unhandled entity type: $type';
         }
     }
     

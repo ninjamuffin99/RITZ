@@ -42,10 +42,11 @@ class PlayState extends flixel.FlxState
 
 	private var grpCheese = new FlxTypedGroup<Cheese>();
 	private var grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
-	private var grpMovingPlatformsPath = new FlxTypedGroup<PathSprite>();
+	private var grpMovingPlatformPaths = new FlxTypedGroup<PathSprite>();
+	private var grpMovingPlatformBolts = new FlxTypedGroup<FlxSprite>();
 	private var grpOneWayMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
 
-	private var grpObstacles = new FlxTypedGroup<Obstacle>();
+	private var grpSpikes = new FlxTypedGroup<SpikeObstacle>();
 	private var curCheckpoint:Checkpoint;
 	private var grpCheckpoint = new FlxTypedGroup<Checkpoint>();
 	private var grpLockedDoors = new FlxTypedGroup<Lock>();
@@ -86,9 +87,10 @@ class PlayState extends flixel.FlxState
 		#if debug crack.ignoreDrawDebug = true; #end
 		
 		add(crack);
-		add(grpMovingPlatformsPath);
+		add(grpMovingPlatformPaths);
 		add(grpMovingPlatforms);
-		add(grpObstacles);
+		add(grpMovingPlatformBolts);
+		add(grpSpikes);
 		add(level);
 		add(grpCheckpoint);
 		add(grpMusicTriggers);
@@ -96,9 +98,13 @@ class PlayState extends flixel.FlxState
 		add(grpLockedDoors);
 
 		var decalGroup = ogmo.level.get_decal_layer('decals').get_decal_group('assets/images/decals');
-		#if debug
-		(cast decalGroup:FlxTypedGroup<FlxSprite>).forEach((decal)->decal.ignoreDrawDebug = true);
-		#end
+		for (decal in decalGroup)
+		{
+			(cast decal:FlxObject).moves = false;
+			#if debug
+			(cast decal:FlxSprite).ignoreDrawDebug = true;
+			#end
+		}
 		add(decalGroup);
 
 		grpCheese = new FlxTypedGroup<Cheese>();
@@ -159,6 +165,7 @@ class PlayState extends flixel.FlxState
 		{
 			case "player": 
 				player = new Player(e.x, e.y);
+				player.onRespawn.add(onPlayerRespawn);
 				add(player.dust);
 				add(player);
 				#if debug
@@ -176,15 +183,19 @@ class PlayState extends flixel.FlxState
 			case "coins" | "cheese":
 				grpCheese.add(new Cheese(e.x, e.y, e.id, true));
 				totalCheese++;
-			case "movingPlatform":
+			case "movingPlatform"|"solidPlatform"|"cloudPlatform":
 				var platform = MovingPlatform.fromOgmo(e);
 				if (platform.visible)
-					grpMovingPlatformsPath.add(platform.createPathSprite());
+				{
+					var path = platform.createPathSprite();
+					grpMovingPlatformPaths.add(path);
+					grpMovingPlatformBolts.add(path.bolt);
+				}
 				grpMovingPlatforms.add(platform);
 				if (platform.oneWayPlatform)
 					grpOneWayMovingPlatforms.add(platform);
 			case "spike":
-				grpObstacles.add(new SpikeObstacle(e.x, e.y, e.rotation));
+				grpSpikes.add(new SpikeObstacle(e.x, e.y, e.rotation));
 			case "checkpoint":
 				var rat = Checkpoint.fromOgmo(e);
 				#if debug
@@ -348,65 +359,72 @@ class PlayState extends flixel.FlxState
 			}
 		});
 
-		if (!player.gettingHurt && Obstacle.overlap(grpObstacles, player))
+		// collide with sides but die by the point, didn't like it but keeping the code
+		// if (player.state == Alive && SpikeObstacle.checkKillOrCollide(grpSpikes, player))
+		// 	player.state = Hurt;
+		if (player.state == Alive && SpikeObstacle.overlap(grpSpikes, player))
+			player.state = Hurt;
+		
+		if (player.state == Hurt)
 			player.hurtAndRespawn(curCheckpoint.x, curCheckpoint.y - 16);
 		
 		dialogueBubble.visible = false;
-
-		FlxG.overlap(grpCheckpoint, player, function(checkpoint:Checkpoint, _)
+		if (player.onGround)
 		{
-			dialogueBubble.visible = true;
-			dialogueBubble.setPosition(checkpoint.x + 20, checkpoint.y - 10);
-			minimap.showCheckpointGet(checkpoint.ID);
-			
-			if (Inputs.justPressed.TALK || (checkpoint.autoTalk && player.onGround))
+			FlxG.overlap(grpCheckpoint, player, function(checkpoint:Checkpoint, _)
 			{
+				dialogueBubble.visible = true;
+				dialogueBubble.setPosition(checkpoint.x + 20, checkpoint.y - 10);
+				minimap.showCheckpointGet(checkpoint.ID);
 				
-				checkpoint.onTalk();
-				persistentUpdate = true;
-				persistentDraw = true;
-				player.active = false;
-				var oldZoom = FlxG.camera.zoom;
-				var subState = new DialogueSubstate(checkpoint.dialogue, false);
-				subState.closeCallback = ()->
+				if (Inputs.justPressed.TALK || checkpoint.autoTalk)
 				{
-					persistentUpdate = false;
-					persistentDraw = false;
-					final tweenTime = 0.3;
-					FlxTween.tween(FlxG.camera, { zoom: oldZoom }, tweenTime, { onComplete: (_)->player.active = true } );
-					if (checkpoint.cameraOffsetX != 0)
-						FlxTween.tween(FlxG.camera.targetOffset, { x:0 }, tweenTime);
-				};
-				openSubState(subState);
-				final tweenTime = 0.25;
-				FlxTween.tween(FlxG.camera, { zoom: oldZoom * 2 }, tweenTime, {onComplete:(_)->subState.start() });
-				if (checkpoint.cameraOffsetX != 0)
-					FlxTween.tween(FlxG.camera.targetOffset, { x:checkpoint.cameraOffsetX }, tweenTime);
-			}
-			
-			if (checkpoint != curCheckpoint)
-			{
-				curCheckpoint.deactivate();
-				checkpoint.activate();
-				curCheckpoint = checkpoint;
-				FlxG.sound.play('assets/sounds/checkpoint' + BootState.soundEXT, 0.8);
-			}
-
-			if (!player.cheese.isEmpty())
-			{
-				player.cheese.first().sendToCheckpoint(checkpoint,
-					(cheese)->
+					checkpoint.onTalk();
+					persistentUpdate = true;
+					persistentDraw = true;
+					player.active = false;
+					var oldZoom = FlxG.camera.zoom;
+					var subState = new DialogueSubstate(checkpoint.dialogue, false);
+					subState.closeCallback = ()->
 					{
-						cheeseCount++;
-						minimap.showCheeseGet(cheese.ID);
-					}
-				);
-				player.cheese.clear();
-			}
-		});
+						persistentUpdate = false;
+						persistentDraw = false;
+						final tweenTime = 0.3;
+						FlxTween.tween(FlxG.camera, { zoom: oldZoom }, tweenTime, { onComplete: (_)->player.active = true } );
+						if (checkpoint.cameraOffsetX != 0)
+							FlxTween.tween(FlxG.camera.targetOffset, { x:0 }, tweenTime);
+					};
+					openSubState(subState);
+					final tweenTime = 0.25;
+					FlxTween.tween(FlxG.camera, { zoom: oldZoom * 2 }, tweenTime, {onComplete:(_)->subState.start() });
+					if (checkpoint.cameraOffsetX != 0)
+						FlxTween.tween(FlxG.camera.targetOffset, { x:checkpoint.cameraOffsetX }, tweenTime);
+				}
+				
+				if (checkpoint != curCheckpoint)
+				{
+					curCheckpoint.deactivate();
+					checkpoint.activate();
+					curCheckpoint = checkpoint;
+					FlxG.sound.play('assets/sounds/checkpoint' + BootState.soundEXT, 0.8);
+				}
+				
+				if (!player.cheese.isEmpty())
+				{
+					player.cheese.first().sendToCheckpoint(checkpoint,
+						(cheese)->
+						{
+							cheeseCount++;
+							minimap.showCheeseGet(cheese.ID);
+						}
+					);
+					player.cheese.clear();
+				}
+			});
+		}
 
 
-		if (!player.gettingHurt)
+		if (player.state == Alive)
 		{
 			FlxG.overlap(player, grpCheese, function(_, cheese:Cheese)
 			{
@@ -436,6 +454,16 @@ class PlayState extends flixel.FlxState
 		if (FlxG.keys.justPressed.T)
 			cheeseCount++;
 		#end
+	}
+	
+	function onPlayerRespawn():Void
+	{
+		// Reset moving platform
+		for (i in 0...grpMovingPlatforms.members.length)
+		{
+			if (grpMovingPlatforms.members[i] != null)
+				grpMovingPlatforms.members[i].resetPath();
+		}
 	}
 	
 	private function musicHandling():Void
