@@ -11,37 +11,16 @@ You can play the game on Newgrounds: https://www.newgrounds.com/portal/view/7468
 
 # CREDS
 ### ART
-MKMAFFO
-
-DEEGEEMIN
+- MKMAFFO
+- DEEGEEMIN
 ### MUSIC
-KAWAISPRITE
+- KAWAISPRITE
 ### PROGRAMMING
-NINJAMUFFIN99
-GEOKURELI
+- NINJAMUFFIN99
+- GEOKURELI
 
 # Changes From the Pixel day version
-
-## Camera
-* Attempted to remove blind jumps, and decrease total camera movement during jumps
-* Deadzone covers total jump height upwards and 3 tiles downwards without moving
-* Landing at a new height (within the deadzone) gradually snaps the camera to the new height
-* Holding down pans the camera down temporarily to see below
-* sections of levels can specify camera modes, which currently only affect
-whether to show more above or below the player
-* falling for more than 3 tiles will make the camera pan down
-
 ## Player Movement
-### Vertical stuff     Old       -> New
-* Min jump height: 2.5 tiles -> 1.5 tiles
-* Max jump height: 4.5 tiles -> 3.5 tiles
-* (Air hop height unchanged, jump duration and distance compensated for above values)
-### Horizontal stuff                  Old     -> New
-* (Ground) Stop to full speed:    0.16  s -> 0.25 s;
-* (Ground) Stop from full speed:  0.135 s -> 0.3  s;
-* (Air)    Stop to full speed:    0.16  s -> 0.36 s;
-* (Air)    Stop from full speed:  0.135 s -> 0.2  s;
-* Post air hop acceleration unchanged
 ### Abilities
 * Skid hop: Jump while changing horizontal direction to instantly reach max speed in
 the desired direction. Works on ground jump and air hops
@@ -50,8 +29,6 @@ the desired direction. Works on ground jump and air hops
 * added dust animations
 
 ## Moving Platforms
-* Added `Hold Per Node`(Float): pauses the platform at each node for the specified duration
-* Added `Hold Per Loop`(Float): pauses the platform after each full loop for the specified duration
 * Added `Trigger`: Pauses the platform at the start until the specified trigger is fired. 
 (Note: all modes other than `Load` will pause after each loop
   * **Load**: always running
@@ -81,11 +58,6 @@ and the cheese line moves to the checkpoint rat.
     the amount needed text dissapears
 * Added vertical locked doors
 
-## Checkpoints
-* Camera zooms in on rats while they talk. Iunno I thought it looked cool.
-
-## Spikes
-* Spikes no longer use a box for a hitshape, the collision matches the traignle graphic
 
 ## Level changes
 * Adjusted many gaps and jumpable spots to account for the new movement settings and abilities
@@ -101,15 +73,7 @@ top right is through the same entrance.
 * Made the TopLeft's final downward fall harder but hopefully more clear
 
 ## Minimap
-* Generates a minimap substate from the ogmo level data. show it when they press a button.
-* Shows areas they have been, cheese and checkpoints they've collected
-* M key or Select/Y gamepad button to show
-* able to warp to any checkpoint you've already reached
 * *TODO:*Reveal hidden platforms when they come back from the ending
-
-## Pause Screes
-* Mute and restart button
-* Show all game controls (keyboard and gamepad)
 
 # To Do
 * Save progress
