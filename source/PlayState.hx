@@ -1,5 +1,6 @@
 package;
 
+import flixel.system.FlxSound;
 import Cheese;
 import OgmoPath;
 import OgmoTilemap;
@@ -29,7 +30,6 @@ import flixel.addons.display.FlxBackdrop;
 using zero.utilities.OgmoUtils;
 using zero.flixel.utilities.FlxOgmoUtils;
 using StringTools;
-
 
 class PlayState extends flixel.FlxState
 {
@@ -63,11 +63,16 @@ class PlayState extends flixel.FlxState
 	var cheeseNeeded = 0;
 	var totalCheese = 0;
 	var cheeseNeededText:LockAmountText;
+
+	/**
+	 * Basically functions as FlxG.sound.music, except uhhh dunno
+	 */
+	var _song:FlxSound;
+	var lastBeat:Float = 0;
+	var totalBeats:Int = 0;
 	
 	override public function create():Void
 	{
-		musicHandling();
-		
 		var bg:FlxSprite = new FlxBackdrop(AssetPaths.dumbbg__png);
 		bg.scrollFactor.set(0.75, 0.75);
 		bg.alpha = 0.75;
@@ -77,7 +82,8 @@ class PlayState extends flixel.FlxState
 		var levelPath = 
 			// AssetPaths.dumbassLevel__json;
 			// AssetPaths.normassLevel__json;
-			AssetPaths.smartassLevel__json;
+			AssetPaths.coolAssLevel__json;
+			// AssetPaths.smartassLevel__json;
 		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, levelPath);
 		minimap = new Minimap(levelPath);
 		level = new OgmoTilemap(ogmo, 'tiles', 0, 3);
@@ -100,9 +106,6 @@ class PlayState extends flixel.FlxState
 		add(level);
 		add(decalGroup);
 		add(foreground);
-		
-		//FlxG.sound.playMusic(AssetPaths.pillow__mp3, 0.7);
-		//FlxG.sound.music.loopTime = 4450;
 
 		dialogueBubble = new FlxSprite().loadGraphic(AssetPaths.dialogue__png, true, 32, 32);
 		dialogueBubble.animation.add('play', [0, 1, 2, 3], 6);
@@ -144,11 +147,14 @@ class PlayState extends flixel.FlxState
 			camera.follow(player, FlxCameraFollowStyle.PLATFORMER, 0.15);
 			camera.focusOn(player.getPosition());
 		}
+
 		FlxG.worldBounds.set(0, 0, level.width, level.height);
 		level.follow(camera);
 		camera.fade(FlxColor.BLACK, 2, true);
 		camera.bgColor = FlxG.stage.color;
 		bg.camera = camera;//prevents it from showing in the dialog substates camera
+
+		musicHandling();
 	}
 
 	function entity_loader(e:EntityData, layer:FlxGroup)
@@ -169,6 +175,9 @@ class PlayState extends flixel.FlxState
 				}
 				#end
 				curCheckpoint = new Checkpoint(e.x, e.y, "");
+
+				musicQueue = e.values.initSong;
+
 			case "spider":
 				layer.add(new Enemy(e.x, e.y, OgmoPath.fromEntity(e), e.values.speed));
 				trace('spider added');
@@ -218,6 +227,8 @@ class PlayState extends flixel.FlxState
 	override public function update(elapsed:Float):Void
 	{
 		super.update(elapsed);
+
+		rhythmHandling();
 		
 		if (!player.active)
 			return;
@@ -293,7 +304,6 @@ class PlayState extends flixel.FlxState
 							if (cheeseNeeded <= lock.amountNeeded)
 								cheeseNeeded = 0;
 						});
-						// FlxG.sound.music.volume = 0;
 					}
 					else if (cheeseNeeded != lock.amountNeeded)
 					{
@@ -326,9 +336,9 @@ class PlayState extends flixel.FlxState
 			{
 				musicQueue = mT.daSong;
 
-				if (FlxG.sound.music != null)
+				if (_song != null)
 				{
-					FlxG.sound.music.fadeOut(3, 0, function(t:FlxTween)
+					_song.fadeOut(3, 0, function(t:FlxTween)
 					{
 						musicHandling();
 					});
@@ -351,11 +361,11 @@ class PlayState extends flixel.FlxState
 				}
 
 				sT.hasTriggered = true;
-				var oldVol:Float = FlxG.sound.music.volume;
-				FlxG.sound.music.volume = 0.1;
+				var oldVol:Float = _song.volume;
+				_song.volume = 0.1;
 				FlxG.sound.play('assets/sounds/discoverysound' + BootState.soundEXT, 1, false, null, true, function()
 					{
-						FlxG.sound.music.volume = oldVol;
+						_song.volume = oldVol;
 					});
 			}
 		});
@@ -479,16 +489,38 @@ class PlayState extends flixel.FlxState
 	
 	private function musicHandling():Void
 	{
+		_song = new FlxSound();
+		_song.loadEmbedded('assets/music/' + musicQueue + BootState.soundEXT, true);
+		add(_song);
+		_song.play();
+
+		lastBeat = 0;
+
 		FlxG.sound.playMusic('assets/music/' + musicQueue + BootState.soundEXT, 0.7);
 		switch (musicQueue)
 		{
 			case "pillow":
-				FlxG.sound.music.loopTime = 4450;
+				_song.loopTime = 4450;
 			case "ritz":
-				FlxG.sound.music.loopTime = 0;
+				_song.loopTime = 0;
 		}
 	}
+
+	private function rhythmHandling():Void
+	{
+		Conductor.songPosition = _song.time;
+
+		if (Conductor.songPosition > lastBeat + Conductor.crochet)
+		{
+			lastBeat += Conductor.crochet;
+			totalBeats += 1;
+
+			FlxG.log.add("Bullshit " + FlxG.random.int(0, 20));
+		}
+	}
+	
 }
+
 
 @:forward
 abstract LockAmountText(BitmapText) to BitmapText

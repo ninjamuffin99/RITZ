@@ -107,7 +107,9 @@
       "nodeDisplay": 0,
       "nodeGhost": true,
       "tags": ["FG"],
-      "values": [],
+      "values": [
+        {"name": "initSong", "definition": "String", "defaults": "pillow", "maxLength": 0, "trimWhitespace": true}
+      ],
       "texture": "ritz_ogmo.png",
       "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAb5JREFUWIXFlz1SwzAQhZ8ZbsLQ0NHlAIESxjVlgIYD5Aw5AA0MJbUGygwXSJUTxMdIuxSSlZW8+k/gNXYca7+n1erHwD+rO1IcqmXUGpgA6e1O3zx9HYJ3NnyQU2OAHCDXCH+/PwCev6Oss6PBRzF48t0KA+GALPWBNmKdlBiIFZoW6/2w2WPY7JMxzgsMZPeejTt2mOvrYo6Lj59J01wDRb3fLeb2XoJyZQ9BqpgAOe3cDISZUDQEKaV6i0Mm0wtEoCGIiC8wjpbLpb1frVZQSonv9X1v2TkGknAf1Pe9CDdgrk4cAiIiDhqD+fBQD0Ngev0ELq90rNtrfQ20sb3OhSTBgIUzA11oFjTvkjF4CagqExP4KC/9CNWAYJCEAmpV9iyIifjUA/T0M3H1zulloXt5cLgtCxEBwGw2C/3fASAD9J9b1RogIKsukhkuPg9I8BPUR9yAUoqUUmTMEK23ND5Hzs7JVJMB18166/w2mZFMiMaadkOllJ3TiXogBOqh6lQcg7GdzoeKJqqP5Qn5Bo6aAccIEWF4vLEPzaGEg6OcJgPO15A5E5oDaXbc5lkAYPIxUqLmIThB3L/VL6fFs+sK96bmAAAAAElFTkSuQmCC"
     },
@@ -585,6 +587,45 @@
       ],
       "texture": "../images/door.png",
       "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAACXBIWXMAAFxGAABcRgEUlENBAAAAG3RFWHRTb2Z0d2FyZQBDZWxzeXMgU3R1ZGlvIFRvb2zBp+F8AAAB8klEQVRo3u2ZMW7CQBBFPw1dfITILqMgS3RIaaBJxQVCtXIOkAtQ+gI5AMgVXMAVDW5SR4oSpcTKEUiXhhTRbIa1McbsYmwz1cpe2Z7nmdnZvy3b7W3QYGvZbm+zCmwsg7dGOT4QLhwR/wGY9tcYCLcxEMhXL7L+AfAbTXAeQBLAy+IL489v4PWhnt535/BvrnB3f50BYDaUhAbCrYXf3B9/FB4OwBFxJR1fBXYxANwcEYPuV828yJIQyA4C4IgYjz/vW1FRpWLnj0JM2p0tCIUAAEhEBs+vsmpF1rv9UQgAegHwF9KY51eZY/W7jABIMyqQ0/4aXmSdfKzmuNEIuADIALAK7NLGFwAXABUBQPmbVdUpt2sJgHeUuwBwCLUEwNdtPof3FZUEkHf5IsdVMNS3cwC17AMIQNqcswdwTCvsRVYiAvgcfo3PPftWOO9miP46z/20/TsB2PVnS9kMjWdD+cCiNml3sE985dFC4IsaffNRANQo0AEgr5Ch652FBJE0TVCHLEYRsC+seTNUiiRmQhTlNSBNrFQB5KkBZkRRQ7K4CkBd7tTrOgHklsX58qHbeBHMA0BHDdhVHFMPRkyfCsm1/flDRlgiBbpzLJ9u5VwTxtNcAjjV4ShvcLIKoGkZniDIw9FTqbi8hT1mjk77BacGJv0fTvKbAAAAAElFTkSuQmCC"
+    },
+    {
+      "exportID": "74204393",
+      "name": "rhythmPlatform",
+      "limit": -1,
+      "size": {"x": 16, "y": 16},
+      "origin": {"x": 0, "y": 0},
+      "originAnchored": true,
+      "shape": {
+        "label": "Rectangle",
+        "points": [
+          {"x": -1, "y": -1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": 1}
+        ]
+      },
+      "color": "#ff0000ff",
+      "tileX": false,
+      "tileY": false,
+      "tileSize": {"x": 16, "y": 16},
+      "resizeableX": true,
+      "resizeableY": true,
+      "rotatable": false,
+      "rotationDegrees": 360,
+      "canFlipX": false,
+      "canFlipY": false,
+      "canSetColor": false,
+      "hasNodes": false,
+      "nodeLimit": 0,
+      "nodeDisplay": 0,
+      "nodeGhost": true,
+      "tags": ["platform"],
+      "values": [
+        {"name": "blinkBeat", "definition": "Integer", "defaults": 0, "bounded": false, "min": 0, "max": 100},
+        {"name": "blinkBeatOffset", "definition": "Integer", "defaults": 0, "bounded": false, "min": 0, "max": 100}
+      ]
     }
   ],
   "tilesets": [

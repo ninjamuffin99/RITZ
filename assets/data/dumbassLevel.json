@@ -416,7 +416,16 @@
         {"name": "spike", "id": 158, "_eid": "62782057", "x": 1824, "y": 3648, "originX": 0, "originY": 0, "rotation": -90},
         {"name": "coins", "id": 159, "_eid": "46479631", "x": 1944, "y": 3712, "originX": 0, "originY": 0},
         {"name": "coins", "id": 160, "_eid": "46479631", "x": 1856, "y": 3536, "originX": 0, "originY": 0},
-        {"name": "player", "id": 162, "_eid": "29962948", "x": 48, "y": 4024, "originX": 0, "originY": 0},
+        {
+          "name": "player",
+          "id": 162,
+          "_eid": "29962948",
+          "x": 48,
+          "y": 4024,
+          "originX": 0,
+          "originY": 0,
+          "values": {"initSong": "pillow"}
+        },
         {"name": "coins", "id": 163, "_eid": "46479631", "x": 1712, "y": 3968, "originX": 0, "originY": 0},
         {"name": "spike", "id": 165, "_eid": "62782057", "x": 1872, "y": 3968, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "coins", "id": 166, "_eid": "46479631", "x": 1296, "y": 992, "originX": 0, "originY": 0},

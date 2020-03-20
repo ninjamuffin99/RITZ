@@ -816,7 +816,16 @@
         {"name": "spike", "id": 500, "_eid": "62782057", "x": 1360, "y": 1104, "originX": 0, "originY": 0, "rotation": 90},
         {"name": "spike", "id": 501, "_eid": "62782057", "x": 1360, "y": 1168, "originX": 0, "originY": 0, "rotation": 90},
         {"name": "spike", "id": 502, "_eid": "62782057", "x": 1392, "y": 1008, "originX": 0, "originY": 0, "rotation": 90},
-        {"name": "player", "id": 508, "_eid": "29962948", "x": 64, "y": 3392, "originX": 0, "originY": 0}
+        {
+          "name": "player",
+          "id": 508,
+          "_eid": "29962948",
+          "x": 64,
+          "y": 3392,
+          "originX": 0,
+          "originY": 0,
+          "values": {"initSong": "pillow"}
+        }
       ]
     },
     {

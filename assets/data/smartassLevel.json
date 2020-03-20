@@ -692,7 +692,16 @@
           "values": {"dialogue": "This is default dialogue text. Jump over shit!!! I don't know what else to put here.", "autoTalk": false, "cameraOffsetX": 0}
         },
         {"name": "coins", "id": 989, "_eid": "46479631", "x": 384, "y": 1024, "originX": 0, "originY": 0},
-        {"name": "player", "id": 990, "_eid": "29962948", "x": 416, "y": 2176, "originX": 0, "originY": 0}
+        {
+          "name": "player",
+          "id": 990,
+          "_eid": "29962948",
+          "x": 416,
+          "y": 2176,
+          "originX": 0,
+          "originY": 0,
+          "values": {"initSong": "pillow"}
+        }
       ]
     },
     {
