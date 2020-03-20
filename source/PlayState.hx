@@ -185,7 +185,7 @@ class PlayState extends flixel.FlxState
 				totalCheese++;
 			case "movingPlatform"|"solidPlatform"|"cloudPlatform":
 				var platform = MovingPlatform.fromOgmo(e);
-				if (platform.visible)
+				if (platform.visible && platform.ogmoPath != null)
 				{
 					var path = platform.createPathSprite();
 					grpMovingPlatformPaths.add(path);
