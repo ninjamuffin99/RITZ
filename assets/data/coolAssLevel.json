@@ -50,6 +50,18 @@
           "originX": 0,
           "originY": 0,
           "values": {"initSong": "rhythm"}
+        },
+        {
+          "name": "rhythmPlatform",
+          "id": 1,
+          "_eid": "74204393",
+          "x": 240,
+          "y": 288,
+          "width": 64,
+          "height": 32,
+          "originX": 0,
+          "originY": 0,
+          "values": {"blinkBeat": 2, "blinkBeatOffset": 0}
         }
       ]
     },

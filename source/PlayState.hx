@@ -48,6 +48,7 @@ class PlayState extends flixel.FlxState
 	var grpMovingPlatformPaths = new FlxTypedGroup<PathSprite>();
 	var grpMovingPlatformBolts = new FlxTypedGroup<FlxSprite>();
 	var grpOneWayMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
+	var grpRhythmPlatforms = new FlxTypedGroup<RhythmPlatform>();
 	var grpSpikes = new FlxTypedGroup<SpikeObstacle>();
 	var curCheckpoint:Checkpoint;
 	var grpCheckpoint = new FlxTypedGroup<Checkpoint>();
@@ -64,11 +65,10 @@ class PlayState extends flixel.FlxState
 	var totalCheese = 0;
 	var cheeseNeededText:LockAmountText;
 
-	/**
-	 * Basically functions as FlxG.sound.music, except uhhh dunno
-	 */
-	var _song:FlxSound;
 	var lastBeat:Float = 0;
+	var lastStep:Float = 0;
+	var curBeat:Int = 0;
+	var curStep:Int = 0;
 	var totalBeats:Int = 0;
 	
 	override public function create():Void
@@ -186,6 +186,20 @@ class PlayState extends flixel.FlxState
 				layer.add(cheese);
 				grpCheese.add(cheese);
 				totalCheese++;
+
+			case "rhythmPlatform":
+				var rhyPlatform = RhythmPlatform.fromOgmo(e);
+				if (rhyPlatform.visible && rhyPlatform.ogmoPath != null)
+				{
+					var path = rhyPlatform.createPathSprite();
+					layer.add(path);
+					layer.add(rhyPlatform);
+					layer.add(path.bolt);
+				}
+				else // Add platform only
+					layer.add(rhyPlatform);
+				
+				grpRhythmPlatforms.add(rhyPlatform);
 			case "movingPlatform"|"solidPlatform"|"cloudPlatform":
 				var platform = MovingPlatform.fromOgmo(e);
 				if (platform.visible && platform.ogmoPath != null)
@@ -254,6 +268,14 @@ class PlayState extends flixel.FlxState
 		var oldPlatform = player.platform;
 		player.platform = null;
 		FlxG.collide(grpMovingPlatforms, player, 
+			function(platform:MovingPlatform, _)
+			{
+				if (player.platform == null || (platform.velocity.y < player.platform.velocity.y))
+					player.platform = platform;
+			}
+		);
+
+		FlxG.collide(grpRhythmPlatforms, player, 
 			function(platform:MovingPlatform, _)
 			{
 				if (player.platform == null || (platform.velocity.y < player.platform.velocity.y))
@@ -336,9 +358,9 @@ class PlayState extends flixel.FlxState
 			{
 				musicQueue = mT.daSong;
 
-				if (_song != null)
+				if (FlxG.sound.music != null)
 				{
-					_song.fadeOut(3, 0, function(t:FlxTween)
+					FlxG.sound.music.fadeOut(3, 0, function(t:FlxTween)
 					{
 						musicHandling();
 					});
@@ -361,11 +383,11 @@ class PlayState extends flixel.FlxState
 				}
 
 				sT.hasTriggered = true;
-				var oldVol:Float = _song.volume;
-				_song.volume = 0.1;
+				var oldVol:Float = FlxG.sound.music.volume;
+				FlxG.sound.music.volume = 0.1;
 				FlxG.sound.play('assets/sounds/discoverysound' + BootState.soundEXT, 1, false, null, true, function()
 					{
-						_song.volume = oldVol;
+						FlxG.sound.music.volume = oldVol;
 					});
 			}
 		});
@@ -444,6 +466,7 @@ class PlayState extends flixel.FlxState
 			});
 		}
 
+		
 
 		if (player.state == Alive)
 		{
@@ -489,34 +512,58 @@ class PlayState extends flixel.FlxState
 	
 	private function musicHandling():Void
 	{
-		_song = new FlxSound();
-		_song.loadEmbedded('assets/music/' + musicQueue + BootState.soundEXT, true);
-		add(_song);
-		_song.play();
-
 		lastBeat = 0;
 
 		FlxG.sound.playMusic('assets/music/' + musicQueue + BootState.soundEXT, 0.7);
 		switch (musicQueue)
 		{
 			case "pillow":
-				_song.loopTime = 4450;
+				FlxG.sound.music.loopTime = 4450;
 			case "ritz":
-				_song.loopTime = 0;
+				FlxG.sound.music.loopTime = 0;
 		}
 	}
 
 	private function rhythmHandling():Void
 	{
-		Conductor.songPosition = _song.time;
+		Conductor.songPosition = FlxG.sound.music.time;
 
-		if (Conductor.songPosition > lastBeat + Conductor.crochet)
+		if (Conductor.songPosition > lastBeat)
 		{
 			lastBeat += Conductor.crochet;
-			totalBeats += 1;
+			curBeat += 1;
 
-			FlxG.log.add("Bullshit " + FlxG.random.int(0, 20));
+			FlxG.log.add("BEAT " + curBeat);
+
+			grpRhythmPlatforms.forEach(function(plat:RhythmPlatform)
+			{
+				if (curBeat % 2 == 0)
+				{
+					plat.solid = !plat.solid;
+					plat.visible = plat.solid;
+				}
+			});
 		}
+
+		if (Conductor.songPosition > lastStep + Conductor.steps)
+		{
+			lastStep += Conductor.steps;
+			curStep += 1;
+
+			FlxG.log.add('STEP ' + curStep);
+		}
+		
+		if (curStep == 128)
+		{
+			curBeat = 0;
+			lastBeat = 0;
+			curStep = 0;
+			lastStep = 0;
+			Conductor.songPosition = 0;
+			
+		}
+
+
 	}
 	
 }
