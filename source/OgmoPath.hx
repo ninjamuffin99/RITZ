@@ -13,8 +13,18 @@ import flixel.util.FlxPath;
 
 import zero.utilities.OgmoUtils;
 
+typedef PathData =
+{
+    speed:Float,
+    startDelay:Float,
+    holdPerNode:Float,
+    holdPerLoop:Float,
+    type:PathType,
+};
+
 class OgmoPath extends FlxPath
 {
+    public var startDelay = 0.0;
     public var holdPerNode = 0.0;
     public var holdPerLoop = 0.0;
     public var mode(get, set):Int;
@@ -72,7 +82,7 @@ class OgmoPath extends FlxPath
     override function restart()
     {
         super.restart();
-        holdTimer = holdPerNode + holdPerLoop;
+        holdTimer = holdPerNode + holdPerLoop + startDelay;
         return this;
     }
     
@@ -94,17 +104,12 @@ class OgmoPath extends FlxPath
         for (point in data.nodes)
             path.add(point.x, point.y);
         
-        if (Reflect.hasField(data.values, "speed"))
-            path.speed = data.values.speed;
-        
-        if (Reflect.hasField(data.values, "type"))
-            path.mode = (data.values.type:PathType).getFlxPathMode();
-        
-        if (Reflect.hasField(data.values, "holdPerNode"))
-            path.holdPerNode = data.values.holdPerNode;
-        
-        if (Reflect.hasField(data.values, "holdPerLoop"))
-            path.holdPerLoop = data.values.holdPerLoop ;
+        var values:PathData = cast data.values;
+        path.speed = values.speed;
+        path.mode = values.type.getFlxPathMode();
+        path.startDelay = values.startDelay;
+        path.holdPerNode = values.holdPerNode;
+        path.holdPerLoop = values.holdPerLoop;
         
         path.setProperties(path.speed, path.mode);
         return path;

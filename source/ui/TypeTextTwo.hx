@@ -16,26 +16,14 @@ using flixel.util.FlxStringUtil;
 class TypeTextTwo extends flixel.addons.text.FlxTypeText 
 {
 	/**
-	   Time in seconds that the text will pause for when encountering a period
+	 * key:      list of characters to match against.
+	 * time:     Time in seconds that the text will pause for when encountering a comma
+	 * variance: Percentage that the period pause changes? Similar to typingVariance in FlxTypeText
+	 *     0.5 == up to 50% change in possible speed I think
 	**/
-	public var periodPause:Float = 0.175;
+	public var pauseData = new Map<String, {time:Float, variance:Float}>();
+	var pauseTime = 0.0;
 	
-	/**
-	   Percentage that the period pause changes? Similar to typingVariance in FlxTypeText
-	   0.5 == up to 50% change in possible speed I think
-	**/
-	public var periodPauseVariance:Float = 0.3;
-	
-	/**
-	   Time in seconds that the text will pause for when encountering a comma
-	**/
-	public var commaPause:Float = 0.1;
-	
-	/**
-	   Percentage that the period pause changes? Similar to typingVariance in FlxTypeText
-	   0.5 == up to 50% change in possible speed I think
-	**/
-	public var commaPauseVariance:Float = 0.3;
 	/**
 	   Text that has break lines included, used to see if the text is done
 	**/
@@ -68,8 +56,18 @@ class TypeTextTwo extends flixel.addons.text.FlxTypeText
 			new FlxTextFormatMarkerPair(format3, "<purp>"),
 		];
 		
+		addPauseChars(".?!", 0.175);
+		addPauseChars(",", 0.1);
+		
 		//addFormat(format1, 8, 15);
 		
+	}
+	
+	public function addPauseChars(chars:String, time:Float, variance = 0.3)
+	{
+		var data = { time:time, variance:variance };
+		for (i in 0...chars.length)
+			pauseData[chars.charAt(i)] = data;
 	}
 	
 	override function insertBreakLines() 
@@ -108,27 +106,21 @@ class TypeTextTwo extends flixel.addons.text.FlxTypeText
 		else
 			isFinished = false;
 		
-		if (!paused)
+		if (pauseTime > 0)
 		{
-			switch(_finalText.charAt(_length - 1))
+			pauseTime -= elapsed;
+			if (pauseTime < 0)
 			{
-				case ".":
-					paused = true;
-					new FlxTimer().start(periodPause * FlxG.random.float(1 - periodPauseVariance, 1 + periodPauseVariance), function(tmr:FlxTimer)
-					{
-						paused = false; 
-						
-					});
-				case ",":
-					paused = true;
-					new FlxTimer().start(commaPause * FlxG.random.float(1 - commaPauseVariance, 1 + commaPauseVariance), function(tmr:FlxTimer)
-					{
-						paused = false; 
-						
-					});
+				pauseTime = 0;
+				paused = false;
 			}
 		}
-		
+		else if (pauseData.exists(_finalText.charAt(_length - 1)))
+		{
+			final pause = pauseData[_finalText.charAt(_length - 1)];
+			pauseTime = pause.time * FlxG.random.float(1 - pause.variance, 1 + pause.variance);
+			paused = true;
+		}
 	}
 
 	override public function skip():Void

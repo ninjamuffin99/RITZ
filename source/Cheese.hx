@@ -28,7 +28,7 @@ class Cheese extends FlxSprite
 
         loadGraphic(AssetPaths.cheese_idle__png, true, 32, 32);
         animation.add('idle', [0]);
-        animation.add('follow', [0, 1, 2, 3, 4, 5, 6], 12);
+        animation.add('follow', [0, 1, 2, 3, 4, 5, 6], 7);
         animation.play('idle');
         offset.x = 2;
         width -= 5;

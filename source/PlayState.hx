@@ -34,29 +34,29 @@ using StringTools;
 class PlayState extends flixel.FlxState
 {
 	inline static var USE_NEW_CAMERA = true;
+	inline static var FIRST_CHEESE_MSG = "Thanks for the cheese, buddy! ";
 	
 	var level:OgmoTilemap;
 	var minimap:Minimap;
 	var player:Player;
 	var tileSize = 0;
 
-	private var grpCheese = new FlxTypedGroup<Cheese>();
-	private var grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
-	private var grpMovingPlatformPaths = new FlxTypedGroup<PathSprite>();
-	private var grpMovingPlatformBolts = new FlxTypedGroup<FlxSprite>();
-	private var grpOneWayMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
+	var foreground = new FlxGroup();
+	var background = new FlxGroup();
+	var grpCheese = new FlxTypedGroup<Cheese>();
+	var grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
+	var grpMovingPlatformPaths = new FlxTypedGroup<PathSprite>();
+	var grpMovingPlatformBolts = new FlxTypedGroup<FlxSprite>();
+	var grpOneWayMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
+	var grpSpikes = new FlxTypedGroup<SpikeObstacle>();
+	var curCheckpoint:Checkpoint;
+	var grpCheckpoint = new FlxTypedGroup<Checkpoint>();
+	var grpLockedDoors = new FlxTypedGroup<Lock>();
+	var grpMusicTriggers = new FlxTypedGroup<MusicTrigger>();
+	var grpSecretTriggers = new FlxTypedGroup<SecretTrigger>();
+	var musicQueue:String = "pillow";
 
-	private var grpSpikes = new FlxTypedGroup<SpikeObstacle>();
-	private var curCheckpoint:Checkpoint;
-	private var grpCheckpoint = new FlxTypedGroup<Checkpoint>();
-	private var grpLockedDoors = new FlxTypedGroup<Lock>();
-
-	private var grpMusicTriggers = new FlxTypedGroup<MusicTrigger>();
-	private var grpSecretTriggers = new FlxTypedGroup<SecretTrigger>();
-	private var musicQueue:String = "pillow";
-
-	private var curTalking:Bool = false;
-
+	var gaveCheese = false;
 	var cheeseCountText:BitmapText;
 	var dialogueBubble:FlxSprite;
 	var cheeseCount = 0;
@@ -86,17 +86,6 @@ class PlayState extends flixel.FlxState
 		var crack = new OgmoTilemap(ogmo, 'Crack', "assets/images/");
 		#if debug crack.ignoreDrawDebug = true; #end
 		
-		add(crack);
-		add(grpMovingPlatformPaths);
-		add(grpMovingPlatforms);
-		add(grpMovingPlatformBolts);
-		add(grpSpikes);
-		add(level);
-		add(grpCheckpoint);
-		add(grpMusicTriggers);
-		add(grpSecretTriggers);
-		add(grpLockedDoors);
-
 		var decalGroup = ogmo.level.get_decal_layer('decals').get_decal_group('assets/images/decals');
 		for (decal in decalGroup)
 		{
@@ -105,11 +94,13 @@ class PlayState extends flixel.FlxState
 			(cast decal:FlxSprite).ignoreDrawDebug = true;
 			#end
 		}
+		
+		add(crack);
+		add(background);
+		add(level);
 		add(decalGroup);
-
-		grpCheese = new FlxTypedGroup<Cheese>();
-		add(grpCheese);
-
+		add(foreground);
+		
 		//FlxG.sound.playMusic(AssetPaths.pillow__mp3, 0.7);
 		//FlxG.sound.music.loopTime = 4450;
 
@@ -119,7 +110,8 @@ class PlayState extends flixel.FlxState
 		add(dialogueBubble);
 		dialogueBubble.visible = false;
 
-		ogmo.level.get_entity_layer('entities').load_entities(entity_loader);
+		ogmo.level.get_entity_layer('BG entities').load_entities(entity_loader.bind(_, background));
+		ogmo.level.get_entity_layer('FG entities').load_entities(entity_loader.bind(_, foreground));
 		trace('Total cheese: $totalCheese');
 		if (player == null)
 			throw "player missing";
@@ -159,50 +151,59 @@ class PlayState extends flixel.FlxState
 		bg.camera = camera;//prevents it from showing in the dialog substates camera
 	}
 
-	function entity_loader(e:EntityData) 
+	function entity_loader(e:EntityData, layer:FlxGroup)
 	{
 		switch(e.name)
 		{
 			case "player": 
 				player = new Player(e.x, e.y);
 				player.onRespawn.add(onPlayerRespawn);
-				add(player.dust);
-				add(player);
+				layer.add(player.dust);
+				layer.add(player);
 				#if debug
 				if (player.jumpSprite != null)
 				{
-					add(player.jumpSprite);
+					layer.add(player.jumpSprite);
 					player.jumpSprite.x = player.x;
 					player.jumpSprite.y = player.y;
 				}
 				#end
 				curCheckpoint = new Checkpoint(e.x, e.y, "");
 			case "spider":
-				add(new Enemy(e.x, e.y, OgmoPath.fromEntity(e), e.values.speed));
+				layer.add(new Enemy(e.x, e.y, OgmoPath.fromEntity(e), e.values.speed));
 				trace('spider added');
 			case "coins" | "cheese":
-				grpCheese.add(new Cheese(e.x, e.y, e.id, true));
+				var cheese = new Cheese(e.x, e.y, e.id, true);
+				layer.add(cheese);
+				grpCheese.add(cheese);
 				totalCheese++;
 			case "movingPlatform"|"solidPlatform"|"cloudPlatform":
 				var platform = MovingPlatform.fromOgmo(e);
-				if (platform.visible)
+				if (platform.visible && platform.ogmoPath != null)
 				{
 					var path = platform.createPathSprite();
-					grpMovingPlatformPaths.add(path);
-					grpMovingPlatformBolts.add(path.bolt);
+					layer.add(path);
+					layer.add(platform);
+					layer.add(path.bolt);
 				}
+				else // Add platform only
+					layer.add(platform);
+				
 				grpMovingPlatforms.add(platform);
 				if (platform.oneWayPlatform)
 					grpOneWayMovingPlatforms.add(platform);
 			case "spike":
-				grpSpikes.add(new SpikeObstacle(e.x, e.y, e.rotation));
+				var spike = new SpikeObstacle(e.x, e.y, e.rotation);
+				layer.add(spike);
+				grpSpikes.add(spike);
 			case "checkpoint":
 				var rat = Checkpoint.fromOgmo(e);
+				layer.add(rat);
+				grpCheckpoint.add(rat);
 				#if debug
 				if (!minimap.checkpoints.exists(rat.ID))
 					throw "Non-existent checkpoint id:" + rat.ID;
 				#end
-				grpCheckpoint.add(rat);
 			case "musicTrigger":
 				grpMusicTriggers.add(new MusicTrigger(e.x, e.y, e.width, e.height, e.values.song, e.values.fadetime));
 			case "secretTrigger":
@@ -373,18 +374,28 @@ class PlayState extends flixel.FlxState
 		{
 			FlxG.overlap(grpCheckpoint, player, function(checkpoint:Checkpoint, _)
 			{
+				
+				var autoTalk = checkpoint.autoTalk;
+				var dialogue = checkpoint.dialogue;
+				if (!gaveCheese && player.cheese.length > 0)
+				{
+					gaveCheese = true;
+					autoTalk = true;
+					dialogue = FIRST_CHEESE_MSG + dialogue;
+				}
+				
 				dialogueBubble.visible = true;
 				dialogueBubble.setPosition(checkpoint.x + 20, checkpoint.y - 10);
 				minimap.showCheckpointGet(checkpoint.ID);
 				
-				if (Inputs.justPressed.TALK || checkpoint.autoTalk)
+				if (Inputs.justPressed.TALK || autoTalk)
 				{
 					checkpoint.onTalk();
 					persistentUpdate = true;
 					persistentDraw = true;
 					player.active = false;
 					var oldZoom = FlxG.camera.zoom;
-					var subState = new DialogueSubstate(checkpoint.dialogue, false);
+					var subState = new DialogueSubstate(dialogue, false);
 					subState.closeCallback = ()->
 					{
 						persistentUpdate = false;

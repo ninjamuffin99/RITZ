@@ -133,7 +133,7 @@ class MovingPlatform extends flixel.FlxSprite
     
     public function resetPath()
     {
-        if (path.active && trigger != Load)
+        if (path != null && path.active && trigger != Load)
         {
             path.restart();
             path.active = false;

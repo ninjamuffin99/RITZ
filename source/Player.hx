@@ -145,6 +145,8 @@ class Player extends FlxSprite
                 xAirBoost = 0;
                 
                 super.update(elapsed);
+            case Alive if (Inputs.pressed.RESET):
+                state = Hurt;
             case Alive:
                 movement(elapsed);
                 
@@ -196,9 +198,15 @@ class Player extends FlxSprite
         }
     }
     
+    function isTouchingAll(dirs:Int)
+    {
+        return (touching & dirs) == dirs;
+    }
+    
     private function movement(elapsed:Float):Void
     {
-        if (isTouching(FlxObject.FLOOR) && isTouching(FlxObject.CEILING) && (platform == null || !platform.oneWayPlatform))
+        if (isTouchingAll(FlxObject.LEFT | FlxObject.RIGHT)
+        || (isTouchingAll(FlxObject.DOWN | FlxObject.UP) && (platform == null || !platform.oneWayPlatform)))
         {
             // crushed
             state = Hurt;

@@ -20,6 +20,7 @@ enum Input
 	TALK;
 	PAUSE;
 	MAP;
+	RESET;
 	ANY;
 }
 
@@ -58,6 +59,7 @@ class Inputs extends flixel.FlxBasic
 		, TALK   => [E, F, X]
 		, PAUSE  => [P, ESCAPE, ENTER]
 		, MAP    => [M]
+		, RESET  => [R]
 		, ANY    => [ANY]
 		];
 	
@@ -71,7 +73,8 @@ class Inputs extends flixel.FlxBasic
 		, JUMP   => [A]
 		, TALK   => [X]
 		, PAUSE  => [START]
-		, MAP    => [GUIDE, Y]
+		, MAP    => [GUIDE]
+		, RESET  => [Y]
 		, ANY    => [ANY]
 		];
 	
@@ -236,5 +239,6 @@ abstract InputList(TypedInputList<Input>)
 	public var TALK  (get, never):Bool; inline function get_TALK  () return this.get(Input.TALK  );
 	public var PAUSE (get, never):Bool; inline function get_PAUSE () return this.get(Input.PAUSE );
 	public var MAP   (get, never):Bool; inline function get_MAP   () return this.get(Input.MAP   );
+	public var RESET (get, never):Bool; inline function get_RESET () return this.get(Input.RESET );
 	public var ANY   (get, never):Bool; inline function get_ANY   () return this.get(Input.ANY   );
 }
