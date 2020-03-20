@@ -131,17 +131,18 @@ abstract MiniTilemap(OgmoTilemap) to OgmoTilemap
             }
         
         this = new OgmoTilemap(ogmo, 'tiles');
-        ogmo.level.get_entity_layer('entities').load_entities(stampEntities.bind(_, cheese, checkpoints));
+        ogmo.level.get_entity_layer('BG entities').load_entities(stampEntities.bind(_, cheese, checkpoints, false));
+        ogmo.level.get_entity_layer('FG entities').load_entities(stampEntities.bind(_, cheese, checkpoints, true));
     }
     
-    public function stampEntities(entity:EntityData, cheese:PositionMap, checkpoints:PositionMap)
+    public function stampEntities(entity:EntityData, cheese:PositionMap, checkpoints:PositionMap, fg:Bool)
     {
         switch(entity.name)
         {
             case "coins" | "cheese":
                 var p = new FlxPoint(Math.floor(entity.x / OLD_TILE_SIZE), Math.floor(entity.y / OLD_TILE_SIZE));
                 cheese[entity.id] = p;
-                stampMap(this, Std.int(p.x), Std.int(p.y), CHEESE_X);
+                stampMap(this, Std.int(p.x), Std.int(p.y), CHEESE_X, fg);
             case "spike":
                 var graphic = 0;
                 switch(entity.rotation)
@@ -159,16 +160,16 @@ abstract MiniTilemap(OgmoTilemap) to OgmoTilemap
                         graphic = SPIKE_L;
                         entity.y -= OLD_TILE_SIZE;
                 }
-                stampMapOf(this, entity, graphic);
+                stampMapOf(this, entity, graphic, fg);
             case "checkpoint":
                 var p = new FlxPoint(Math.floor(entity.x / OLD_TILE_SIZE), Math.floor(entity.y / OLD_TILE_SIZE));
                 checkpoints[entity.id] = p;
-                stampMap(this, Std.int(p.x), Std.int(p.y), RAT_X);
+                stampMap(this, Std.int(p.x), Std.int(p.y), RAT_X, fg);
             case "movingPlatform"|"solidPlatform"|"cloudPlatform":
                 if (entity.values.graphic != "none")
-                    stampAllMapOf(this, entity, PLATFORM);
+                    stampAllMapOf(this, entity, PLATFORM, fg);
             case 'locked' | 'locked_tall':
-                stampAllMapOf(this, entity, DOOR);
+                stampAllMapOf(this, entity, DOOR, fg);
             case "player" | "spider" | "musicTrigger" | "secretTrigger"://unusued
             case type: throw 'Unhandled entity type: $type';
         }
@@ -184,26 +185,26 @@ abstract MiniTilemap(OgmoTilemap) to OgmoTilemap
             );
     }
     
-    static function stampAllMapOf(map:OgmoTilemap, entity:EntityData, index:Int):Void
+    static function stampAllMapOf(map:OgmoTilemap, entity:EntityData, index:Int, fg:Bool):Void
     {
         var shape = getStampShapeOf(entity);
         
         for(x in Std.int(shape.left)...Std.int(shape.right))
         {
             for(y in Std.int(shape.top)...Std.int(shape.bottom))
-                stampMap(map, x, y, index);
+                stampMap(map, x, y, index, fg);
         }
         shape.put();
     }
     
-    static function stampMapOf(map:OgmoTilemap, entity:EntityData, index:Int):Void
+    static function stampMapOf(map:OgmoTilemap, entity:EntityData, index:Int, fg:Bool):Void
     {
-        stampMap(map, Math.floor(entity.x / OLD_TILE_SIZE), Math.floor(entity.y / OLD_TILE_SIZE), index);
+        stampMap(map, Math.floor(entity.x / OLD_TILE_SIZE), Math.floor(entity.y / OLD_TILE_SIZE), index, fg);
     }
     
-    inline static function stampMap(map:OgmoTilemap, x:Int, y:Int, index:Int):Void
+    inline static function stampMap(map:OgmoTilemap, x:Int, y:Int, index:Int, fg:Bool):Void
     {
-        if (map.getTile(x, y) == -1)
+        if (fg || map.getTile(x, y) == -1)
             map.setTile(x, y, index);
     }
 }
