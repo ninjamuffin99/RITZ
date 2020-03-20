@@ -145,6 +145,8 @@ class Player extends FlxSprite
                 xAirBoost = 0;
                 
                 super.update(elapsed);
+            case Alive if (Inputs.pressed.RESET):
+                state = Hurt;
             case Alive:
                 movement(elapsed);
                 

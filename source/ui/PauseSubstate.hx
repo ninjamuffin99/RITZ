@@ -46,6 +46,7 @@ class PauseSubstate extends flixel.FlxSubState
         controls.addFromInput(JUMP  );
         controls.addFromInput(TALK  );
         controls.addFromInput(MAP   );
+        controls.addFromInput(RESET );
         
         inline function addColumn()
         {
