@@ -15,7 +15,7 @@
   "compactExport": false,
   "externalScript": "",
   "playCommand": "",
-  "entityTags": ["FG", "trigger", "platform"],
+  "entityTags": ["platform", "FG", "trigger", "blinking", "moving", "cloud", "solid"],
   "layers": [
     {
       "definition": "tile",
@@ -182,7 +182,7 @@
       "nodeLimit": 0,
       "nodeDisplay": 0,
       "nodeGhost": true,
-      "tags": ["platform"],
+      "tags": ["platform", "moving", "solid", "cloud"],
       "values": [
         {"name": "speed", "definition": "Float", "defaults": 70, "bounded": false, "min": 0, "max": 1},
         {"name": "startDelay", "definition": "Float", "defaults": 0, "bounded": false, "min": 0, "max": 100},
@@ -207,11 +207,13 @@
           "choices": ["Load", "OnScreen", "Collide", "Ground"],
           "defaults": 0
         }
-      ]
+      ],
+      "texture": "movingPlatform.png",
+      "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAthJREFUWIXFVz9oE1Ec/i4EAqV1aCazpKEk4NDLZElAsKW1IE2HQsVF6GwHWwW7eJt1CVJah+6CgkVRQYNgK3UI3OF26SAkw5mlmZLBiHDTOcTf5b137+UulcZvSd7f7/v9e++dNqUXvHRiGXoui1Hiw+keHNtEnMin9fTIyPde3odjm8jki4iNjFVC/qNmafH/Rf5zrITJQsmLN90KUF8eerNnL25z7Xt3DgfOp5gTOUGb0gvesOSObQIAMvmitK1aI5IDGD4HZGSiEBW5u7QeGNM8z0MmX4zkhTBLZeMqywl+EqYTvTwIOw8GuTmTL8KxTazMbHExB4BLvz9KRXBVEOU8YN2scr1ITpCJiMvc/+7NMfRcFrV6A6tri37/ftny/29uF7g1NMaW2s3dIwDApwc3lCKk5wB5gi01llwFlpz1ysbukVKEtApq9YZv4aCYq8jJclp7sDDu97EiACDm2KYmbvb1mzEUOYAAOYEVEZqEAJSWizFXiZCBQtI2HyH1MInE5+cAgI5lyO8CkTzME1E8RSLcahvuWKkfgtCVFwQKh9QDYg0Pcm2UcXZO4lqyP8GSCNgvW9jcLgREiHUuYuPLL659sDAeIE8WnwTWxWQH0dzsDreQwJZaVNAeokBfgKxTz2V9i2kDWZ3/KzmgyIFavQEAmJs9xura4rnIB5FyAhzb1MQw0Pk/raeVx6sINuavv7e4sZOzCcynunjPJiAQTEKynMDeauVXbwHIa17M9pOzCW58PtVVCvcFNN1K7/e0P8i7vcv1yTDIQ0oBqtcQb3n3r1Ut3LpyWSqCTTjRYgqBDNJHaVjCUbzFgygs8Q6Nfa7dsQwtBvSeYyszW5HIWSLHNiOTq+B/mrEJF6XUzksoQrt+9bHXdCuhr9eLQMcytDhL7i6tIwHArbb5S2OIvqhzW0/vakDvu8CjD8XJwo4HQLqpCm61HehTrae5HcvwX2F/ANr1uTN/ASm3AAAAAElFTkSuQmCC"
     },
     {
       "exportID": "97687877",
-      "name": "cloudPlatform",
+      "name": "cloudMovingPlatform",
       "limit": -1,
       "size": {"x": 32, "y": 32},
       "origin": {"x": 0, "y": 0},
@@ -242,7 +244,7 @@
       "nodeLimit": 0,
       "nodeDisplay": 0,
       "nodeGhost": true,
-      "tags": ["platform"],
+      "tags": ["platform", "moving", "cloud"],
       "values": [
         {"name": "speed", "definition": "Float", "defaults": 70, "bounded": false, "min": 0, "max": 100},
         {"name": "startDelay", "definition": "Float", "defaults": 0, "bounded": false, "min": 0, "max": 100},
@@ -260,11 +262,13 @@
           "choices": ["Load", "OnScreen", "Collide", "Ground"],
           "defaults": 0
         }
-      ]
+      ],
+      "texture": "cloudMovingPlatform.png",
+      "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAftJREFUWIXFV7FugzAQfURI+YwUVclWmBqZqRm6RR0qVeqSbwidmLq1U7b0G7pUqtQpW4ZuRN1gBEWIz8jkDu1RAzbgUIU3hZi7e2ffPR/Gmc34aDiHPRnjlIjiBNlhA5OCn9ujkxIAAMRzDE4ftYjeCZjZYQPEc23Dl9f7wvNy8aZlTzVgnNmM6wZPwwAAYDmu9FkH2kcgC1YmokUgDQOjS/AuJNIwMEx6GA1/6qBJD+q22XJcpGGAm4sH5TtRnAAAssMGAGCKi230QMxQlXWTDyIBAKbluJUi/Hjfwp6MEcUJbu+u8//Xq13+2/NZwUZca+PrNwFuyoxoJ8RWUwVQgQh6Pqu1lXZBFCe5g2Nai0C2ns8K214gIOuCz6/HzsHLJMiniEIXEFSZl89cZacikYYBPJ9hucgKa9IaKAdv2ok2O0Ukyuj/MpL9mYZBISuVujWpXxsfFQLr1Q6ezyokyq3UpAPiOgWXteNAJkSz6XMtax2QD/IpwnJcLq0BezLO2XYhIWauumOkNUCiMZtuK/LZFpSAKMWyO8LgnMNyXN5mOC2fu6oI66R3H2X5NFQRIpVc/oHVzgJEZh9llXdUMfIdaIicOy8H1FmXvG9oz4SqIMfOhdpKKDv3LkOpceyn2b+N5VeXT7yPTzPqht4vo94JHP1p1hVUA9+U1RIcN4piIgAAAABJRU5ErkJggg=="
     },
     {
       "exportID": "97715593",
-      "name": "solidPlatform",
+      "name": "solidMovingPlatform",
       "limit": -1,
       "size": {"x": 32, "y": 32},
       "origin": {"x": 0, "y": 0},
@@ -295,7 +299,7 @@
       "nodeLimit": 0,
       "nodeDisplay": 0,
       "nodeGhost": true,
-      "tags": ["platform"],
+      "tags": ["platform", "moving", "solid"],
       "values": [
         {"name": "speed", "definition": "Float", "defaults": 70, "bounded": false, "min": 0, "max": 100},
         {"name": "startDelay", "definition": "Float", "defaults": 0, "bounded": false, "min": 0, "max": 100},
@@ -313,7 +317,160 @@
           "choices": ["Load", "OnScreen", "Collide", "Ground"],
           "defaults": 0
         }
-      ]
+      ],
+      "texture": "solidMovingPlatform.png",
+      "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAoJJREFUWIW9Vz1o20AU/iQMBiNnsCZr85jJqwVdjJcUDC2FQIdOnVLPTRd1tKdAIYubtdCldMmQobQ1XgyaPXX0pkxaYhHQpA7tXe7n6e6UpP1AIN29975P773T6TwQePNzX1HjFC6/fcbzo1dOtstJ4KljfKA3mnPS9pPQlR8AUG5yJ59yk/P7PE08APApctHQBZQPFUMUGcaLCgB8kbxpwIf6hPGiatkCiqrF5+zsRLKPTi+4z8HtFdoAbjpTa3l8ADi4vbK+FbMpNzknHwxjDIaxJEiMJfoYBZiMVRF5mnByBlWECJsI38WYpXC3TTVyVcRum+Lphx/OInx1wKaYIqfm6kSo8HqjeUVN3nSmAO7e/vz1Mxwf9klClhmGr7+u+f27ly/IuAx+3YSaiXXWxWxVSI0nYrYq+LXOuvyyZUIqgSoiTxPkaSI1lxqwDstJwC+TCK0HmAhTw7mKYL4mEZoAG3lTiCLUDAN/N6PeaF6pXziRXG0yNbhtXrSJTi/Q/v6JjXktQN/91De3ZcIlU4NhjN02RbnJUXam5hL8D7BytAB9P99t039WAjXbfDdk6z2MF8jTRBMxWxWS43ISSM+meUYexgtNJFkCFqzuzZqAxVAFGgU8lggbOSCUwCTiPnD1JZchAIyjvfS8zrpa3UWIc+JmxHzH0R6XBA+ZgXG0xzrrEoIC478A8CfttC+Nxt8BU0/cp1/IDLCUqWPANY4P+9oSFclnq4L0rcsC/xBJOIKWRhZonRVYTgJJhNrtdb5Ov2QuEJeoy1IzwbgMXUQ8FKSAL+/PHyW4C/jhtP/2Iz+iUacZ1zFX2+zsxJMEAHeH1CanY9shlLJlJ2MA+A3hR4qGYyr0GgAAAABJRU5ErkJggg=="
+    },
+    {
+      "exportID": "97481894",
+      "name": "blinkingPlatform",
+      "limit": -1,
+      "size": {"x": 32, "y": 32},
+      "origin": {"x": 0, "y": 0},
+      "originAnchored": true,
+      "shape": {
+        "label": "Rectangle",
+        "points": [
+          {"x": -1, "y": -1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": 1}
+        ]
+      },
+      "color": "#ff0000ff",
+      "tileX": false,
+      "tileY": false,
+      "tileSize": {"x": 32, "y": 32},
+      "resizeableX": true,
+      "resizeableY": true,
+      "rotatable": false,
+      "rotationDegrees": 360,
+      "canFlipX": false,
+      "canFlipY": false,
+      "canSetColor": false,
+      "hasNodes": false,
+      "nodeLimit": 0,
+      "nodeDisplay": 0,
+      "nodeGhost": true,
+      "tags": ["platform", "blinking", "solid", "cloud"],
+      "values": [
+        {"name": "showTime", "definition": "Float", "defaults": 1, "bounded": false, "min": 0, "max": 100},
+        {"name": "warningTime", "definition": "Float", "defaults": 0.25, "bounded": false, "min": 0, "max": 100},
+        {"name": "hideTime", "definition": "Float", "defaults": 0, "bounded": false, "min": 0, "max": 100},
+        {
+          "name": "graphic",
+          "definition": "Enum",
+          "choices": ["auto", "movingLongside", "movingLonger", "movingLong", "movingShort", "movingSingle", "none"],
+          "defaults": 0
+        },
+        {"name": "oneWayPlatform", "definition": "Boolean", "defaults": false},
+        {
+          "name": "trigger",
+          "definition": "Enum",
+          "choices": ["Load", "OnScreen", "Collide", "Ground"],
+          "defaults": 0
+        }
+      ],
+      "texture": "blinkingPlatform.png",
+      "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAqZJREFUWIXFVzFr20AYfTICQcAdks2LI0yyRZoKFgSKIQ2YOENKhkCHzN2SDp28tVMprv9EoIXQFFKTwQEvBnmVvNkE1Ys72UMNBU3q4H7y6XQnS2ntPhA2Z0nv3fvefXdWto1yUNSOYOzuYJ247TfhOTZUIi8ZxbWRN68u4Tk2dNNCbm2sAvLvbk9R/xf5z40aNsu1QB35LWBwtHJyqjmRE5RtoxysnB0QkgNAphJ4jp3qPt20hOT+4TnQnUR+y3mOrWQRkRXszH2OHGAcKGrzHMj6wW2/CSA+OxEhTw4AT359i9kfEUDk0n7QT+QVCuHFikTkdNOKhfDm+h4P7gg31/fZWBnopoVqo41qox0TEREgepic4Muhm1ZosefYsVCys2aJk0QIBbiDIR7cEdzBMBy7ePkxJoZIefCESSKEq+Dk9AAlo4iT04PYi1gXdNOKCFkWUFEIpXsB5YC9jvcuYiJ48vefvqBSmAEAKoVZ5AIw7wV/MO3V5XuBsbsTLj0ReCeInFApzNAZ5yPPaPtb8LsT+Bu1RQmkDCsGlUPqgDsYhpazIFdY2+n7m7MXoQudcT60nfC5O4G2v7UY6CUIEAWweXUZIwcW5SARlHi+BABi7ThzI5KlnQ9mWqRuRDT7NLh7/fzvBPCNSGY93w0f44LqObbCl4HqXzKKkWMUC1kfILABpEB+ZQMIxEPItl4geozisazrsQHkVwOLUMDIb80/mW2XyKuNdljXxwQtCapoFbDk83U9w13GF4tKIBSQRF5ttNEZL8aX2c6C7wGdcV5+JKN/R2zN+e1TtMX+C+TSkK8SyrOnb4OR35Ke21eJaa+uqCy5f3gODfN+rXFrNu1Y2nt/fHilAIASBEFAfxQ3y+8CAMKXyiAKlux5unfaq4ensN86AphRenp9QQAAAABJRU5ErkJggg=="
+    },
+    {
+      "exportID": "98477857",
+      "name": "cloudBlinkingPlatform",
+      "limit": -1,
+      "size": {"x": 32, "y": 32},
+      "origin": {"x": 0, "y": 0},
+      "originAnchored": true,
+      "shape": {
+        "label": "Rectangle",
+        "points": [
+          {"x": -1, "y": -1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": 1}
+        ]
+      },
+      "color": "#ff0000ff",
+      "tileX": false,
+      "tileY": false,
+      "tileSize": {"x": 32, "y": 32},
+      "resizeableX": true,
+      "resizeableY": true,
+      "rotatable": false,
+      "rotationDegrees": 360,
+      "canFlipX": false,
+      "canFlipY": false,
+      "canSetColor": false,
+      "hasNodes": false,
+      "nodeLimit": 0,
+      "nodeDisplay": 0,
+      "nodeGhost": true,
+      "tags": ["platform", "blinking", "cloud"],
+      "values": [
+        {"name": "showTime", "definition": "Float", "defaults": 1, "bounded": false, "min": 0, "max": 100},
+        {"name": "warnTime", "definition": "Float", "defaults": 0.25, "bounded": false, "min": 0, "max": 100},
+        {"name": "hideTime", "definition": "Float", "defaults": 0, "bounded": false, "min": 0, "max": 100},
+        {
+          "name": "trigger",
+          "definition": "Enum",
+          "choices": ["Load", "OnScreen", "Collide", "Ground"],
+          "defaults": 0
+        }
+      ],
+      "texture": "blinkingPlatform.png",
+      "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAqZJREFUWIXFVzFr20AYfTICQcAdks2LI0yyRZoKFgSKIQ2YOENKhkCHzN2SDp28tVMprv9EoIXQFFKTwQEvBnmVvNkE1Ys72UMNBU3q4H7y6XQnS2ntPhA2Z0nv3fvefXdWto1yUNSOYOzuYJ247TfhOTZUIi8ZxbWRN68u4Tk2dNNCbm2sAvLvbk9R/xf5z40aNsu1QB35LWBwtHJyqjmRE5RtoxysnB0QkgNAphJ4jp3qPt20hOT+4TnQnUR+y3mOrWQRkRXszH2OHGAcKGrzHMj6wW2/CSA+OxEhTw4AT359i9kfEUDk0n7QT+QVCuHFikTkdNOKhfDm+h4P7gg31/fZWBnopoVqo41qox0TEREgepic4Muhm1ZosefYsVCys2aJk0QIBbiDIR7cEdzBMBy7ePkxJoZIefCESSKEq+Dk9AAlo4iT04PYi1gXdNOKCFkWUFEIpXsB5YC9jvcuYiJ48vefvqBSmAEAKoVZ5AIw7wV/MO3V5XuBsbsTLj0ReCeInFApzNAZ5yPPaPtb8LsT+Bu1RQmkDCsGlUPqgDsYhpazIFdY2+n7m7MXoQudcT60nfC5O4G2v7UY6CUIEAWweXUZIwcW5SARlHi+BABi7ThzI5KlnQ9mWqRuRDT7NLh7/fzvBPCNSGY93w0f44LqObbCl4HqXzKKkWMUC1kfILABpEB+ZQMIxEPItl4geozisazrsQHkVwOLUMDIb80/mW2XyKuNdljXxwQtCapoFbDk83U9w13GF4tKIBSQRF5ttNEZL8aX2c6C7wGdcV5+JKN/R2zN+e1TtMX+C+TSkK8SyrOnb4OR35Ke21eJaa+uqCy5f3gODfN+rXFrNu1Y2nt/fHilAIASBEFAfxQ3y+8CAMKXyiAKlux5unfaq4ensN86AphRenp9QQAAAABJRU5ErkJggg=="
+    },
+    {
+      "exportID": "98401502",
+      "name": "solidBlinkingPlatform",
+      "limit": -1,
+      "size": {"x": 32, "y": 32},
+      "origin": {"x": 0, "y": 0},
+      "originAnchored": true,
+      "shape": {
+        "label": "Rectangle",
+        "points": [
+          {"x": -1, "y": -1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": 1}
+        ]
+      },
+      "color": "#ff0000ff",
+      "tileX": false,
+      "tileY": false,
+      "tileSize": {"x": 32, "y": 32},
+      "resizeableX": true,
+      "resizeableY": true,
+      "rotatable": false,
+      "rotationDegrees": 360,
+      "canFlipX": false,
+      "canFlipY": false,
+      "canSetColor": false,
+      "hasNodes": false,
+      "nodeLimit": 0,
+      "nodeDisplay": 0,
+      "nodeGhost": true,
+      "tags": ["platform", "blinking", "solid"],
+      "values": [
+        {"name": "showTime", "definition": "Float", "defaults": 0.25, "bounded": false, "min": 0, "max": 100},
+        {"name": "warnTime", "definition": "Float", "defaults": 0.25, "bounded": false, "min": 0, "max": 100},
+        {"name": "hideTime", "definition": "Float", "defaults": 0, "bounded": false, "min": 0, "max": 100},
+        {
+          "name": "trigger",
+          "definition": "Enum",
+          "choices": ["Load", "OnScreen", "Collide", "Ground"],
+          "defaults": 0
+        }
+      ],
+      "texture": "solidBlinkingPlatform.png",
+      "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAldJREFUWIW9Vz1LA0EQfRcOAmIsvMp0+QVpPUgTRIlgITZaCLZaCSJptNRGIWCjtWChjVgIigpphLPNL0h3XSwSCKSKhc66Nzu3t6fRBweXZT7ezbydzXoQsPMyGEvrEu4er7Da2HSyPV+Y9viaWpidP1JJi7XANT8AYPTac/IZvfbUey868ACgICXXDV0g+UgxdJJBeDwGgIKePG/A3/oE4fG4MMmA5FN8usTM8N7JxweAmeE9+lMr6QFrgQqIJ2s8FLV3imvTiJ9lrEgA6HYie/YvVKqhM4lEC9LKlndXcNja4UvGNsb610mgKi23nvGwt2jE5RBF6CogG+rlAU6ub8W4IgHO7rck2nEJ7biE5dazlUSiAlkkKtVQlbjbiQxRdjuR2CIbCaMFaSR4EEok7QxuayMhaoAbrx/tJhJT0ko1TBDJEqgowve3Q68/tYJiLVAPAENAuqh0Ejz5yfUt6uWB8tEfABgtbSm/XnTgFQBzn9fLg4SA6Le+RiR4ch5Df2io6ZVIPQsIUj8nASLhA+Z53o5LqmT8d3NjDUCy7PTe3FhTVeAxAOBGGG5qEib2e+MzgI52XFKTjQuO2kEkqGo8hpEHDi3gSFM7F6YrnAnoc32StrkqwL+eT8OfVMEH5OOWC+hBIJNGjPuTIO+EPMZxTM6SgHRkTT3dn39MJgEbfiI0G0QC0h7mLchC2hwRCRhnvjAHgOyy65DmiNNfsjT81UjOPYgmDbECN4dn/0ZAXU7n9i/UFU36R+y65mobn257CQLA9yU1zz0g6xIq2dLNGAA+AM8mfwmmqdNCAAAAAElFTkSuQmCC"
     },
     {
       "exportID": "62782057",

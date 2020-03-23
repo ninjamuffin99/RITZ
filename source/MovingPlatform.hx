@@ -15,80 +15,28 @@ import flixel.util.FlxTimer;
 import zero.utilities.OgmoUtils;
 
 @:noCompletion
-typedef EntityValues = {
+typedef PlatformValues = {
     ?graphic       :String,
-    ?oneWayPlatform:Bool,
-    trigger       :Trigger
+    ?oneWayPlatform:Bool
 }
+@:noCompletion
+typedef TriggerPlatformValues = PlatformValues & { trigger:Trigger }
 
-class MovingPlatform extends flixel.FlxSprite
+class Platform extends flixel.FlxSprite
 {
-    inline static var TRANSFER_DELAY = 0.2;
-    
-    /** The velocity it transfers to rits when he jumps */
-    public var transferVelocity(default, null):ReadonlyVector = FlxVector.get();
-    var timer = 0.0;
-    
-    public var ogmoPath(get, set):Null<OgmoPath>;
-    inline function get_ogmoPath() return cast(path, OgmoPath);
-    inline function set_ogmoPath(value:OgmoPath) return cast path = value;
-    
     public var oneWayPlatform(default, null) = false;
-    public var trigger(default, null):Trigger = Load;
     
-    public function new(x:Float, y:Float) {
+    function new(x:Float, y:Float)
+    {
         super(x, y);
         
         immovable = true;
     }
     
-    inline public function createPathSprite()
+    function setOgmoProperties(data:EntityData)
     {
-        var path = ogmoPath.createPathSprite();
-        path.x += width / 2;
-        path.y += height / 2;
-        return path;
-    }
-    
-    override function update(elapsed:Float)
-    {
-        if (ogmoPath != null && !path.active)
-        {
-            switch (trigger)
-            {
-                case Load:
-                case OnScreen:
-                    if (isOnScreen())
-                        ogmoPath.restart();
-                case Collide:
-                    if (touching > 0)
-                        ogmoPath.restart();
-                case Ground:
-                    if (touching & FlxObject.CEILING > 0)
-                        ogmoPath.restart();
-            }
-        }
-        
-        super.update(elapsed);
-        
-        if (velocity.x != 0 || velocity.y != 0)
-        {
-            velocity.copyTo(cast transferVelocity);
-            timer = TRANSFER_DELAY;
-        }
-        else if (timer > 0)
-        {
-            timer -= elapsed;
-            if (timer <= 0)
-                velocity.copyTo(cast transferVelocity);
-        }
-    }
-    
-    inline function setOgmoProperties(data:EntityData)
-    {
-        var values:EntityValues = cast data.values;
-        trigger = values.trigger;
-        oneWayPlatform = values.oneWayPlatform != null ? values.oneWayPlatform : data.name == "cloudPlatform";
+        var values:PlatformValues = cast data.values;
+        oneWayPlatform = values.oneWayPlatform != null ? values.oneWayPlatform : data.name == "cloudMovingPlatform";
         final type = oneWayPlatform ? "cloud" : "solid";
         
         switch (values.graphic)
@@ -117,35 +65,8 @@ class MovingPlatform extends flixel.FlxSprite
         }
         updateHitbox();
         
-        ogmoPath = OgmoPath.fromEntity(data);
-        if (ogmoPath != null)
-        {
-            ogmoPath.autoCenter = false;
-            if (trigger == Load)
-                ogmoPath.restart();
-            else
-                ogmoPath.onLoopComplete = (_)->ogmoPath.pause();
-        }
-        
         if (values.oneWayPlatform)
             allowCollisions = FlxObject.UP;
-    }
-    
-    public function resetPath()
-    {
-        if (path != null && path.active && trigger != Load)
-        {
-            path.restart();
-            path.active = false;
-            reset(path.nodes[path.nodeIndex].x, path.nodes[path.nodeIndex].y);
-        }
-    }
-    
-    inline static public function fromOgmo(data:EntityData)
-    {
-        var platform = new MovingPlatform(data.x, data.y);
-        platform.setOgmoProperties(data);
-        return platform;
     }
     
     static function getImage(width:Int, height:Int, type:String)
@@ -184,6 +105,125 @@ class MovingPlatform extends flixel.FlxSprite
                 stamp(getSourceTile(x, tilesX), sourceY, x, y);
         }
         return graphic;
+    }
+}
+
+class TriggerPlatform extends Platform
+{
+    public var triggered(default, null) = false;
+    public var trigger(default, null):Trigger = Load;
+    
+    override function setOgmoProperties(data:EntityData)
+    {
+        super.setOgmoProperties(data);
+        
+        trigger = data.values.trigger;
+    }
+    
+    override function update(elapsed:Float)
+    {
+        if (!triggered)
+        {
+            switch (trigger)
+            {
+                case Load:
+                case OnScreen:
+                    if (isOnScreen()) fire();
+                case Collide:
+                    if (touching > 0) fire();
+                case Ground:
+                    if (touching & FlxObject.CEILING > 0) fire();
+            }
+        }
+        
+        super.update(elapsed);
+    }
+    
+    public function fire() { triggered = true; }
+    
+    public function resetTrigger() { triggered = false; }
+}
+
+class MovingPlatform extends TriggerPlatform
+{
+    inline static var TRANSFER_DELAY = 0.2;
+    
+    /** The velocity it transfers to rits when he jumps */
+    public var transferVelocity(default, null):ReadonlyVector = FlxVector.get();
+    var timer = 0.0;
+    
+    public var ogmoPath(get, set):Null<OgmoPath>;
+    inline function get_ogmoPath() return cast(path, OgmoPath);
+    inline function set_ogmoPath(value:OgmoPath) return cast path = value;
+    
+    public function new(x:Float, y:Float) { super(x, y); }
+    
+    inline public function createPathSprite()
+    {
+        var path = ogmoPath.createPathSprite();
+        path.x += width / 2;
+        path.y += height / 2;
+        return path;
+    }
+    
+    override function setOgmoProperties(data:EntityData)
+    {
+        super.setOgmoProperties(data);
+        
+        ogmoPath = OgmoPath.fromEntity(data);
+        if (ogmoPath != null)
+        {
+            resetTrigger();
+            ogmoPath.autoCenter = false;
+            if (trigger == Load)
+                fire();
+            else
+                ogmoPath.onLoopComplete = (_)->resetTrigger();
+        }
+        else
+            active = false;
+    }
+    
+    override function update(elapsed:Float)
+    {
+        super.update(elapsed);
+        
+        if (velocity.x != 0 || velocity.y != 0)
+        {
+            velocity.copyTo(cast transferVelocity);
+            timer = TRANSFER_DELAY;
+        }
+        else if (timer > 0)
+        {
+            timer -= elapsed;
+            if (timer <= 0)
+                velocity.copyTo(cast transferVelocity);
+        }
+    }
+    
+    override function fire()
+    {
+        super.fire();
+        
+        ogmoPath.restart();
+    }
+    
+    override function resetTrigger()
+    {
+        if (path != null && path.active && trigger != Load)
+        {
+            path.restart();
+            path.active = false;
+            reset(path.nodes[path.nodeIndex].x, path.nodes[path.nodeIndex].y);
+            super.resetTrigger();
+        }
+    }
+    
+    inline static public function fromOgmo(data:EntityData)
+    {
+        var platform = new MovingPlatform(data.x, data.y);
+        platform.setOgmoProperties(data);
+        return platform;
     }
 }
 
