@@ -356,13 +356,14 @@
       "nodeGhost": true,
       "tags": ["platform", "blinking", "solid", "cloud"],
       "values": [
+        {"name": "startDelay", "definition": "Float", "defaults": 0, "bounded": false, "min": 0, "max": 100},
         {"name": "showTime", "definition": "Float", "defaults": 1, "bounded": false, "min": 0, "max": 100},
         {"name": "warningTime", "definition": "Float", "defaults": 0.25, "bounded": false, "min": 0, "max": 100},
         {"name": "hideTime", "definition": "Float", "defaults": 0, "bounded": false, "min": 0, "max": 100},
         {
           "name": "graphic",
           "definition": "Enum",
-          "choices": ["auto", "movingLongside", "movingLonger", "movingLong", "movingShort", "movingSingle", "none"],
+          "choices": ["auto", "none"],
           "defaults": 0
         },
         {"name": "oneWayPlatform", "definition": "Boolean", "defaults": false},
@@ -411,6 +412,7 @@
       "nodeGhost": true,
       "tags": ["platform", "blinking", "cloud"],
       "values": [
+        {"name": "startDelay", "definition": "Float", "defaults": 0, "bounded": false, "min": 0, "max": 100},
         {"name": "showTime", "definition": "Float", "defaults": 1, "bounded": false, "min": 0, "max": 100},
         {"name": "warnTime", "definition": "Float", "defaults": 0.25, "bounded": false, "min": 0, "max": 100},
         {"name": "hideTime", "definition": "Float", "defaults": 0, "bounded": false, "min": 0, "max": 100},
@@ -421,8 +423,8 @@
           "defaults": 0
         }
       ],
-      "texture": "blinkingPlatform.png",
-      "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAqZJREFUWIXFVzFr20AYfTICQcAdks2LI0yyRZoKFgSKIQ2YOENKhkCHzN2SDp28tVMprv9EoIXQFFKTwQEvBnmVvNkE1Ys72UMNBU3q4H7y6XQnS2ntPhA2Z0nv3fvefXdWto1yUNSOYOzuYJ247TfhOTZUIi8ZxbWRN68u4Tk2dNNCbm2sAvLvbk9R/xf5z40aNsu1QB35LWBwtHJyqjmRE5RtoxysnB0QkgNAphJ4jp3qPt20hOT+4TnQnUR+y3mOrWQRkRXszH2OHGAcKGrzHMj6wW2/CSA+OxEhTw4AT359i9kfEUDk0n7QT+QVCuHFikTkdNOKhfDm+h4P7gg31/fZWBnopoVqo41qox0TEREgepic4Muhm1ZosefYsVCys2aJk0QIBbiDIR7cEdzBMBy7ePkxJoZIefCESSKEq+Dk9AAlo4iT04PYi1gXdNOKCFkWUFEIpXsB5YC9jvcuYiJ48vefvqBSmAEAKoVZ5AIw7wV/MO3V5XuBsbsTLj0ReCeInFApzNAZ5yPPaPtb8LsT+Bu1RQmkDCsGlUPqgDsYhpazIFdY2+n7m7MXoQudcT60nfC5O4G2v7UY6CUIEAWweXUZIwcW5SARlHi+BABi7ThzI5KlnQ9mWqRuRDT7NLh7/fzvBPCNSGY93w0f44LqObbCl4HqXzKKkWMUC1kfILABpEB+ZQMIxEPItl4geozisazrsQHkVwOLUMDIb80/mW2XyKuNdljXxwQtCapoFbDk83U9w13GF4tKIBSQRF5ttNEZL8aX2c6C7wGdcV5+JKN/R2zN+e1TtMX+C+TSkK8SyrOnb4OR35Ke21eJaa+uqCy5f3gODfN+rXFrNu1Y2nt/fHilAIASBEFAfxQ3y+8CAMKXyiAKlux5unfaq4ensN86AphRenp9QQAAAABJRU5ErkJggg=="
+      "texture": "cloudBlinkingPlatform.png",
+      "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAbxJREFUWIXtV7tugzAUPURI+YwUVckWWMPeLcpQqVt/gn5J+YlukTJE2bJ7ttmMIovPyOQOlZHB1zykCDL0LEjY3HPu9b0HCF7inV4t94g3a0wJIUtU9wtCQ/4aryYVAACQeyymZ21idgFhdb8Acj85semB4CXe6cnZLYRjNivOBu2LknRwzIXiLBgj4pFQnAV1BVbLvz7w+cG5yAH0Z2eqdNhm5LqQJQCgul8AtI6g0w+KTl4HXb5iRADAIkpSpwlPxytuosLpeB3HSqArVpSkmmxCXyWiJIXirL6aewZmbUgsA9KIhCxxE1WjVNnntyPGkLZh76Vi2QgVZ0H7GN4/3gDQ52hXoS/7vliNKWjjdLw6E3HYZjgXeUNEm/ywzXATVeM5IctaSBteAfFmXY8eBV8fUM/4RhJ4hpeRb0HIklRuMuw6AiqWbxK8Aqgzy3++HEKg2ZjnIncmpnMMxxqRr9vtnhgaK0pSTfaAMQ97Ckz2Q2DvpWLZGGxEgJu94qyRNVWFhxuRTe4TNjSWY0Q+lRT6XsttM/JxBFprUI1I4dFfRIqzgJyCqRAlqX6Oj9L/X7M5MbuA2X/NfgF4JxRZmJkzcAAAAABJRU5ErkJggg=="
     },
     {
       "exportID": "98401502",
@@ -459,6 +461,7 @@
       "nodeGhost": true,
       "tags": ["platform", "blinking", "solid"],
       "values": [
+        {"name": "startDelay", "definition": "Float", "defaults": 0, "bounded": false, "min": 0, "max": 100},
         {"name": "showTime", "definition": "Float", "defaults": 0.25, "bounded": false, "min": 0, "max": 100},
         {"name": "warnTime", "definition": "Float", "defaults": 0.25, "bounded": false, "min": 0, "max": 100},
         {"name": "hideTime", "definition": "Float", "defaults": 0, "bounded": false, "min": 0, "max": 100},

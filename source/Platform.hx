@@ -24,7 +24,32 @@ typedef TriggerPlatformValues = PlatformValues & { trigger:Trigger }
 
 class Platform extends flixel.FlxSprite
 {
-    public var oneWayPlatform(default, null) = false;
+    public var oneWayPlatform(get, set):Bool;
+    inline function get_oneWayPlatform()
+    {
+        return collisions == FlxObject.UP;
+    }
+    inline function set_oneWayPlatform(value:Bool)
+    {
+        collisions = value ? FlxObject.UP : FlxObject.ANY;
+        return value;
+    }
+    public var enabled(default, set) = true;
+    inline function set_enabled(value:Bool)
+    {
+        enabled = value;
+        allowCollisions = enabled && cloudSolid ? collisions : FlxObject.NONE;
+        return value;
+    }
+    // set false to allow the player to pass through
+    public var cloudSolid(default, set) = true;
+    inline function set_cloudSolid(value:Bool)
+    {
+        cloudSolid = value;
+        allowCollisions = enabled && cloudSolid ? collisions : FlxObject.NONE;
+        return value;
+    }
+    var collisions = FlxObject.ANY;
     
     function new(x:Float, y:Float)
     {
@@ -36,7 +61,8 @@ class Platform extends flixel.FlxSprite
     function setOgmoProperties(data:EntityData)
     {
         var values:PlatformValues = cast data.values;
-        oneWayPlatform = values.oneWayPlatform != null ? values.oneWayPlatform : data.name == "cloudMovingPlatform";
+        oneWayPlatform = values.oneWayPlatform != null ? values.oneWayPlatform : data.name.indexOf("cloud") == 0;
+        allowCollisions = collisions;
         final type = oneWayPlatform ? "cloud" : "solid";
         
         switch (values.graphic)
@@ -64,9 +90,6 @@ class Platform extends flixel.FlxSprite
                 setGraphicSize(data.width, data.height);
         }
         updateHitbox();
-        
-        if (values.oneWayPlatform)
-            allowCollisions = FlxObject.UP;
     }
     
     static function getImage(width:Int, height:Int, type:String)
@@ -118,6 +141,13 @@ class TriggerPlatform extends Platform
         super.setOgmoProperties(data);
         
         trigger = data.values.trigger;
+        
+        if (active)
+        {
+            resetTrigger();
+            if (trigger == Load)
+                fire();
+        }
     }
     
     override function update(elapsed:Float)
@@ -144,6 +174,91 @@ class TriggerPlatform extends Platform
     public function resetTrigger() { triggered = false; }
 }
 
+typedef BlinkingPlatformValues = TriggerPlatformValues & 
+{
+    showTime:Float,
+    warnTime:Float,
+    ?hideTime:Float,
+    startDelay:Float
+}
+class BlinkingPlatform extends TriggerPlatform
+{
+    var timer = 0.0;
+    public var showTime = 1.0;
+    public var warnTime = 0.25;
+    public var hideTime = 0.0;
+    
+    public function new(x:Float, y:Float) { super(x, y); }
+    
+    override function setOgmoProperties(data:EntityData)
+    {
+        final values:BlinkingPlatformValues = cast data.values;
+        showTime = values.showTime;
+        warnTime = values.warnTime;
+        if (values.hideTime == null || values.hideTime <= 0)
+            hideTime = showTime;
+        else
+            hideTime = values.hideTime;
+        
+        active = showTime > 0;
+        
+        super.setOgmoProperties(data);
+        
+        var startDelay = values.startDelay % (showTime + hideTime);
+        if (trigger != Load && startDelay != 0)
+            throw 'startDelay is only usable when trigger="Load"';
+        else if (trigger == Load && startDelay > 0)
+        {
+            timer = showTime + hideTime - startDelay;
+            visible = enabled = timer < showTime;
+        }
+    }
+    
+    override function update(elapsed:Float)
+    {
+        super.update(elapsed);
+        
+        var oldTimer = timer;
+        timer += elapsed;
+        
+        if (timer > showTime + hideTime)
+            resetTrigger();
+        else if (timer >= showTime)
+        {
+            if (oldTimer < showTime)
+                visible = enabled = false;
+        }
+        else if (timer > showTime - warnTime)
+            visible = (timer - (showTime - warnTime)) % (warnTime / 4) > warnTime / 8;
+        else if (timer > 0 && oldTimer <= 0)
+            visible = enabled = true;
+    }
+    
+    override function fire()
+    {
+        super.fire();
+        active = true;
+    }
+    
+    override function resetTrigger()
+    {
+        timer = 0;
+        visible = enabled = true;
+        if (trigger != Load)
+        {
+            super.resetTrigger();
+            active = false;
+        }
+    }
+    
+    inline static public function fromOgmo(data:EntityData)
+    {
+        var platform = new BlinkingPlatform(data.x, data.y);
+        platform.setOgmoProperties(data);
+        return platform;
+    }
+}
+
 class MovingPlatform extends TriggerPlatform
 {
     inline static var TRANSFER_DELAY = 0.2;
@@ -168,20 +283,18 @@ class MovingPlatform extends TriggerPlatform
     
     override function setOgmoProperties(data:EntityData)
     {
-        super.setOgmoProperties(data);
-        
         ogmoPath = OgmoPath.fromEntity(data);
-        if (ogmoPath != null)
+        if (ogmoPath == null)
+            active = false;
+        else
         {
-            resetTrigger();
             ogmoPath.autoCenter = false;
-            if (trigger == Load)
-                fire();
-            else
+            
+            if (trigger != Load)
                 ogmoPath.onLoopComplete = (_)->resetTrigger();
         }
-        else
-            active = false;
+        
+        super.setOgmoProperties(data);
     }
     
     override function update(elapsed:Float)
