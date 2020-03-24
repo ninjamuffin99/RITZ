@@ -24,32 +24,10 @@ typedef TriggerPlatformValues = PlatformValues & { trigger:Trigger }
 
 class Platform extends flixel.FlxSprite
 {
-    public var oneWayPlatform(get, set):Bool;
-    inline function get_oneWayPlatform()
-    {
-        return collisions == FlxObject.UP;
-    }
-    inline function set_oneWayPlatform(value:Bool)
-    {
-        collisions = value ? FlxObject.UP : FlxObject.ANY;
-        return value;
-    }
+    public var oneWayPlatform(default, set) = false;
     public var enabled(default, set) = true;
-    inline function set_enabled(value:Bool)
-    {
-        enabled = value;
-        allowCollisions = enabled && cloudSolid ? collisions : FlxObject.NONE;
-        return value;
-    }
     // set false to allow the player to pass through
     public var cloudSolid(default, set) = true;
-    inline function set_cloudSolid(value:Bool)
-    {
-        cloudSolid = value;
-        allowCollisions = enabled && cloudSolid ? collisions : FlxObject.NONE;
-        return value;
-    }
-    var collisions = FlxObject.ANY;
     
     function new(x:Float, y:Float)
     {
@@ -62,7 +40,6 @@ class Platform extends flixel.FlxSprite
     {
         var values:PlatformValues = cast data.values;
         oneWayPlatform = values.oneWayPlatform != null ? values.oneWayPlatform : data.name.indexOf("cloud") == 0;
-        allowCollisions = collisions;
         final type = oneWayPlatform ? "cloud" : "solid";
         
         switch (values.graphic)
@@ -90,6 +67,32 @@ class Platform extends flixel.FlxSprite
                 setGraphicSize(data.width, data.height);
         }
         updateHitbox();
+    }
+    
+    public function set_oneWayPlatform(value:Bool)
+    {
+        oneWayPlatform = value;
+        updateCollision();
+        return value;
+    }
+    
+    inline function set_enabled(value:Bool)
+    {
+        enabled = value;
+        updateCollision();
+        return value;
+    }
+    
+    inline function set_cloudSolid(value:Bool)
+    {
+        cloudSolid = value;
+        updateCollision();
+        return value;
+    }
+    
+    inline function updateCollision()
+    {
+        allowCollisions = enabled && cloudSolid ? (oneWayPlatform ? FlxObject.UP : FlxObject.ANY) : FlxObject.NONE;
     }
     
     static function getImage(width:Int, height:Int, type:String)

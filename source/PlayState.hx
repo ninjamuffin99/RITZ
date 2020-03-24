@@ -274,7 +274,7 @@ class PlayState extends flixel.FlxState
 			player.onLandPlatform(player.platform);
 		
 		// Re-enable one way platforms in case other things collide
-		grpOneWayPlatforms.forEach((platform)->platform.cloudSolid = false);
+		grpOneWayPlatforms.forEach((platform)->platform.cloudSolid = true);
 		
 		level.setTilesCollisions(40, 4, player.down ? FlxObject.NONE : FlxObject.UP);
 		FlxG.collide(level, player);
