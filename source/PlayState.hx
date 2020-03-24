@@ -3,6 +3,7 @@ package;
 import Cheese;
 import OgmoPath;
 import OgmoTilemap;
+import Platform;
 import ui.BitmapText;
 import ui.DialogueSubstate;
 import ui.Inputs;
@@ -44,10 +45,8 @@ class PlayState extends flixel.FlxState
 	var foreground = new FlxGroup();
 	var background = new FlxGroup();
 	var grpCheese = new FlxTypedGroup<Cheese>();
-	var grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
-	var grpMovingPlatformPaths = new FlxTypedGroup<PathSprite>();
-	var grpMovingPlatformBolts = new FlxTypedGroup<FlxSprite>();
-	var grpOneWayMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
+	var grpPlatforms = new FlxTypedGroup<TriggerPlatform>();
+	var grpOneWayPlatforms = new FlxTypedGroup<Platform>();
 	var grpSpikes = new FlxTypedGroup<SpikeObstacle>();
 	var curCheckpoint:Checkpoint;
 	var grpCheckpoint = new FlxTypedGroup<Checkpoint>();
@@ -177,7 +176,22 @@ class PlayState extends flixel.FlxState
 				layer.add(cheese);
 				grpCheese.add(cheese);
 				totalCheese++;
-			case "movingPlatform"|"solidPlatform"|"cloudPlatform":
+			case "blinkingPlatform"|"solidBlinkingPlatform"|"cloudBlinkingPlatform":
+				var platform = BlinkingPlatform.fromOgmo(e);
+				// if (platform.active)
+				// {
+				// 	var path = platform.createPathSprite();
+				// 	layer.add(path);
+				// 	layer.add(platform);
+				// 	layer.add(path.bolt);
+				// }
+				// else // Add platform only
+					layer.add(platform);
+				
+				grpPlatforms.add(platform);
+				if (platform.oneWayPlatform)
+					grpOneWayPlatforms.add(platform);
+			case "movingPlatform"|"solidMovingPlatform"|"cloudMovingPlatform":
 				var platform = MovingPlatform.fromOgmo(e);
 				if (platform.visible && platform.ogmoPath != null)
 				{
@@ -189,9 +203,9 @@ class PlayState extends flixel.FlxState
 				else // Add platform only
 					layer.add(platform);
 				
-				grpMovingPlatforms.add(platform);
+				grpPlatforms.add(platform);
 				if (platform.oneWayPlatform)
-					grpOneWayMovingPlatforms.add(platform);
+					grpOneWayPlatforms.add(platform);
 			case "spike":
 				var spike = new SpikeObstacle(e.x, e.y, e.rotation);
 				layer.add(spike);
@@ -210,7 +224,11 @@ class PlayState extends flixel.FlxState
 				trace('ADDED SECRET');
 				grpSecretTriggers.add(new SecretTrigger(e.x, e.y, e.width, e.height));
 			case 'locked' | 'locked_tall':
-				grpLockedDoors.add(Lock.fromOgmo(e));
+				var gate = Lock.fromOgmo(e);
+				grpLockedDoors.add(gate);
+				layer.add(gate);
+			case unhandled:
+				throw 'Unhandled token:$unhandled';
 		}
 	}
 	
@@ -238,15 +256,16 @@ class PlayState extends flixel.FlxState
 		
 		// Disable one way platforms when pressing down
 		if (player.down)
-			grpOneWayMovingPlatforms.forEach((platform)->platform.allowCollisions = FlxObject.NONE);
+			grpOneWayPlatforms.forEach((platform)->platform.cloudSolid = false);
 		
 		var oldPlatform = player.platform;
 		player.platform = null;
-		FlxG.collide(grpMovingPlatforms, player, 
-			function(platform:MovingPlatform, _)
+		FlxG.collide(grpPlatforms, player, 
+			function(platform:Platform, _)
 			{
-				if (player.platform == null || (platform.velocity.y < player.platform.velocity.y))
-					player.platform = platform;
+				if (Std.is(platform, MovingPlatform)
+				&& (player.platform == null || (platform.velocity.y < player.platform.velocity.y)))
+					player.platform = cast platform;
 			}
 		);
 		if (player.platform == null && oldPlatform != null)
@@ -255,7 +274,7 @@ class PlayState extends flixel.FlxState
 			player.onLandPlatform(player.platform);
 		
 		// Re-enable one way platforms in case other things collide
-		grpOneWayMovingPlatforms.forEach((platform)->platform.allowCollisions = FlxObject.UP);
+		grpOneWayPlatforms.forEach((platform)->platform.cloudSolid = true);
 		
 		level.setTilesCollisions(40, 4, player.down ? FlxObject.NONE : FlxObject.UP);
 		FlxG.collide(level, player);
@@ -470,10 +489,10 @@ class PlayState extends flixel.FlxState
 	function onPlayerRespawn():Void
 	{
 		// Reset moving platform
-		for (i in 0...grpMovingPlatforms.members.length)
+		for (i in 0...grpPlatforms.members.length)
 		{
-			if (grpMovingPlatforms.members[i] != null)
-				grpMovingPlatforms.members[i].resetPath();
+			if (grpPlatforms.members[i] != null)
+				grpPlatforms.members[i].resetTrigger();
 		}
 	}
 	

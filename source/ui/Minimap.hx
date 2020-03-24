@@ -165,9 +165,15 @@ abstract MiniTilemap(OgmoTilemap) to OgmoTilemap
                 var p = new FlxPoint(Math.floor(entity.x / OLD_TILE_SIZE), Math.floor(entity.y / OLD_TILE_SIZE));
                 checkpoints[entity.id] = p;
                 stampMap(this, Std.int(p.x), Std.int(p.y), RAT_X, fg);
-            case "movingPlatform"|"solidPlatform"|"cloudPlatform":
+            case "movingPlatform"|"blinkingPlatform":
+                if (entity.values.graphic != "none")
+                    stampAllMapOf(this, entity, entity.values.oneWayPlatform ? CLOUD : PLATFORM, fg);
+            case "solidMovingPlatform"|"solidBlinkingPlatform":
                 if (entity.values.graphic != "none")
                     stampAllMapOf(this, entity, PLATFORM, fg);
+            case "cloudMovingPlatform"|"cloudBlinkingPlatform":
+                if (entity.values.graphic != "none")
+                    stampAllMapOf(this, entity, CLOUD, fg);
             case 'locked' | 'locked_tall':
                 stampAllMapOf(this, entity, DOOR, fg);
             case "player" | "spider" | "musicTrigger" | "secretTrigger"://unusued
@@ -220,5 +226,6 @@ enum abstract EntityTile(Int) from Int to Int
     var RAT      = 62;
     var RAT_X    = 63;
     var DOOR     = 64;
-    var PLATFORM = 43;
+    var PLATFORM = 35;
+    var CLOUD    = 43;
 }
