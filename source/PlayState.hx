@@ -3,7 +3,9 @@ package;
 import Cheese;
 import OgmoPath;
 import OgmoTilemap;
-import Platform;
+import props.Platform;
+import props.BlinkingPlatform;
+import props.MovingPlatform;
 import ui.BitmapText;
 import ui.DialogueSubstate;
 import ui.Inputs;
@@ -29,8 +31,6 @@ import flixel.addons.display.FlxBackdrop;
 
 using zero.utilities.OgmoUtils;
 using zero.flixel.utilities.FlxOgmoUtils;
-using StringTools;
-
 
 class PlayState extends flixel.FlxState
 {
@@ -44,6 +44,7 @@ class PlayState extends flixel.FlxState
 
 	var foreground = new FlxGroup();
 	var background = new FlxGroup();
+	var playerLayer = new FlxGroup();
 	var grpCheese = new FlxTypedGroup<Cheese>();
 	var grpPlatforms = new FlxTypedGroup<TriggerPlatform>();
 	var grpOneWayPlatforms = new FlxTypedGroup<Platform>();
@@ -99,6 +100,7 @@ class PlayState extends flixel.FlxState
 		add(level);
 		add(decalGroup);
 		add(foreground);
+		add(playerLayer);
 		
 		//FlxG.sound.playMusic(AssetPaths.pillow__mp3, 0.7);
 		//FlxG.sound.music.loopTime = 4450;
@@ -157,17 +159,18 @@ class PlayState extends flixel.FlxState
 			case "player": 
 				player = new Player(e.x, e.y);
 				player.onRespawn.add(onPlayerRespawn);
-				layer.add(player.dust);
-				layer.add(player);
+				playerLayer.add(player.dust);
+				playerLayer.add(player);
 				#if debug
 				if (player.jumpSprite != null)
 				{
-					layer.add(player.jumpSprite);
+					playerLayer.add(player.jumpSprite);
 					player.jumpSprite.x = player.x;
 					player.jumpSprite.y = player.y;
 				}
 				#end
 				curCheckpoint = new Checkpoint(e.x, e.y, "");
+				//layer not used
 			case "spider":
 				layer.add(new Enemy(e.x, e.y, OgmoPath.fromEntity(e), e.values.speed));
 				trace('spider added');
