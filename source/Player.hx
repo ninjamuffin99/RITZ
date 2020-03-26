@@ -1,7 +1,7 @@
 package;
 
 import Dust;
-import Platform;
+import props.MovingPlatform;
 import ui.Inputs;
 
 import flixel.FlxG;

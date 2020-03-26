@@ -462,7 +462,7 @@
       "tags": ["platform", "blinking", "solid"],
       "values": [
         {"name": "startDelay", "definition": "Float", "defaults": 0, "bounded": false, "min": 0, "max": 100},
-        {"name": "showTime", "definition": "Float", "defaults": 0.25, "bounded": false, "min": 0, "max": 100},
+        {"name": "showTime", "definition": "Float", "defaults": 1, "bounded": false, "min": 0, "max": 100},
         {"name": "warnTime", "definition": "Float", "defaults": 0.25, "bounded": false, "min": 0, "max": 100},
         {"name": "hideTime", "definition": "Float", "defaults": 0, "bounded": false, "min": 0, "max": 100},
         {
