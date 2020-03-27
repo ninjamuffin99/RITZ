@@ -75,6 +75,7 @@ class BlinkingPlatform extends TriggerPlatform
             showOn();
             enabled = true;
             resetTrigger();
+            return;
         }
         
         if (timer >= showTime)
