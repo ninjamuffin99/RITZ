@@ -845,7 +845,7 @@
           "height": 32,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 0, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
+          "values": {"unit": "Seconds", "startDelay": 0, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
           "name": "solidBlinkingPlatform",
@@ -857,7 +857,7 @@
           "height": 32,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 1, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
+          "values": {"unit": "Seconds", "startDelay": 1, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
           "name": "cloudBlinkingPlatform",
@@ -869,7 +869,7 @@
           "height": 32,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 1, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
+          "values": {"unit": "Seconds", "startDelay": 1, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
           "name": "solidBlinkingPlatform",
@@ -881,7 +881,7 @@
           "height": 32,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 2, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
+          "values": {"unit": "Seconds", "startDelay": 2, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
           "name": "cloudBlinkingPlatform",
@@ -893,7 +893,7 @@
           "height": 32,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 2, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
+          "values": {"unit": "Seconds", "startDelay": 2, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
           "name": "solidBlinkingPlatform",
@@ -905,7 +905,7 @@
           "height": 32,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 0, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
+          "values": {"unit": "Seconds", "startDelay": 0, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
           "name": "cloudBlinkingPlatform",
@@ -917,7 +917,7 @@
           "height": 32,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 0, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
+          "values": {"unit": "Seconds", "startDelay": 0, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
           "name": "cloudBlinkingPlatform",
@@ -929,7 +929,7 @@
           "height": 32,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 1, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
+          "values": {"unit": "Seconds", "startDelay": 1, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
           "name": "cloudBlinkingPlatform",
@@ -941,7 +941,7 @@
           "height": 32,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 1, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
+          "values": {"unit": "Seconds", "startDelay": 1, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
           "name": "cloudBlinkingPlatform",
@@ -953,7 +953,7 @@
           "height": 32,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 2, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
+          "values": {"unit": "Seconds", "startDelay": 2, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {"name": "coins", "id": 1192, "_eid": "46479631", "x": 736, "y": 704, "originX": 0, "originY": 0},
         {
@@ -966,7 +966,7 @@
           "height": 32,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 0, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
+          "values": {"unit": "Seconds", "startDelay": 0, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
           "name": "solidBlinkingPlatform",
@@ -978,7 +978,7 @@
           "height": 32,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 0, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
+          "values": {"unit": "Seconds", "startDelay": 0, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
           "name": "solidBlinkingPlatform",
@@ -990,7 +990,7 @@
           "height": 32,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 1, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
+          "values": {"unit": "Seconds", "startDelay": 1, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {"name": "coins", "id": 1196, "_eid": "46479631", "x": 1440, "y": 832, "originX": 0, "originY": 0},
         {
@@ -1003,7 +1003,7 @@
           "height": 32,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 2, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
+          "values": {"unit": "Seconds", "startDelay": 2, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
           "name": "solidBlinkingPlatform",
@@ -1015,7 +1015,7 @@
           "height": 32,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 0, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
+          "values": {"unit": "Seconds", "startDelay": 0, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
           "name": "solidBlinkingPlatform",
@@ -1027,7 +1027,7 @@
           "height": 32,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 1, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
+          "values": {"unit": "Seconds", "startDelay": 1, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
           "name": "solidBlinkingPlatform",
@@ -1039,7 +1039,7 @@
           "height": 32,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 2, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
+          "values": {"unit": "Seconds", "startDelay": 2, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {"name": "coins", "id": 1201, "_eid": "46479631", "x": 2096, "y": 800, "originX": 0, "originY": 0},
         {
@@ -1052,7 +1052,7 @@
           "height": 32,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 0, "showTime": 0.5, "warnTime": 0.5, "hideTime": 3, "trigger": "Collide"}
+          "values": {"unit": "Seconds", "startDelay": 0, "showTime": 0.5, "warnTime": 0.5, "hideTime": 3, "trigger": "Collide"}
         },
         {
           "name": "solidBlinkingPlatform",
@@ -1064,7 +1064,7 @@
           "height": 32,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 0, "showTime": 0.5, "warnTime": 0.5, "hideTime": 3, "trigger": "Collide"}
+          "values": {"unit": "Seconds", "startDelay": 0, "showTime": 0.5, "warnTime": 0.5, "hideTime": 3, "trigger": "Collide"}
         },
         {
           "name": "solidBlinkingPlatform",
@@ -1076,7 +1076,7 @@
           "height": 32,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 0, "showTime": 0.5, "warnTime": 0.5, "hideTime": 3, "trigger": "Collide"}
+          "values": {"unit": "Seconds", "startDelay": 0, "showTime": 0.5, "warnTime": 0.5, "hideTime": 3, "trigger": "Collide"}
         },
         {
           "name": "solidBlinkingPlatform",
@@ -1088,7 +1088,7 @@
           "height": 32,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 0, "showTime": 0.5, "warnTime": 0.5, "hideTime": 3, "trigger": "Collide"}
+          "values": {"unit": "Seconds", "startDelay": 0, "showTime": 0.5, "warnTime": 0.5, "hideTime": 3, "trigger": "Collide"}
         },
         {
           "name": "solidBlinkingPlatform",
@@ -1100,7 +1100,7 @@
           "height": 32,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 0, "showTime": 0.5, "warnTime": 0.5, "hideTime": 3, "trigger": "Collide"}
+          "values": {"unit": "Seconds", "startDelay": 0, "showTime": 0.5, "warnTime": 0.5, "hideTime": 3, "trigger": "Collide"}
         },
         {"name": "coins", "id": 1212, "_eid": "46479631", "x": 2208, "y": 1760, "originX": 0, "originY": 0},
         {
@@ -1113,7 +1113,7 @@
           "height": 416,
           "originX": 0,
           "originY": 0,
-          "values": {"startDelay": 0, "showTime": 0.5, "warnTime": 0.5, "hideTime": 1, "trigger": "Collide"}
+          "values": {"unit": "Seconds", "startDelay": 0, "showTime": 0.5, "warnTime": 0.5, "hideTime": 1, "trigger": "Collide"}
         },
         {
           "name": "locked_tall",
@@ -1127,7 +1127,7 @@
           "originY": 0,
           "values": {"amountNeeded": 24}
         },
-        {"name": "player", "id": 1221, "_eid": "29962948", "x": 2336, "y": 1664, "originX": 0, "originY": 0}
+        {"name": "player", "id": 1223, "_eid": "29962948", "x": 64, "y": 4032, "originX": 0, "originY": 0}
       ]
     },
     {

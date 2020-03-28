@@ -494,7 +494,7 @@ class PlayState extends flixel.FlxState
 		// Reset moving platform
 		for (i in 0...grpPlatforms.members.length)
 		{
-			if (grpPlatforms.members[i] != null)
+			if (grpPlatforms.members[i] != null && grpPlatforms.members[i].trigger != Load)
 				grpPlatforms.members[i].resetTrigger();
 		}
 	}

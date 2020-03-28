@@ -123,13 +123,6 @@ class BlinkingPlatform extends TriggerPlatform
     }
     inline function showOnWarn() showOff();
     
-    override function resetTrigger()
-    {
-        super.resetTrigger();
-        if (trigger == Load)
-            fire();
-    }
-    
     inline static public function fromOgmo(data:EntityData)
     {
         var platform = new BlinkingPlatform(data.x, data.y);
