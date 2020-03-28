@@ -161,7 +161,8 @@ class TriggerPlatform extends Platform
                 case OnScreen:
                     if (isOnScreen()) fire();
                 case Collide:
-                    if (touching > 0) fire();
+                    if (touching > 0)
+                        fire();
                 case Ground:
                     if (touching & FlxObject.CEILING > 0) fire();
             }
@@ -172,7 +173,12 @@ class TriggerPlatform extends Platform
     
     public function fire() { triggered = true; }
     
-    public function resetTrigger() { triggered = false; }
+    public function resetTrigger()
+    {
+        triggered = false;
+        if (trigger == Load)
+            fire();
+    }
 }
 
 enum abstract Trigger(String) to String from String
