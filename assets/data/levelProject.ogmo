@@ -168,8 +168,8 @@
         ]
       },
       "color": "#ffffffff",
-      "tileX": false,
-      "tileY": false,
+      "tileX": true,
+      "tileY": true,
       "tileSize": {"x": 32, "y": 32},
       "resizeableX": true,
       "resizeableY": true,
@@ -230,7 +230,7 @@
         ]
       },
       "color": "#ff00ffff",
-      "tileX": false,
+      "tileX": true,
       "tileY": false,
       "tileSize": {"x": 32, "y": 32},
       "resizeableX": true,
@@ -285,8 +285,8 @@
         ]
       },
       "color": "#004dffff",
-      "tileX": false,
-      "tileY": false,
+      "tileX": true,
+      "tileY": true,
       "tileSize": {"x": 32, "y": 32},
       "resizeableX": true,
       "resizeableY": true,
@@ -340,8 +340,8 @@
         ]
       },
       "color": "#ff0000ff",
-      "tileX": false,
-      "tileY": false,
+      "tileX": true,
+      "tileY": true,
       "tileSize": {"x": 32, "y": 32},
       "resizeableX": true,
       "resizeableY": true,
@@ -402,7 +402,7 @@
         ]
       },
       "color": "#ff0000ff",
-      "tileX": false,
+      "tileX": true,
       "tileY": false,
       "tileSize": {"x": 32, "y": 32},
       "resizeableX": true,
@@ -457,8 +457,8 @@
         ]
       },
       "color": "#ff0000ff",
-      "tileX": false,
-      "tileY": false,
+      "tileX": true,
+      "tileY": true,
       "tileSize": {"x": 32, "y": 32},
       "resizeableX": true,
       "resizeableY": true,

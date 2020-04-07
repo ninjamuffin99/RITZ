@@ -26,7 +26,7 @@ class SpikeObstacle extends Obstacle
         var anim = animation.getByName('idle');
         @:privateAccess
         anim.delay = BeatGame.beatTime / anim.numFrames;
-        animation.play('idle', false, false, FlxMath.wrap(Std.int((x+y) / SIZE), 0, anim.numFrames - 1));
+        animation.play('idle', false, false, FlxMath.wrap(Std.int((x+y) / SIZE * anim.numFrames / 2) , 0, anim.numFrames - 1));
         
         switch(rotation)
         {

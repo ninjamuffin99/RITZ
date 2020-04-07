@@ -50,19 +50,21 @@ class BeatGame extends flixel.FlxGame
             if (FlxG.fixedTimestep)
             {
                 var delta = 0.0;
-                if (FlxG.sound != null && FlxG.sound.music != null && FlxG.sound.music.playing)
-                {
-                    final music = FlxG.sound.music;
-                    if (music.time >= prevMusicTime)
-                        delta = music.time - prevMusicTime;
-                    else
-                    {
-                        delta = (music.time - music.loopTime) + (music.length - prevMusicTime);
-                        if (delta > _maxAccumulation)
-                            delta = 0;//TODO: figure out this shit
-                    }
-                    prevMusicTime = music.time;
-                }
+                // Disabled because it might fuck everything up
+                //
+                // if (FlxG.sound != null && FlxG.sound.music != null && FlxG.sound.music.playing)
+                // {
+                //     final music = FlxG.sound.music;
+                //     if (music.time >= prevMusicTime)
+                //         delta = music.time - prevMusicTime;
+                //     else
+                //     {
+                //         delta = (music.time - music.loopTime) + (music.length - prevMusicTime);
+                //         if (delta > _maxAccumulation)
+                //             delta = 0;//TODO: figure out this shit
+                //     }
+                //     prevMusicTime = music.time;
+                // }
                 
                 if (delta > 0)
                 {
