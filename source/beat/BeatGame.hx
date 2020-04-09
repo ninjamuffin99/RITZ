@@ -6,7 +6,7 @@ import flixel.FlxBasic;
 class BeatGame extends flixel.FlxGame
 {
     static public var beatsPerMinute = 110.0;
-    static public var beatsPerSecond:Float;
+    static public var beatsPerSecond(get, never):Float;
     inline static function get_beatsPerSecond() return beatsPerMinute / 60;
     static public var prevMusicTime = 0.0;
     static public var beatTime(get, never):Float;

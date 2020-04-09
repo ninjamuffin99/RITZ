@@ -95,8 +95,7 @@ class Player extends FlxSprite
         {
             animation.add(name, frames, 0);
             var anim = animation.getByName(name);
-            @:privateAccess
-            anim.delay = BeatGame.beatTime / anim.numFrames / loopsPerBeat;
+            anim.frameRate = BeatGame.beatsPerSecond * anim.numFrames * loopsPerBeat;
         }
         
         loadGraphic(AssetPaths.ritz_spritesheet__png, true, 32, 32);
