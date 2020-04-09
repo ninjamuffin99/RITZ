@@ -1,5 +1,6 @@
 package;
 
+import flixel.util.FlxArrayUtil;
 import flixel.graphics.frames.FlxTileFrames;
 import flixel.math.FlxPoint;
 import flixel.tile.FlxTilemap;
@@ -19,6 +20,7 @@ abstract OgmoTilemap(FlxTilemap) to FlxTilemap
 		, path         = 'assets/data/'
 		, drawIndex    = 0
 		, collideIndex = 1
+		, indexOffset  = 0
 		)
 	{
 		this = new FlxTilemap();
@@ -26,9 +28,9 @@ abstract OgmoTilemap(FlxTilemap) to FlxTilemap
 		var tileset = ogmo.project.get_tileset_data(layer.tileset);
 		@:privateAccess//get_export_mode
 		switch layer.get_export_mode() {
-			case CSV    : loadOgmoCSVMap(layer, tileset, path, 0, drawIndex, collideIndex);
-			case ARRAY  : loadOgmoArrayMap(layer, tileset, path, 0, drawIndex, collideIndex);
-			case ARRAY2D: loadOgmo2DArrayMap(layer, tileset, path, 0, drawIndex, collideIndex);
+			case CSV    : throw "unsupported CSV export mode";
+			case ARRAY  : loadOgmoArrayMap(layer, tileset, path, indexOffset, drawIndex, collideIndex);
+			case ARRAY2D: loadOgmo2DArrayMap(layer, tileset, path, indexOffset, drawIndex, collideIndex);
 		}
 	}
 	
@@ -45,69 +47,55 @@ abstract OgmoTilemap(FlxTilemap) to FlxTilemap
 			setTileCollisions(i, allowCollisions);
 	}
 	
-	function loadOgmoCSVMap
+	inline function loadOgmoArrayMap
 		( layer  :TileLayer
 		, tileset:ProjectTilesetData
 		, path   :String
-		, startingIndex = 0
-		, drawIndex     = 0
-		, collideIndex  = 1
-		)
-	{
-		return this.loadMapFromCSV
-			( layer.dataCSV
-			, getPaddedTileset(tileset, path)
-			, tileset.tileWidth
-			, tileset.tileHeight
-			, OFF
-			, startingIndex
-			, drawIndex
-			, collideIndex
-			);
-	}
-	
-	function loadOgmoArrayMap
-		( layer  :TileLayer
-		, tileset:ProjectTilesetData
-		, path   :String
-		, startingIndex = 0
-		, drawIndex     = 0
-		, collideIndex  = 1
+		, indexOffset  = 0
+		, drawIndex    = 0
+		, collideIndex = 1
 		)
 	{
 		return this.loadMapFromArray
-			( layer.data
+			( getOffsetIndices(layer.data, indexOffset)
 			, layer.gridCellsX
 			, layer.gridCellsY
 			, getPaddedTileset(tileset, path)
 			, tileset.tileWidth
 			, tileset.tileHeight
 			, OFF
-			, startingIndex
+			, 0
 			, drawIndex
 			, collideIndex
 			);
 	}
 	
-	function loadOgmo2DArrayMap
+	inline function loadOgmo2DArrayMap
 		( layer  :TileLayer
 		, tileset:ProjectTilesetData
 		, path   :String
-		, startingIndex = 0
-		, drawIndex     = 0
-		, collideIndex  = 1
+		, indexOffset  = 0
+		, drawIndex    = 0
+		, collideIndex = 1
 		)
 	{
-		return this.loadMapFrom2DArray
-			( layer.data2D
+		return this.loadMapFromArray
+			( getOffsetIndices(FlxArrayUtil.flatten2DArray(layer.data2D), indexOffset)
+			, layer.gridCellsX
+			, layer.gridCellsY
 			, getPaddedTileset(tileset, path)
 			, tileset.tileWidth
 			, tileset.tileHeight
 			, OFF
-			, startingIndex
+			, 0
 			, drawIndex
 			, collideIndex
 			);
+	}
+	
+	inline function getOffsetIndices(data:Array<Int>, offset:Int):Array<Int>
+	{
+		return offset == 0 ? data : data.map(i->i+offset);
 	}
 	
 	inline function getPaddedTileset(tileset:ProjectTilesetData, path, padding = 2)
@@ -126,17 +114,17 @@ abstract CameraTilemap(OgmoTilemap) to FlxTilemap
 {
 	public function new(ogmo:OgmoPackage)
 	{
-		this = new OgmoTilemap(ogmo, 'CameraView');
+		this = new OgmoTilemap(ogmo, 'CameraView', "assets/data/", 0, 1, 1);
 	}
 	
 	public function getTileTypeAt(x:Float, y:Float):CameraTileType
 	{
 		return switch(this.getTileByIndex(this.getTileIndexByCoords(FlxPoint.weak(x, y))))
 		{
-			case  0: Up;
-			case  1: Down;
-			case  2: MoreDown;
-			case -1,_: None;
+			case 1: Up;
+			case 2: Down;
+			case 3: MoreDown;
+			case 0,_: None;
 		} 
 	}
 }
