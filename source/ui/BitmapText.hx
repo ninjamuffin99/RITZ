@@ -111,10 +111,6 @@ class BitmapText extends flixel.text.FlxBitmapText
 @:forward
 abstract Font(FlxBitmapFont) to FlxBitmapFont
 {
-    public var lineHeight(get, set):Int;
-    inline function get_lineHeight() @:privateAccess return this.lineHeight;
-    inline function set_lineHeight(value:Int) @:privateAccess return this.lineHeight = value;
-    
     function new (chars:String, widths:Array<Int>, path:String, lineHeight = 9, spaceWidth = 4)
     {
         @:privateAccess
