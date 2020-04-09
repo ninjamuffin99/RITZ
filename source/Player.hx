@@ -1,12 +1,14 @@
 package;
 
 import Dust;
+import beat.BeatGame;
 import props.MovingPlatform;
 import ui.Inputs;
 
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.animation.FlxAnimation;
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.input.gamepad.FlxGamepadInputID;
@@ -88,14 +90,22 @@ class Player extends FlxSprite
     public function new(x:Float, y:Float):Void
     {
         super(x, y);
-
+        
+        inline function addBeatAnim(name:String, frames:Array<Int>, loopsPerBeat:Float)
+        {
+            animation.add(name, frames, 0);
+            var anim = animation.getByName(name);
+            @:privateAccess
+            anim.delay = BeatGame.beatTime / anim.numFrames / loopsPerBeat;
+        }
+        
         loadGraphic(AssetPaths.ritz_spritesheet__png, true, 32, 32);
-        animation.add('idle', [0]);
-        animation.add('walk', [1, 2, 2, 0], 12);
-        animation.add('jumping', [2]);
-        animation.add('skid', [3]);
-        animation.add('falling', [4]);
-        animation.add('fucking died lmao', [7, 8, 9, 10, 11], 12);
+        addBeatAnim('idle', [0, 1, 2, 3], 1);
+        addBeatAnim('walk', [4, 5, 5, 1], 1.5);
+        animation.add('jumping', [5]);
+        animation.add('skid', [6]);
+        animation.add('falling', [7]);
+        animation.add('fucking died lmao', [8, 9, 10, 11, 12], 12);
 
         animation.play("idle");
 

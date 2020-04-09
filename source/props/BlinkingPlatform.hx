@@ -1,5 +1,6 @@
 package props;
 
+import beat.BeatGame;
 import flixel.tweens.FlxEase;
 import flixel.graphics.FlxGraphic;
 import flixel.FlxG;
@@ -9,6 +10,7 @@ import zero.utilities.OgmoUtils;
 
 typedef BlinkingPlatformValues = TriggerPlatformValues & 
 {
+    unit:Unit,
     showTime:Float,
     warnTime:Float,
     ?hideTime:Float,
@@ -32,12 +34,19 @@ class BlinkingPlatform extends TriggerPlatform
     override function setOgmoProperties(data:EntityData)
     {
         final values:BlinkingPlatformValues = cast data.values;
-        showTime = values.showTime;
-        warnTime = values.warnTime;
+        final unit = switch(values.unit)
+        {
+            case Seconds     : 1.0;
+            case QuarterBeats: BeatGame.beatTime;
+            case HalfBeats   : BeatGame.beatTime * 2;
+            case Beats       : BeatGame.beatTime * 4;
+        }
+        showTime = values.showTime * unit;
+        warnTime = values.warnTime * unit;
         if (values.hideTime == null || values.hideTime <= 0)
             hideTime = showTime;
         else
-            hideTime = values.hideTime;
+            hideTime = values.hideTime * unit;
         
         active = showTime > 0;
         
@@ -45,7 +54,7 @@ class BlinkingPlatform extends TriggerPlatform
         onGraphic = graphic;
         offGraphic = Platform.getImageFromOgmo(data.values.graphic, data.width, data.height, oneWayPlatform ? "cloudOff" : "solidOff");
         
-        var startDelay = values.startDelay % (showTime + hideTime);
+        var startDelay = (values.startDelay * unit) % (showTime + hideTime);
         if (trigger != Load && startDelay != 0)
             throw 'startDelay is only usable when trigger="Load"';
         else if (trigger == Load && startDelay > 0)
@@ -129,4 +138,12 @@ class BlinkingPlatform extends TriggerPlatform
         platform.setOgmoProperties(data);
         return platform;
     }
+}
+
+enum abstract Unit(String) from String to String
+{
+    var Seconds;
+    var QuarterBeats;
+    var HalfBeats;
+    var Beats;
 }

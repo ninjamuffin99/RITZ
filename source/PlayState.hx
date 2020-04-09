@@ -3,6 +3,7 @@ package;
 import Cheese;
 import OgmoPath;
 import OgmoTilemap;
+import beat.BeatGame;
 import props.Platform;
 import props.BlinkingPlatform;
 import props.MovingPlatform;
@@ -506,8 +507,10 @@ class PlayState extends flixel.FlxState
 		{
 			case "pillow":
 				FlxG.sound.music.loopTime = 4450;
+				BeatGame.beatsPerMinute = 110;
 			case "ritz":
 				FlxG.sound.music.loopTime = 0;
+				BeatGame.beatsPerMinute = 60;//not needed
 		}
 	}
 }

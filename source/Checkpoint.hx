@@ -1,5 +1,7 @@
 package;
 
+import beat.BeatGame;
+
 import flixel.util.FlxColor;
 import flixel.FlxSprite;
 
@@ -18,9 +20,17 @@ class Checkpoint extends FlxSprite
         super(x, y + 2);
         moves = false;
         
+        inline function addBeatAnim(name:String, frames:Array<Int>, loopsPerBeat = 1.0)
+        {
+            animation.add(name, frames, 0);
+            var anim = animation.getByName(name);
+            @:privateAccess
+            anim.delay = BeatGame.beatTime / anim.numFrames / loopsPerBeat;
+        }
+        
         loadGraphic(AssetPaths.checkpoint_rat__png, true, 32, 32);
-        animation.add('idle', [0, 1, 2, 3], 10);
-        animation.add('play', [4, 5, 6, 7], 10);
+        addBeatAnim('idle', [0, 1, 2, 3]);
+        addBeatAnim('play', [4, 5, 6, 7]);
         animation.play('idle');
     }
     
@@ -33,8 +43,22 @@ class Checkpoint extends FlxSprite
         return this;
     }
     
-    inline public function activate():Void animation.play('play');
-    inline public function deactivate():Void animation.play('idle');
+    inline public function activate():Void
+    {
+        @:privateAccess
+        var frameTime = animation.curAnim._frameTimer;
+        animation.play('play', false, false, animation.curAnim.curIndex);
+        @:privateAccess
+        animation.curAnim._frameTimer = frameTime;
+    }
+    inline public function deactivate():Void
+    {
+        @:privateAccess
+        var frameTime = animation.curAnim._frameTimer;
+        animation.play('idle', false, false, animation.curAnim.curIndex);
+        @:privateAccess
+        animation.curAnim._frameTimer = frameTime;
+    }
     
     public function onTalk() autoTalk = false;
     

@@ -9,7 +9,7 @@ class Main extends openfl.display.Sprite
 	{
 		super();
 		addChild(
-			new flixel.FlxGame(
+			new beat.BeatGame(
 				Std.int(stage.stageWidth / SCALE),
 				Std.int(stage.stageHeight / SCALE),
 				

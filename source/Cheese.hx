@@ -1,5 +1,6 @@
 package;
 
+import beat.BeatGame;
 import flixel.util.FlxTimer;
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -28,7 +29,10 @@ class Cheese extends FlxSprite
 
         loadGraphic(AssetPaths.cheese_idle__png, true, 32, 32);
         animation.add('idle', [0]);
-        animation.add('follow', [0, 1, 2, 3, 4, 5, 6], 7);
+        animation.add('follow', [0, 1, 2, 2, 2, 3, 4, 5, 6], 7);
+        var anim = animation.getByName('follow');
+        @:privateAccess
+        anim.delay = BeatGame.beatTime / anim.numFrames * 2;
         animation.play('idle');
         offset.x = 2;
         width -= 5;
@@ -60,27 +64,32 @@ class Cheese extends FlxSprite
         if (target == null)
             throw "null follow target";
         
-        var animFrame = 0;
         if (target.cheese.length == 0)
+        {
             followTarget = target;
+            animation.play("follow", true);
+        }
         else
         {
             var leadCheese = target.cheese.last();
             followTarget = leadCheese;
             leadCheese.follower = this;
-            animFrame = leadCheese.animation.curAnim.curFrame - 1;
-            leadCheese.animation.play("follow", true, false, animFrame);
+            var animFrame = leadCheese.animation.curAnim.curFrame - 1;
             
             // 
             if (animFrame == -1)
                 animFrame += leadCheese.animation.curAnim.numFrames;
+            
+            animation.play("follow", true, false, animFrame);
+            @:privateAccess
+            animation.curAnim._frameTimer = leadCheese.animation.curAnim._frameTimer;
         }
         mode = GetAnim;
         moves = true;
         solid = false;
         
         // make it start moving a little so it's really clear we just touched it
-        animation.play("follow", true, false, animFrame);
+        
         var animDuration = animation.curAnim.numFrames / animation.curAnim.frameRate;
         flickerTimer = animDuration / 2;
         // move in direction player is moving
@@ -223,12 +232,16 @@ abstract DisplayCheese(FlxSprite) to FlxSprite
     {
         this = new FlxSprite(x, y);
         this.loadGraphic(AssetPaths.cheese_idle__png, true, 32, 32);
-        this.animation.add('idle', [0]);
+        this.animation.add('idle', [0, 1, 2, 2, 2, 3, 4, 5, 6], 7);
+        var anim = this.animation.getByName('idle');
+        @:privateAccess
+        anim.delay = BeatGame.beatTime / anim.numFrames * 2;
+        this.animation.play('idle');
         // closer to graphic bounds than collectible cheese
         this.offset.x = 3;
         this.width -= 4;
         this.height -= 5;
-        this.offset.y = 9;
+        this.offset.y = 6;
     }
 }
 
