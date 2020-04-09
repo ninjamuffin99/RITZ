@@ -24,8 +24,7 @@ class Checkpoint extends FlxSprite
         {
             animation.add(name, frames, 0);
             var anim = animation.getByName(name);
-            @:privateAccess
-            anim.delay = BeatGame.beatTime / anim.numFrames / loopsPerBeat;
+            anim.frameRate = BeatGame.beatsPerSecond * anim.numFrames * loopsPerBeat;
         }
         
         loadGraphic(AssetPaths.checkpoint_rat__png, true, 32, 32);

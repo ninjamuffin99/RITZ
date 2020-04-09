@@ -232,10 +232,9 @@ abstract DisplayCheese(FlxSprite) to FlxSprite
     {
         this = new FlxSprite(x, y);
         this.loadGraphic(AssetPaths.cheese_idle__png, true, 32, 32);
-        this.animation.add('idle', [0, 1, 2, 2, 2, 3, 4, 5, 6], 7);
+        this.animation.add('idle', [0, 1, 2, 2, 3, 3, 4, 5, 6], 0);
         var anim = this.animation.getByName('idle');
-        @:privateAccess
-        anim.delay = BeatGame.beatTime / anim.numFrames * 2;
+        anim.frameRate = BeatGame.beatsPerSecond * anim.numFrames / 2;
         this.animation.play('idle');
         // closer to graphic bounds than collectible cheese
         this.offset.x = 3;
