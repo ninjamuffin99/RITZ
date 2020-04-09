@@ -91,11 +91,7 @@ class BitmapText extends flixel.text.FlxBitmapText
 		active = false;
 		
 		if (borderColor >= 0xFF000000)
-		{
 			setBorderStyle(OUTLINE, borderColor, borderSize, 0);
-			@:privateAccess
-			lineHeight = font.lineHeight + borderSize * 2;
-		}
 	}
 	
 	override function set_alpha(value:Float):Float
@@ -115,6 +111,10 @@ class BitmapText extends flixel.text.FlxBitmapText
 @:forward
 abstract Font(FlxBitmapFont) to FlxBitmapFont
 {
+    public var lineHeight(get, set):Int;
+    inline function get_lineHeight() @:privateAccess return this.lineHeight;
+    inline function set_lineHeight(value:Int) @:privateAccess return this.lineHeight = value;
+    
     function new (chars:String, widths:Array<Int>, path:String, lineHeight = 9, spaceWidth = 4)
     {
         @:privateAccess
