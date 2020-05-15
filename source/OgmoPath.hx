@@ -138,38 +138,17 @@ enum abstract PathType(String) to String from String
     }
 }
 
-class PathSprite extends FlxTypedSpriteGroup<FlxSprite>
+@:forward
+abstract PathSprite(FlxTypedSpriteGroup<FlxSprite>) to FlxTypedSpriteGroup<FlxSprite>
 {
-    var target:FlxObject;
-    public final bolt = new FlxSprite();
-    
-    public function new (path:OgmoPath)
+    inline public function new (path:OgmoPath)
     {
-        target = path.object;
-        super(path.nodes[0].x, path.nodes[0].y, path.nodes.length);
+        this = new FlxTypedSpriteGroup(path.nodes[0].x, path.nodes[0].y, path.nodes.length);
         for (i in 1...path.nodes.length)
-            add(new PathSpriteLink(path.nodes[0], path.nodes[i-1], path.nodes[i]));
-        if (path.nodes.length > 2 && (path.mode == FlxPath.LOOP_BACKWARD || path.mode == FlxPath.LOOP_FORWARD))
-            add(new PathSpriteLink(path.nodes[0], path.nodes[path.nodes.length-1], path.nodes[0]));
+            this.add(new PathSpriteLink(path.nodes[0], path.nodes[i-1], path.nodes[i]));
         
-        bolt.loadGraphic("assets/images/pathBolt.png", true, 7, 7);
-        bolt.animation.add("stopped", [0]); 
-        bolt.animation.add("moving", [0, 1, 2, 3], 8); 
-        bolt.offset.set(Math.floor(bolt.width / 2), Math.floor(bolt.height / 2));
-    }
-    
-    override function update(elapsed:Float)
-    {
-        super.update(elapsed);
-        bolt.x = target.x + target.width  / 2;
-        bolt.y = target.y + target.height / 2;
-        bolt.animation.play(bolt.x == bolt.last.x && bolt.y == bolt.last.y ? "stopped" : "moving");
-    }
-    
-    override function destroy()
-    {
-        super.destroy();
-        target = null;
+        if (path.nodes.length > 2 && (path.mode == FlxPath.LOOP_BACKWARD || path.mode == FlxPath.LOOP_FORWARD))
+            this.add(new PathSpriteLink(path.nodes[0], path.nodes[path.nodes.length-1], path.nodes[0]));
     }
 }
 

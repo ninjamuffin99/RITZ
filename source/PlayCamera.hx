@@ -51,7 +51,6 @@ class PlayCamera extends FlxCamera
 	#end
 	
 	var tileSize = 1.0;
-	var cameraTilemap:CameraTilemap;
 	
 	var groundRect = new FlxRect();
 	var airRect = new FlxRect();
@@ -59,12 +58,15 @@ class PlayCamera extends FlxCamera
 	var player(get, never):Player;
 	inline function get_player():Player return cast target;
 	
+	public var leading = CameraTileType.None;
+	
 	public function new (x = 0, y = 0, width = 0, height = 0, zoom = 0):Void
 	{
 		super(x, y, width, height, zoom);
+		bgColor = FlxG.stage.color;
 	}
 	
-	public function init(player:Player, tileSize:Float, cameraTilemap:CameraTilemap):PlayCamera
+	public function init(player:Player, tileSize:Float):PlayCamera
 	{
 		var w = (width / 8);
 		var h = (height * 2 / 3);
@@ -77,7 +79,6 @@ class PlayCamera extends FlxCamera
 		airRect.height += Player.MAX_JUMP + 3 * tileSize;
 		
 		this.tileSize = tileSize;
-		this.cameraTilemap = cameraTilemap;
 		follow(player, FlxCameraFollowStyle.PLATFORMER, LERP);
 		focusOn(player.getPosition());
 		deadzone.copyFrom(airRect);
@@ -147,7 +148,6 @@ class PlayCamera extends FlxCamera
 		}
 		
 		// Tilemap leading bias, Look up unless it's a downward section of the level (indicated in ogmo)
-		var leading = cameraTilemap.getTileTypeAt(player.x, player.y);
 		if (leading != MoreDown)
 		{
 			if (!player.onCoyoteGround && player.velocity.y > 0 && scroll.y > lastPos.y + 1)

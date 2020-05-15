@@ -77,7 +77,7 @@ class Player extends FlxSprite
     public var wasOnGround   (default, null):Bool = false;
     public var onCoyoteGround(default, null):Bool = false;
     
-    public var dust:FlxTypedGroup<Dust> = new FlxTypedGroup();
+    var dust:FlxTypedGroup<Dust> = new FlxTypedGroup();
     public var platform:MovingPlatform = null;
     
     public var cheese = new List<Cheese>();
@@ -148,7 +148,9 @@ class Player extends FlxSprite
     {
         switch (state)
         {
+            case Won:
             case Hurt:
+            case Talking:
             case Respawning:
                 velocity.set();
                 acceleration.set();
@@ -206,6 +208,25 @@ class Player extends FlxSprite
                     acceleration.x = oldAccelX;
                 }
         }
+        
+        dust.update(elapsed);
+        
+        #if debug
+        if (jumpSprite != null)
+            jumpSprite.update(elapsed);
+        #end
+    }
+    
+    override function draw()
+    {
+        super.draw();
+        
+        dust.draw();
+        
+        #if debug
+        if (jumpSprite != null)
+            jumpSprite.draw();
+        #end
     }
     
     function isTouchingAll(dirs:Int)
@@ -559,6 +580,7 @@ class Player extends FlxSprite
     }
 }
 
+@:forward
 abstract JumpSprite(FlxSpriteGroup) to FlxSprite
 {
     static var colors = [0xFF123884, 0xFF69bcf3, 0xFF123884, 0xFFffffff];
@@ -633,6 +655,8 @@ abstract JumpSprite(FlxSpriteGroup) to FlxSprite
 enum PlayerState
 {
     Alive;
+    Talking;
     Hurt;
     Respawning;
+    Won;
 }
