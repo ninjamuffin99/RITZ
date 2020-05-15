@@ -1,6 +1,6 @@
 package data;
 
-import OgmoTilemap;
+import data.OgmoTilemap;
 
 import flixel.group.FlxGroup;
 

@@ -1,7 +1,7 @@
 package;
 
+import data.OgmoTilemap;
 import ui.Inputs;
-import OgmoTilemap;
 
 import flixel.FlxG;
 import flixel.FlxCamera;

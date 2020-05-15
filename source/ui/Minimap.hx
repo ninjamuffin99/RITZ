@@ -1,6 +1,7 @@
 package ui;
 
-import js.lib.Error;
+import data.OgmoTilemap;
+
 import flixel.FlxCamera;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
