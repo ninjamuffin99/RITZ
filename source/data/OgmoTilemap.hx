@@ -1,4 +1,4 @@
-package;
+package data;
 
 import flixel.util.FlxArrayUtil;
 import flixel.graphics.frames.FlxTileFrames;

@@ -1,7 +1,7 @@
 package;
 
-import ui.Inputs;
-import OgmoTilemap;
+import data.OgmoTilemap;
+import props.Player;
 
 import flixel.FlxG;
 import flixel.FlxCamera;
@@ -13,7 +13,7 @@ import flixel.tweens.FlxEase;
 
 class PlayCamera extends FlxCamera
 {
-	
+	inline static var TILE_SIZE = 32;
 	/**
 	 * Too high and it can be disorienting,
 	 * too low and the player won't see ahead of their path
@@ -50,39 +50,41 @@ class PlayCamera extends FlxCamera
 	var debugDeadZone:FlxObject;
 	#end
 	
-	var tileSize = 1.0;
-	var cameraTilemap:CameraTilemap;
-	
 	var groundRect = new FlxRect();
 	var airRect = new FlxRect();
 	
 	var player(get, never):Player;
 	inline function get_player():Player return cast target;
 	
+	public var leading = CameraTileType.None;
+	
 	public function new (x = 0, y = 0, width = 0, height = 0, zoom = 0):Void
 	{
 		super(x, y, width, height, zoom);
+		bgColor = FlxG.stage.color;
 	}
 	
-	public function init(player:Player, tileSize:Float, cameraTilemap:CameraTilemap):PlayCamera
+	public function init(player:Player):PlayCamera
+	{
+		follow(player, FlxCameraFollowStyle.PLATFORMER, LERP);
+		resetDeadZones();
+		focusOn(player.getPosition());
+		leadOffset = camYLeadAmount = -TILE_SIZE;
+		return this;
+	}
+
+	public function resetDeadZones():Void
 	{
 		var w = (width / 8);
 		var h = (height * 2 / 3);
 		groundRect.x = (width - w) / 2;
 		groundRect.width = w;
 		groundRect.height = player.height;
-		groundRect.y = (height - groundRect.height) / 2 - (tileSize * 1 * zoom);
+		groundRect.y = (height - groundRect.height) / 2 - (TILE_SIZE * 1 * zoom);
 		airRect.copyFrom(groundRect);
 		airRect.y -= Player.MAX_JUMP;
-		airRect.height += Player.MAX_JUMP + 3 * tileSize;
-		
-		this.tileSize = tileSize;
-		this.cameraTilemap = cameraTilemap;
-		follow(player, FlxCameraFollowStyle.PLATFORMER, LERP);
-		focusOn(player.getPosition());
+		airRect.height += Player.MAX_JUMP + 3 * TILE_SIZE;
 		deadzone.copyFrom(airRect);
-		leadOffset = camYLeadAmount = -tileSize;
-		return this;
 	}
 	
 	override function update(elapsed:Float)
@@ -126,7 +128,7 @@ class PlayCamera extends FlxCamera
 		}
 		
 		// Look around
-		if (Inputs.pressed.DOWN && player.onGround)
+		if (player.controls.down && player.onGround)
 		{
 			panDownTimer += elapsed;
 			if (panDownTimer > PAN_DOWN_DELAY + PAN_DOWN_TIME)
@@ -142,12 +144,11 @@ class PlayCamera extends FlxCamera
 		{
 			if (panDownTimer > PAN_DOWN_DELAY)
 				panOffset
-					= tileSize * PAN_DOWN_DISTANCE
+					= TILE_SIZE * PAN_DOWN_DISTANCE
 					* /*FlxEase.smoothStepInOut*/(Math.min(panDownTimer - PAN_DOWN_DELAY, PAN_DOWN_TIME) / PAN_DOWN_TIME);
 		}
 		
 		// Tilemap leading bias, Look up unless it's a downward section of the level (indicated in ogmo)
-		var leading = cameraTilemap.getTileTypeAt(player.x, player.y);
 		if (leading != MoreDown)
 		{
 			if (!player.onCoyoteGround && player.velocity.y > 0 && scroll.y > lastPos.y + 1)
@@ -161,12 +162,12 @@ class PlayCamera extends FlxCamera
 				fallTimer = 0;
 		}
 		
-		camYLeadAmount = tileSize * leading.getOffset();
+		camYLeadAmount = TILE_SIZE * leading.getOffset();
 		
 		// linear shift because I'm lazy and this can get weird if player keeps going back and forth
 		if (leadOffset != camYLeadAmount)
 		{
-			final speed = tileSize * (player.onGround ? GROUND_PAN_LEAD_SHIFT_SPEED : AIR_PAN_LEAD_SHIFT_SPEED);
+			final speed = TILE_SIZE * (player.onGround ? GROUND_PAN_LEAD_SHIFT_SPEED : AIR_PAN_LEAD_SHIFT_SPEED);
 			if (leadOffset < camYLeadAmount)
 			{
 				leadOffset += speed * elapsed;
@@ -175,8 +176,8 @@ class PlayCamera extends FlxCamera
 			}
 			else
 			{
-				if (!player.onGround && leadOffset > tileSize * CameraTileType.Down.getOffset())
-					leadOffset = camYLeadAmount
+				if (!player.onGround && leadOffset > TILE_SIZE * CameraTileType.Down.getOffset())
+					leadOffset = camYLeadAmount;
 				else
 					leadOffset -= speed * elapsed;
 				
@@ -186,7 +187,7 @@ class PlayCamera extends FlxCamera
 		}
 		
 		// Combine all the camera offsets
-		targetOffset.y = snapOffset + panOffset + leadOffset;
+		targetOffset.y = (snapOffset + panOffset + leadOffset) * 0.5;
 		lastPos.copyFrom(scroll);
 		
 		#if debug
@@ -213,15 +214,5 @@ class PlayCamera extends FlxCamera
 		#end
 		
 		super.update(elapsed);
-	}
-	
-	static public function replaceCurrentCamera():PlayCamera
-	{
-		var camera = new PlayCamera();
-		camera.copyFrom(FlxG.camera);
-		FlxG.cameras.remove(FlxG.camera);
-		FlxG.cameras.add(camera);
-		FlxG.camera = camera;
-		return camera;
 	}
 }

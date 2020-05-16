@@ -132,4 +132,14 @@ class NGio
 		
 		//NGio.scoreboardArray = NG.core.scoreBoards.get(8004).scores;
 	}
+	
+	inline static public function unlockMedal(id:Int)
+	{
+		if (isLoggedIn)
+		{
+			var medal = NG.core.medals.get(id);
+			if (!medal.unlocked)
+				medal.sendUnlock();
+		}
+	}
 }

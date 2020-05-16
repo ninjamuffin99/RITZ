@@ -1,5 +1,6 @@
 package ui;
 
+import states.BootState;
 import ui.Inputs;
 
 import flixel.FlxCamera;

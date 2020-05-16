@@ -1,5 +1,6 @@
-package;
+package states;
 
+import props.Checkpoint;
 import ui.DialogueSubstate;
 
 import io.newgrounds.NG;

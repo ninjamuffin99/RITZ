@@ -4,6 +4,7 @@
   "height": 3456,
   "offsetX": 0,
   "offsetY": 0,
+  "values": {"splits?": ""},
   "layers": [
     {
       "name": "CameraView",

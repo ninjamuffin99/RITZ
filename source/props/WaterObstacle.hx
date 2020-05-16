@@ -1,4 +1,4 @@
-package;
+package props;
 
 class WaterObstacle extends Obstacle
 {

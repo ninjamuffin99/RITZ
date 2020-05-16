@@ -4,6 +4,7 @@
   "height": 4096,
   "offsetX": 0,
   "offsetY": 0,
+  "values": {"splits?": ""},
   "layers": [
     {
       "name": "CameraView",
@@ -1175,7 +1176,7 @@
           "originY": 0,
           "values": {"unit": "HalfBeats", "startDelay": 1.5, "showTime": 1, "warnTime": 0.5, "hideTime": 0, "trigger": "Load"}
         },
-        {"name": "player", "id": 1229, "_eid": "29962948", "x": 64, "y": 4032, "originX": 0, "originY": 0}
+        {"name": "player", "id": 1229, "_eid": "29962948", "x": 96, "y": 4000, "originX": 0, "originY": 0}
       ]
     },
     {

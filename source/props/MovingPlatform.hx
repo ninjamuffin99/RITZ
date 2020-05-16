@@ -3,6 +3,8 @@ package props;
 import OgmoPath;
 import props.Platform;
 
+import flixel.FlxObject;
+import flixel.FlxSprite;
 import flixel.math.FlxVector;
 
 import zero.utilities.OgmoUtils;
@@ -18,15 +20,17 @@ class MovingPlatform extends TriggerPlatform
     public var ogmoPath(get, set):Null<OgmoPath>;
     inline function get_ogmoPath() return cast(path, OgmoPath);
     inline function set_ogmoPath(value:OgmoPath) return cast path = value;
+    var pathSprite:PathSprite;
+    var bolt:Bolt;
     
     public function new(x:Float, y:Float) { super(x, y); }
     
-    inline public function createPathSprite()
+    inline function createPathSprite()
     {
-        var path = ogmoPath.createPathSprite();
-        path.x += width / 2;
-        path.y += height / 2;
-        return path;
+        var sprite = ogmoPath.createPathSprite();
+        sprite.x += width / 2;
+        sprite.y += height / 2;
+        return sprite;
     }
     
     override function setOgmoProperties(data:EntityData)
@@ -42,6 +46,9 @@ class MovingPlatform extends TriggerPlatform
             
             if (trigger != Load)
                 ogmoPath.onLoopComplete = (_)->resetTrigger();
+            
+            pathSprite = createPathSprite();
+            bolt = new Bolt();
         }
     }
     
@@ -60,6 +67,15 @@ class MovingPlatform extends TriggerPlatform
             if (timer <= 0)
                 velocity.copyTo(cast transferVelocity);
         }
+        
+        bolt.update(elapsed);
+    }
+    
+    override function draw()
+    {
+        pathSprite.draw();
+        super.draw();
+        bolt.drawCenteredOn(this);
     }
     
     override function fire()
@@ -85,6 +101,31 @@ class MovingPlatform extends TriggerPlatform
         var platform = new MovingPlatform(data.x, data.y);
         platform.setOgmoProperties(data);
         return platform;
+    }
+}
+
+abstract Bolt(FlxSprite) to FlxSprite
+{
+    public function new()
+    {
+        this = new FlxSprite();
+        this.loadGraphic("assets/images/pathBolt.png", true, 7, 7);
+        this.animation.add("stopped", [0]); 
+        this.animation.add("moving", [0, 1, 2, 3], 8); 
+        this.offset.set(Math.floor(this.width / 2), Math.floor(this.height / 2));
+    }
+    
+    inline public function update(elapsed:Float)
+    {
+        this.animation.play(this.x == this.last.x && this.y == this.last.y ? "stopped" : "moving");
+        this.update(elapsed);
+    }
+    
+    inline public function drawCenteredOn(target:FlxObject)
+    {
+        this.x = target.x + target.width  / 2;
+        this.y = target.y + target.height / 2;
+        this.draw();
     }
 }
 

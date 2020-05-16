@@ -1,5 +1,6 @@
 package ui;
 
+import props.Player;
 import ui.Minimap;
 import ui.Prompt;
 

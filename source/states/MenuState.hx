@@ -1,4 +1,4 @@
-package;
+package states;
 
 import ui.Inputs;
 
@@ -68,10 +68,8 @@ class MenuState extends flixel.FlxState
                 {
                     FlxG.switchState(new PlayState());
                 });
-            }    
+            }
         }
-
-        
         
         super.update(elapsed);
     }

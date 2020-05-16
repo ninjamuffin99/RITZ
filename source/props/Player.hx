@@ -1,9 +1,10 @@
-package;
+package props;
 
-import Dust;
 import beat.BeatGame;
+import props.Dust;
 import props.MovingPlatform;
-import ui.Inputs;
+import states.BootState;
+import ui.Controls;
 
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -11,6 +12,9 @@ import flixel.FlxSprite;
 import flixel.animation.FlxAnimation;
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup;
+import flixel.input.actions.FlxAction;
+import flixel.input.actions.FlxActionInput;
+import flixel.input.actions.FlxActionManager;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxMath;
@@ -77,7 +81,7 @@ class Player extends FlxSprite
     public var wasOnGround   (default, null):Bool = false;
     public var onCoyoteGround(default, null):Bool = false;
     
-    public var dust:FlxTypedGroup<Dust> = new FlxTypedGroup();
+    var dust:FlxTypedGroup<Dust> = new FlxTypedGroup();
     public var platform:MovingPlatform = null;
     
     public var cheese = new List<Cheese>();
@@ -87,9 +91,14 @@ class Player extends FlxSprite
     public var jump (default, null):Bool;
     public var down (default, null):Bool;
     
-    public function new(x:Float, y:Float):Void
+    public var controlsType(default, null):ControlsType = Solo;
+    public var controls(default, null):Controls;
+    
+    public function new(x:Float, y:Float, controlsType:ControlsType = Solo):Void
     {
         super(x, y);
+        
+        initActions(controlsType);
         
         inline function addBeatAnim(name:String, frames:Array<Int>, loopsPerBeat:Float)
         {
@@ -122,6 +131,23 @@ class Player extends FlxSprite
         maxVelocity.y = FALL_SPEED;
     }
     
+    public function rebindKeys():Void
+    {
+        //TODO:
+    }
+
+    public function initActions(controlsType:ControlsType):Void
+    {
+        this.controlsType = controlsType;
+        controls = switch(controlsType)
+        {
+            case Solo: Controls.solo;
+            case Duo(true): Controls.duo1;
+            case Duo(false): Controls.duo2;
+            case Custom: null;//TODO
+        }
+    }
+    
     public function hurtAndRespawn(x, y):Void
     {
         for (c in cheese)
@@ -148,14 +174,16 @@ class Player extends FlxSprite
     {
         switch (state)
         {
+            case Won:
             case Hurt:
+            case Talking:
             case Respawning:
                 velocity.set();
                 acceleration.set();
                 xAirBoost = 0;
                 
                 super.update(elapsed);
-            case Alive if (Inputs.pressed.RESET):
+            case Alive if (controls.reset):
                 state = Hurt;
             case Alive:
                 movement(elapsed);
@@ -206,6 +234,25 @@ class Player extends FlxSprite
                     acceleration.x = oldAccelX;
                 }
         }
+        
+        dust.update(elapsed);
+        
+        #if debug
+        if (jumpSprite != null)
+            jumpSprite.update(elapsed);
+        #end
+    }
+    
+    override function draw()
+    {
+        super.draw();
+        
+        dust.draw();
+        
+        #if debug
+        if (jumpSprite != null)
+            jumpSprite.draw();
+        #end
     }
     
     function isTouchingAll(dirs:Int)
@@ -223,20 +270,13 @@ class Player extends FlxSprite
             return;
         }
         
-        jump  = Inputs.pressed.JUMP;
-        down  = Inputs.pressed.DOWN;
-        left  = Inputs.pressed.LEFT;
-        right = Inputs.pressed.RIGHT;
+        jump  = controls.jump;
+        left  = controls.left;
+        right = controls.right;
+        down  = controls.down;
         
-        var jumpR  = Inputs.justReleased.JUMP;
-        var downR  = Inputs.justReleased.DOWN;
-        var leftR  = Inputs.justReleased.LEFT;
-        var rightR = Inputs.justReleased.RIGHT;
-        
-        var jumpP  = Inputs.justPressed.JUMP;
-        var downP  = Inputs.justPressed.DOWN;
-        var leftP  = Inputs.justPressed.LEFT;
-        var rightP = Inputs.justPressed.RIGHT;
+        var jumpR  = controls.jumpR; 
+        var jumpP  = controls.jumpP;
         
         if (velocity.y > 0)
             maxVelocity.y = FALL_SPEED;
@@ -370,24 +410,6 @@ class Player extends FlxSprite
                 FlxG.sound.play('assets/sounds/doubleJump' + BootState.soundEXT, 0.75);
             }
         }
-
-        
-        
-        /* 
-        if (airHopped && velocity.y > 0)
-        {
-            drag.x = 200;
-
-            if (jump)
-            {
-                hovering = true;
-            }
-            else
-            {
-                hovering = false;
-            }
-        }
-        */
 
         if (wallClimbing)
         {
@@ -559,6 +581,7 @@ class Player extends FlxSprite
     }
 }
 
+@:forward
 abstract JumpSprite(FlxSpriteGroup) to FlxSprite
 {
     static var colors = [0xFF123884, 0xFF69bcf3, 0xFF123884, 0xFFffffff];
@@ -633,6 +656,8 @@ abstract JumpSprite(FlxSpriteGroup) to FlxSprite
 enum PlayerState
 {
     Alive;
+    Talking;
     Hurt;
     Respawning;
+    Won;
 }
