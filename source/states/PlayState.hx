@@ -1,5 +1,6 @@
 package states;
 
+import ui.Controls;
 import OgmoPath;
 import beat.BeatGame;
 import data.OgmoTilemap;
@@ -16,7 +17,6 @@ import props.SecretTrigger;
 import props.MusicTrigger;
 import ui.BitmapText;
 import ui.DialogueSubstate;
-import ui.Inputs;
 import ui.PauseSubstate;
 import ui.MinimapSubstate;
 import ui.Minimap;
@@ -174,9 +174,9 @@ class PlayState extends flixel.FlxState
 		return level;
 	}
 	
-	function createPlayer(x:Float, y:Float, num:Int):Player
+	function createPlayer(x:Float, y:Float, controlsType:ControlsType):Player
 	{
-		var player = new Player(x, y, num);
+		var player = new Player(x, y, controlsType);
 		player.onRespawn.add(onPlayerRespawn);
 		grpPlayers.add(player);
 		if (curCheckpoint == null)
@@ -205,7 +205,8 @@ class PlayState extends flixel.FlxState
 			throw "Only 2 players allowed right now";
 		
 		var firstPlayer = grpPlayers.members[0];
-		createPlayer(firstPlayer.x, firstPlayer.y, 1);
+		firstPlayer.initActions(Duo(true));
+		createPlayer(firstPlayer.x, firstPlayer.y, Duo(false));
 	}
 	
 	function splitCameras()
@@ -235,7 +236,7 @@ class PlayState extends flixel.FlxState
 		switch(e.name)
 		{
 			case "player": 
-				level.player = createPlayer(e.x, e.y, 0);
+				level.player = createPlayer(e.x, e.y, Solo);
 				level.add(level.player);
 				// entity = level.player;
 				//layer not used
@@ -288,22 +289,23 @@ class PlayState extends flixel.FlxState
 		
 		updateCollision();
 		
+		var pressedMap = false;
+		var pressedPause = false;
 		grpPlayers.forEach
 		(
 			player->
 			{
 				checkPlayerState(player);
 				minimap.updateSeen(playerCameras[player]);
+				
+				if (!pressedMap && player.controls.map)
+					openSubState(new MinimapSubstate(minimap, player, warpTo));
+				
+				pressedPause = pressedPause || player.controls.pause;
 			}
 		);
 		
-		if (Inputs.justPressed.MAP)
-		{
-			var player = grpPlayers.members[0];//Todo: check each player
-			openSubState(new MinimapSubstate(minimap, player, warpTo));
-		}
-		
-		if (Inputs.justPressed.PAUSE)
+		if (pressedPause)
 			openSubState(new PauseSubstate());
 		
 		cheeseCountText.text = cheeseCount + (cheeseNeeded > 0 ? "/" + cheeseNeeded : "");
@@ -461,7 +463,7 @@ class PlayState extends flixel.FlxState
 		dialogueBubble.setPosition(checkpoint.x + 20, checkpoint.y - 10);
 		minimap.showCheckpointGet(checkpoint.ID);
 		
-		if (Inputs.justPressed.TALK || autoTalk)
+		if (player.controls.talk || autoTalk)
 		{
 			checkpoint.onTalk();
 			persistentUpdate = true;

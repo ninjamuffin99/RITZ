@@ -2,7 +2,6 @@ package;
 
 import data.OgmoTilemap;
 import props.Player;
-import ui.Inputs;
 
 import flixel.FlxG;
 import flixel.FlxCamera;
@@ -129,7 +128,7 @@ class PlayCamera extends FlxCamera
 		}
 		
 		// Look around
-		if (Inputs.pressed.DOWN && player.onGround)
+		if (player.controls.down && player.onGround)
 		{
 			panDownTimer += elapsed;
 			if (panDownTimer > PAN_DOWN_DELAY + PAN_DOWN_TIME)

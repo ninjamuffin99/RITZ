@@ -4,7 +4,7 @@ import beat.BeatGame;
 import props.Dust;
 import props.MovingPlatform;
 import states.BootState;
-import ui.Inputs;
+import ui.Controls;
 
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -91,16 +91,14 @@ class Player extends FlxSprite
     public var jump (default, null):Bool;
     public var down (default, null):Bool;
     
-    public var curCheckpoint:Checkpoint;
-    public var curPlayer:Int = 0;
+    public var controlsType(default, null):ControlsType = Solo;
+    public var controls(default, null):Controls;
     
-    public function new(x:Float, y:Float, daPlayer:Int = 0):Void
+    public function new(x:Float, y:Float, controlsType:ControlsType = Solo):Void
     {
         super(x, y);
         
-        curPlayer = daPlayer;
-        
-        initActions(curPlayer);
+        initActions(controlsType);
         
         inline function addBeatAnim(name:String, frames:Array<Int>, loopsPerBeat:Float)
         {
@@ -133,58 +131,21 @@ class Player extends FlxSprite
         maxVelocity.y = FALL_SPEED;
     }
     
-    var daJumpP = new FlxActionDigital();
-    var daJumpR = new FlxActionDigital();
-    var daJump = new FlxActionDigital();
-    var actionLeft = new FlxActionDigital();
-    var actionRight = new FlxActionDigital();
-    var actionDown = new FlxActionDigital();
-
-    var daAction:Array<FlxAction> = [];
     public function rebindKeys():Void
     {
-        for (action in daAction)
-        {
-            action.inputs = [];
-        }
+        //TODO:
     }
 
-    public function initActions(gamepadNum:Int = 0):Void
+    public function initActions(controlsType:ControlsType):Void
     {
-        var actionManager = new FlxActionManager();
-        FlxG.inputs.add(actionManager);
-
-        actionManager.deviceConnected.add(function(device:FlxInputDevice, dunno1:Int, dunnoString:String)
-            {
-                trace(device);
-                trace(dunno1);
-                trace(dunnoString);
-            });
-
-        switch(curPlayer)
+        this.controlsType = controlsType;
+        controls = switch(controlsType)
         {
-            case 0:
-                daJumpP.addKey(SPACE, JUST_PRESSED);
-                daJumpR.addKey(SPACE, JUST_RELEASED);
-                daJump.addKey(SPACE, PRESSED);
-                daJumpP.addKey(W, JUST_PRESSED);
-                daJumpR.addKey(W, JUST_RELEASED);
-                daJump.addKey(W, PRESSED);
-                actionLeft.addKey(A, PRESSED);
-                actionRight.addKey(D, PRESSED);
-                actionDown.addKey(S, PRESSED);
-            case 1:
-                daJumpP.addGamepad(A, JUST_PRESSED);
-                daJumpR.addGamepad(A, JUST_RELEASED);
-                daJump.addGamepad(A, PRESSED);
-                actionLeft.addGamepad(DPAD_LEFT, PRESSED);
-                actionRight.addGamepad(DPAD_RIGHT, PRESSED);
-                actionDown.addGamepad(DPAD_DOWN, PRESSED);
+            case Solo: Controls.solo;
+            case Duo(true): Controls.duo1;
+            case Duo(false): Controls.duo2;
+            case Custom: null;//TODO
         }
-
-        daAction = [daJumpP, daJumpR, daJump, actionDown, actionLeft, actionRight];
-
-        actionManager.addActions(daAction);
     }
     
     public function hurtAndRespawn(x, y):Void
@@ -222,7 +183,7 @@ class Player extends FlxSprite
                 xAirBoost = 0;
                 
                 super.update(elapsed);
-            case Alive if (Inputs.pressed.RESET):
+            case Alive if (controls.reset):
                 state = Hurt;
             case Alive:
                 movement(elapsed);
@@ -309,13 +270,13 @@ class Player extends FlxSprite
             return;
         }
         
-        jump  = daJump.check();
-        left  = actionLeft.check();
-        right = actionRight.check();
-        down = actionDown.check();
+        jump  = controls.jump;
+        left  = controls.left;
+        right = controls.right;
+        down  = controls.down;
         
-        var jumpR  = daJumpR.check(); 
-        var jumpP  = daJumpP.check();
+        var jumpR  = controls.jumpR; 
+        var jumpP  = controls.jumpP;
         
         if (velocity.y > 0)
             maxVelocity.y = FALL_SPEED;
