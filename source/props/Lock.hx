@@ -1,5 +1,6 @@
-package;
+package props;
 
+import states.BootState;
 import ui.BitmapText;
 
 import flixel.FlxG;

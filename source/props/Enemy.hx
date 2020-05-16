@@ -1,4 +1,5 @@
-package;
+package props;
+
 import flixel.util.FlxPath;
 import flixel.FlxObject;
 import flixel.util.FlxColor;

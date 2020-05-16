@@ -1,4 +1,4 @@
-package;
+package props;
 
 import beat.BeatGame;
 import flixel.util.FlxTimer;

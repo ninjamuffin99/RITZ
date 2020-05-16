@@ -1,6 +1,7 @@
 package;
 
 import data.OgmoTilemap;
+import props.Player;
 import ui.Inputs;
 
 import flixel.FlxG;

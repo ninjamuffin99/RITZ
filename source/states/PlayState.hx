@@ -1,14 +1,19 @@
-package;
+package states;
 
-import Cheese;
-import Lock;
 import OgmoPath;
 import beat.BeatGame;
 import data.OgmoTilemap;
 import data.Level;
+import props.Checkpoint;
+import props.Cheese;
+import props.Lock;
+import props.SpikeObstacle;
+import props.Player;
 import props.Platform;
 import props.BlinkingPlatform;
 import props.MovingPlatform;
+import props.SecretTrigger;
+import props.MusicTrigger;
 import ui.BitmapText;
 import ui.DialogueSubstate;
 import ui.Inputs;

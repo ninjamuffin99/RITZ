@@ -1,8 +1,9 @@
-package;
+package props;
 
-import Dust;
 import beat.BeatGame;
+import props.Dust;
 import props.MovingPlatform;
+import states.BootState;
 import ui.Inputs;
 
 import flixel.FlxG;
