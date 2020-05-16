@@ -18,8 +18,6 @@ import props.MusicTrigger;
 import ui.BitmapText;
 import ui.DialogueSubstate;
 import ui.PauseSubstate;
-import ui.MinimapSubstate;
-import ui.Minimap;
 
 import io.newgrounds.NG;
 
@@ -44,9 +42,6 @@ class PlayState extends flixel.FlxState
 {
 	inline static var USE_NEW_CAMERA = true;
 	inline static var FIRST_CHEESE_MSG = "Thanks for the cheese, buddy! ";
-	
-	var minimap:Minimap;
-	var tileSize = 0;
 	
 	var levels:Map<String, Level> = [];
 	var playerCameras:Map<Player, PlayCamera> = [];
@@ -105,14 +100,12 @@ class PlayState extends flixel.FlxState
 		FlxG.worldBounds.set(0, 0, 0, 0);
 		FlxG.cameras.remove(FlxG.camera);
 		FlxG.camera = null;
-		var levelPath = 
-			// AssetPaths.dumbassLevel__json;
-			// AssetPaths.normassLevel__json;
-			AssetPaths.smartassLevel__json;
-		createLevel(levelPath);
-		minimap = new Minimap(levelPath);
-		
+		createInitialLevel();
 		createUI();
+	}
+	
+	function createInitialLevel()
+	{
 	}
 	
 	function createUI()
@@ -289,17 +282,13 @@ class PlayState extends flixel.FlxState
 		
 		updateCollision();
 		
-		var pressedMap = false;
 		var pressedPause = false;
 		grpPlayers.forEach
 		(
 			player->
 			{
 				checkPlayerState(player);
-				minimap.updateSeen(playerCameras[player]);
 				
-				if (!pressedMap && player.controls.map)
-					openSubState(new MinimapSubstate(minimap, player, warpTo));
 				
 				pressedPause = pressedPause || player.controls.pause;
 			}
@@ -331,8 +320,6 @@ class PlayState extends flixel.FlxState
 		// Disable one way platforms when pressing down
 		if (player.down)
 			grpOneWayPlatforms.forEach((platform)->platform.cloudSolid = false);
-		
-		minimap.updateSeen(FlxG.camera);
 		
 		cheeseCountText.text = cheeseCount + (cheeseNeeded > 0 ? "/" + cheeseNeeded : "");
 		
@@ -461,7 +448,6 @@ class PlayState extends flixel.FlxState
 		
 		dialogueBubble.visible = true;
 		dialogueBubble.setPosition(checkpoint.x + 20, checkpoint.y - 10);
-		minimap.showCheckpointGet(checkpoint.ID);
 		
 		if (player.controls.talk || autoTalk)
 		{
@@ -497,15 +483,14 @@ class PlayState extends flixel.FlxState
 		
 		if (!player.cheese.isEmpty())
 		{
-			player.cheese.first().sendToCheckpoint(checkpoint,
-				(cheese)->
-				{
-					cheeseCount++;
-					minimap.showCheeseGet(cheese.ID);
-				}
-			);
+			player.cheese.first().sendToCheckpoint(checkpoint, onFeedCheese);
 			player.cheese.clear();
 		}
+	}
+	
+	function onFeedCheese(cheese:Cheese)
+	{
+		cheeseCount++;
 	}
 	
 	function collectCheese()
