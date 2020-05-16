@@ -122,6 +122,7 @@ class PlayState extends flixel.FlxState
 		cheeseCountText.scrollFactor.set();
 		#if debug cheeseCountText.ignoreDrawDebug = true; #end
 		uiGroup.add(cheeseCountText);
+		uiGroup.camera = FlxG.camera;
 		add(uiGroup);
 	}
 	
@@ -168,15 +169,15 @@ class PlayState extends flixel.FlxState
 		return level;
 	}
 	
-	function createPlayer(x:Float, y:Float):Player
+	function createPlayer(x:Float, y:Float, num:Int):Player
 	{
-		var player = new Player(x, y);
+		var player = new Player(x, y, num);
 		player.onRespawn.add(onPlayerRespawn);
 		grpPlayers.add(player);
 		if (curCheckpoint == null)
 			curCheckpoint = new Checkpoint(x, y, "");
 		
-		var camera = new PlayCamera().init(player, 32);
+		var camera = new PlayCamera().init(player);
 		camera.minScrollX = FlxG.worldBounds.left;
 		camera.maxScrollX = FlxG.worldBounds.right;
 		camera.minScrollY = FlxG.worldBounds.top;
@@ -188,16 +189,48 @@ class PlayState extends flixel.FlxState
 			FlxG.camera = camera;
 		bg.cameras.push(camera);
 		
+		splitCameras();
+		
 		return player;
 	}
-
+	
+	function createSecondPlayer()
+	{
+		if (grpPlayers.length > 1)
+			throw "Only 2 players allowed right now";
+		
+		var firstPlayer = grpPlayers.members[0];
+		createPlayer(firstPlayer.x, firstPlayer.y, 1);
+	}
+	
+	function splitCameras()
+	{
+		switch(grpPlayers.length)
+		{
+			case 1:
+				var cam:PlayCamera = cast FlxG.camera;
+				cam.width = FlxG.width;
+				cam.resetDeadZones();
+			case 2:
+				var cam:PlayCamera;
+				cam = cast playerCameras[grpPlayers.members[0]];
+				cam.width = Std.int(FlxG.width / 2);
+				cam.resetDeadZones();
+				cam = cast playerCameras[grpPlayers.members[1]];
+				cam.width = Std.int(FlxG.width / 2);
+				cam.x = cam.width;
+				cam.resetDeadZones();
+			case num: throw 'Invalid number of players: $num';
+		}
+	}
+	
 	function entity_loader(e:EntityData, layer:FlxGroup, level:Level)
 	{
 		var entity:FlxBasic = null;
 		switch(e.name)
 		{
 			case "player": 
-				level.player = createPlayer(e.x, e.y);
+				level.player = createPlayer(e.x, e.y, 0);
 				level.add(level.player);
 				// entity = level.player;
 				//layer not used
@@ -244,8 +277,7 @@ class PlayState extends flixel.FlxState
 		}
 	}
 	
-	private var ending:Bool = false;
-	override public function update(elapsed:Float):Void
+	override function update(elapsed)
 	{
 		super.update(elapsed);
 		
@@ -293,23 +325,9 @@ class PlayState extends flixel.FlxState
 		if (player.down)
 			grpOneWayPlatforms.forEach((platform)->platform.cloudSolid = false);
 		
-		var oldPlatform = player.platform;
-		player.platform = null;
-		FlxG.collide(grpPlatforms, player, 
-			function(platform:Platform, _)
-			{
-				if (Std.is(platform, MovingPlatform)
-				&& (player.platform == null || (platform.velocity.y < player.platform.velocity.y)))
-					player.platform = cast platform;
-			}
-		);
-		if (player.platform == null && oldPlatform != null)
-			player.onSeparatePlatform(oldPlatform);
-		else if (player.platform != null && oldPlatform == null)
-			player.onLandPlatform(player.platform);
+		minimap.updateSeen(FlxG.camera);
 		
-		// Re-enable one way platforms in case other things collide
-		grpOneWayPlatforms.forEach((platform)->platform.cloudSolid = true);
+		cheeseCountText.text = cheeseCount + (cheeseNeeded > 0 ? "/" + cheeseNeeded : "");
 		
 		grpTilemaps.forEach((level)->level.setTilesCollisions(40, 4, player.down ? FlxObject.NONE : FlxObject.UP));
 		FlxG.collide(grpTilemaps, player);
@@ -504,6 +522,16 @@ class PlayState extends flixel.FlxState
 		
 		if (FlxG.keys.justPressed.T)
 			cheeseCount++;
+		
+		if (FlxG.keys.justPressed.SIX)
+		{
+			createSecondPlayer();
+		}
+
+		if (FlxG.keys.justPressed.SEVEN)
+		{
+			grpPlayers.members[0].rebindKeys();
+		}
 	}
 	
 	function onPlayerRespawn():Void

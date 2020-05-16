@@ -11,6 +11,9 @@ import flixel.FlxSprite;
 import flixel.animation.FlxAnimation;
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup;
+import flixel.input.actions.FlxAction;
+import flixel.input.actions.FlxActionInput;
+import flixel.input.actions.FlxActionManager;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxMath;
@@ -87,9 +90,16 @@ class Player extends FlxSprite
     public var jump (default, null):Bool;
     public var down (default, null):Bool;
     
-    public function new(x:Float, y:Float):Void
+    public var curCheckpoint:Checkpoint;
+    public var curPlayer:Int = 0;
+    
+    public function new(x:Float, y:Float, daPlayer:Int = 0):Void
     {
         super(x, y);
+        
+        curPlayer = daPlayer;
+        
+        initActions(curPlayer);
         
         inline function addBeatAnim(name:String, frames:Array<Int>, loopsPerBeat:Float)
         {
@@ -120,6 +130,60 @@ class Player extends FlxSprite
         acceleration.y = GRAVITY;
         maxVelocity.x = MAXSPEED;
         maxVelocity.y = FALL_SPEED;
+    }
+    
+    var daJumpP = new FlxActionDigital();
+    var daJumpR = new FlxActionDigital();
+    var daJump = new FlxActionDigital();
+    var actionLeft = new FlxActionDigital();
+    var actionRight = new FlxActionDigital();
+    var actionDown = new FlxActionDigital();
+
+    var daAction:Array<FlxAction> = [];
+    public function rebindKeys():Void
+    {
+        for (action in daAction)
+        {
+            action.inputs = [];
+        }
+    }
+
+    public function initActions(gamepadNum:Int = 0):Void
+    {
+        var actionManager = new FlxActionManager();
+        FlxG.inputs.add(actionManager);
+
+        actionManager.deviceConnected.add(function(device:FlxInputDevice, dunno1:Int, dunnoString:String)
+            {
+                trace(device);
+                trace(dunno1);
+                trace(dunnoString);
+            });
+
+        switch(curPlayer)
+        {
+            case 0:
+                daJumpP.addKey(SPACE, JUST_PRESSED);
+                daJumpR.addKey(SPACE, JUST_RELEASED);
+                daJump.addKey(SPACE, PRESSED);
+                daJumpP.addKey(W, JUST_PRESSED);
+                daJumpR.addKey(W, JUST_RELEASED);
+                daJump.addKey(W, PRESSED);
+                actionLeft.addKey(A, PRESSED);
+                actionRight.addKey(D, PRESSED);
+                actionDown.addKey(S, PRESSED);
+            case 1:
+                daJumpP.addGamepad(A, JUST_PRESSED);
+                daJumpR.addGamepad(A, JUST_RELEASED);
+                daJump.addGamepad(A, PRESSED);
+                actionLeft.addGamepad(DPAD_LEFT, PRESSED);
+                actionRight.addGamepad(DPAD_RIGHT, PRESSED);
+                actionDown.addGamepad(DPAD_DOWN, PRESSED);
+        }
+
+        daAction = [daJumpP, daJumpR, daJump, actionDown, actionLeft, actionRight];
+
+        actionManager.addActions(daAction);
     }
     
     public function hurtAndRespawn(x, y):Void
@@ -244,20 +308,13 @@ class Player extends FlxSprite
             return;
         }
         
-        jump  = Inputs.pressed.JUMP;
-        down  = Inputs.pressed.DOWN;
-        left  = Inputs.pressed.LEFT;
-        right = Inputs.pressed.RIGHT;
+        jump  = daJump.check();
+        left  = actionLeft.check();
+        right = actionRight.check();
+        down = actionDown.check();
         
-        var jumpR  = Inputs.justReleased.JUMP;
-        var downR  = Inputs.justReleased.DOWN;
-        var leftR  = Inputs.justReleased.LEFT;
-        var rightR = Inputs.justReleased.RIGHT;
-        
-        var jumpP  = Inputs.justPressed.JUMP;
-        var downP  = Inputs.justPressed.DOWN;
-        var leftP  = Inputs.justPressed.LEFT;
-        var rightP = Inputs.justPressed.RIGHT;
+        var jumpR  = daJumpR.check(); 
+        var jumpP  = daJumpP.check();
         
         if (velocity.y > 0)
             maxVelocity.y = FALL_SPEED;
@@ -391,24 +448,6 @@ class Player extends FlxSprite
                 FlxG.sound.play('assets/sounds/doubleJump' + BootState.soundEXT, 0.75);
             }
         }
-
-        
-        
-        /* 
-        if (airHopped && velocity.y > 0)
-        {
-            drag.x = 200;
-
-            if (jump)
-            {
-                hovering = true;
-            }
-            else
-            {
-                hovering = false;
-            }
-        }
-        */
 
         if (wallClimbing)
         {
