@@ -33,6 +33,7 @@ class Controls extends FlxActionSet
     var _map    = new FlxActionDigital("map");
     var _pause  = new FlxActionDigital("pause");
     var _reset  = new FlxActionDigital("reset");
+    var _any    = new FlxActionDigital("any");
     
     public var jump  (get, never):Bool;
     public var jumpP (get, never):Bool;
@@ -47,6 +48,7 @@ class Controls extends FlxActionSet
     public var map   (get, never):Bool;
     public var pause (get, never):Bool;
     public var reset (get, never):Bool;
+    public var any   (get, never):Bool;
     
     inline function get_jump  () return _jump  .check();
     inline function get_jumpP () return _jumpP .check();
@@ -61,6 +63,7 @@ class Controls extends FlxActionSet
     inline function get_map   () return _map   .check();
     inline function get_pause () return _pause .check();
     inline function get_reset () return _reset .check();
+    inline function get_any   () return _any   .check();
     
     function new(name:String)
     {
@@ -77,6 +80,7 @@ class Controls extends FlxActionSet
         add(_map);
         add(_pause);
         add(_reset);
+        add(_any);
     }
     
     static function get_solo():Controls
@@ -119,6 +123,7 @@ class Controls extends FlxActionSet
         addKeys(solo._pause , [P, ESCAPE, ENTER], JUST_PRESSED);
         addKeys(solo._map   , [M], JUST_PRESSED);
         addKeys(solo._reset , [R], JUST_PRESSED);
+        addKeys(solo._any   , [ANY], JUST_PRESSED);
         actions.addSet(solo);
         
         duo1 = new Controls("duo1");
@@ -135,6 +140,7 @@ class Controls extends FlxActionSet
         addKeys(duo1._pause , [ESCAPE], JUST_PRESSED);
         addKeys(duo1._map   , [M], JUST_PRESSED);
         addKeys(duo1._reset , [R], JUST_PRESSED);
+        addKeys(duo1._any   , [ANY], JUST_PRESSED);
         actions.addSet(duo1);
         
         duo2 = new Controls("duo2");
@@ -151,6 +157,7 @@ class Controls extends FlxActionSet
         addKeys(duo2._pause , [ENTER], JUST_PRESSED);
         addKeys(duo2._map   , [M], JUST_PRESSED);
         addKeys(duo2._reset , [BACKSPACE], JUST_PRESSED);
+        addKeys(duo2._any   , [ANY], JUST_PRESSED);
         actions.addSet(duo2);
     }
     
