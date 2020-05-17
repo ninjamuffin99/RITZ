@@ -318,11 +318,7 @@ class PlayState extends flixel.FlxState
 	function updatePlatforms(player:Player)
 	{
 		// Disable one way platforms when pressing down
-		if (player.down)
-			grpOneWayPlatforms.forEach((platform)->platform.cloudSolid = false);
-		
-		cheeseCountText.text = cheeseCount + (cheeseNeeded > 0 ? "/" + cheeseNeeded : "");
-		
+		grpOneWayPlatforms.forEach((platform)->platform.cloudSolid = !player.down);
 		grpTilemaps.forEach((level)->level.setTilesCollisions(40, 4, player.down ? FlxObject.NONE : FlxObject.UP));
 		FlxG.collide(grpTilemaps, player);
 	}

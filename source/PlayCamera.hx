@@ -187,7 +187,7 @@ class PlayCamera extends FlxCamera
 		}
 		
 		// Combine all the camera offsets
-		targetOffset.y = (snapOffset + panOffset + leadOffset) * 0.5;
+		targetOffset.y = snapOffset + panOffset + leadOffset;
 		lastPos.copyFrom(scroll);
 		
 		#if debug
