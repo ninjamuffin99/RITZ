@@ -105,7 +105,7 @@ class EndState extends flixel.FlxState
             else
             {
                 finishedShit = true;
-                openSubState(new DialogueSubstate(dumbass.dialogue));
+                openSubState(new DialogueSubstate(dumbass.dialogue, null));
             }
         }
 

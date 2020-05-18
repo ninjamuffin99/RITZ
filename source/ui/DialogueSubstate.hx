@@ -1,7 +1,7 @@
 package ui;
 
 import states.BootState;
-import ui.Inputs;
+import ui.Controls;
 
 import flixel.FlxCamera;
 import flixel.system.FlxAssets;
@@ -18,9 +18,11 @@ class DialogueSubstate extends FlxSubState
     private var blackBarTop:FlxSprite;
     private var blackBarBottom:FlxSprite;
     private var uiCamera:FlxCamera;
+    private var controls:Controls = null;
 
-    public function new(dialogue:String, startNow = true) {
+    public function new(dialogue:String, controls:Null<Controls>, startNow = true) {
         super();
+        this.controls = controls;
         
         uiCamera = new FlxCamera();
         uiCamera.scroll.x -= uiCamera.width * 2;//showEmpty
@@ -67,14 +69,10 @@ class DialogueSubstate extends FlxSubState
                 var end = d.indexOf("}", start);
                 if (end == -1)
                     throw '"{" token found with no matching "}" token';
-                trace("token" + d.substring(start + 1, end));
-                switch(d.substring(start + 1, end))
-                {
-                    case inputName if(Input.createByName(inputName) != null):
-                        d = d.split('{$inputName}')
-                            .join(Inputs.getDialogueNameFromToken(inputName));
-                    case token: throw 'Unhandled dialog token: $token';
-                }
+                var inputName = d.substring(start + 1, end);
+                trace('token $inputName');
+                d = d.split('{$inputName}')
+                    .join(controls.getDialogueNameFromToken(inputName));
                 start = d.indexOf("{", end + 1);
             }
         }
@@ -90,7 +88,7 @@ class DialogueSubstate extends FlxSubState
     override function update(elapsed:Float) {
 
         if (dialogueText.visible
-        && (Inputs.justPressed.BACK || Inputs.justPressed.ACCEPT || Inputs.justPressed.TALK))
+        && controls != null && (controls.back || controls.accept || controls.talk))
         {
             if (dialogueText.isFinished)
                 startClose();

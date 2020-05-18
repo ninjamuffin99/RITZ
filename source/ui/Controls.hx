@@ -1,10 +1,11 @@
 package ui;
 
 import flixel.FlxG;
+import flixel.input.FlxInput;
 import flixel.input.actions.FlxActionManager;
 import flixel.input.actions.FlxActionSet;
-import flixel.input.FlxInput;
 import flixel.input.actions.FlxAction;
+import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 
 enum ControlsType
@@ -81,6 +82,29 @@ class Controls extends FlxActionSet
         add(_pause);
         add(_reset);
         add(_any);
+    }
+    
+    public function getDialogueName(action:FlxActionDigital):String
+    {
+        var input = action.inputs[0];
+        return switch input.device
+        {
+            case KEYBOARD: return '[${(input.inputID:FlxKey)}]';
+            case GAMEPAD : return '(${(input.inputID:FlxGamepadInputID)})';
+            case device: throw 'unhandled device: $device';
+        }
+    }
+    
+    public function getDialogueNameFromToken(inputName:String):String
+    {
+        inputName = inputName.toLowerCase();
+        for (action in this.digitalActions)
+        {
+            if (action.name == inputName)
+                return getDialogueName(action);
+        }
+        
+        throw 'Unrecognised inputName:$inputName';
     }
     
     static function get_solo():Controls
