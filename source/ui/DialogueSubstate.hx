@@ -1,60 +1,65 @@
 package ui;
 
 import states.BootState;
-import ui.Controls;
 
 import flixel.FlxCamera;
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
 import flixel.system.FlxAssets;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
-import flixel.FlxSprite;
-import flixel.FlxG;
-import flixel.FlxSubState;
 
-class DialogueSubstate extends FlxSubState
+class DialogueSubstate extends flixel.FlxSubState
 {
-    private var dialogueText:TypeTextTwo;
-    private var blackBarTop:FlxSprite;
-    private var blackBarBottom:FlxSprite;
-    private var uiCamera:FlxCamera;
-    private var controls:Controls = null;
+    public var dialogueText:TypeTextTwo;
+    public var blackBarTop:FlxSprite;
+    public var blackBarBottom:FlxSprite;
+    public var uiCamera:FlxCamera;
+    public var controls:Controls = null;
 
-    public function new(dialogue:String, controls:Null<Controls>, startNow = true) {
+    public function new(dialogue:String, controls:Null<Controls>, ?playerCamera:PlayCamera, startNow = true) {
         super();
         this.controls = controls;
         
         uiCamera = new FlxCamera();
+        uiCamera.x = playerCamera.x;
+        uiCamera.y = playerCamera.y;
+        uiCamera.width = playerCamera.width;
+        uiCamera.height = playerCamera.height;
         uiCamera.scroll.x -= uiCamera.width * 2;//showEmpty
         uiCamera.bgColor = 0;
+        cameras = [uiCamera];
         FlxG.cameras.add(uiCamera);
         
-        blackBarTop = new FlxSprite();
-        blackBarTop.makeGraphic(FlxG.width, Std.int(FlxG.height * 0.3), FlxColor.BLACK);
-        blackBarTop.scrollFactor.set();
-        blackBarTop.y = -blackBarTop.height;
-        blackBarTop.camera = uiCamera;
-        add(blackBarTop);
-
-        blackBarBottom = new FlxSprite();
-        blackBarBottom.makeGraphic(FlxG.width, Std.int(FlxG.height * 0.22), FlxColor.BLACK);
-        blackBarBottom.scrollFactor.set();
-        blackBarBottom.y = FlxG.height;
-        blackBarBottom.camera = uiCamera;
-        add(blackBarBottom);
-
-        FlxTween.tween(blackBarTop, {y: 0}, 0.25, {ease:FlxEase.quadIn});
-        FlxTween.tween(blackBarBottom, {y: Std.int(FlxG.height - blackBarBottom.height)}, 0.25, {ease:FlxEase.quadIn});
-
-        dialogueText = new TypeTextTwo(0, 0, FlxG.width, parseDialogue(dialogue), 16);
+        var textSize = 16;//uiCamera.width < FlxG.width ? 8 : 16;
+        dialogueText = new TypeTextTwo(0, 0, uiCamera.width, parseDialogue(dialogue), textSize);
         dialogueText.scrollFactor.set();
         dialogueText.sounds = [FlxG.sound.load('assets/sounds/talksound' + BootState.soundEXT), FlxG.sound.load('assets/sounds/talksound1' + BootState.soundEXT)];
         dialogueText.finishSounds = true;
         dialogueText.skipKeys = [];
-        dialogueText.camera = uiCamera;
         dialogueText.visible = false;
+        
+        blackBarBottom = new FlxSprite();
+        blackBarBottom.makeGraphic(uiCamera.width, Std.int(uiCamera.height * 0.22), FlxColor.BLACK);
+        blackBarBottom.scrollFactor.set();
+        blackBarBottom.y = uiCamera.height;
+        
+        blackBarTop = new FlxSprite();
+        final height = Math.max(blackBarBottom.height, dialogueText.finalHeight);
+        blackBarTop.makeGraphic(uiCamera.width, Std.int(height), FlxColor.BLACK);
+        blackBarTop.scrollFactor.set();
+        blackBarTop.y = -blackBarTop.height;
+        
+        add(blackBarBottom);
+        add(blackBarTop);
         add(dialogueText);
-
+        
+        FlxTween.tween(blackBarTop, {y: 0}, 0.25, {ease:FlxEase.quadIn});
+        FlxTween.tween(blackBarBottom, {y: Std.int(uiCamera.height - blackBarBottom.height)}, 0.25, {ease:FlxEase.quadIn});
+        
         if (startNow)
             start(0.25);
     }
@@ -103,7 +108,7 @@ class DialogueSubstate extends FlxSubState
     {
         FlxG.cameras.remove(uiCamera);
         
-        super.close();
+        closeCallback();
     }
     
     function startClose():Void
@@ -113,5 +118,47 @@ class DialogueSubstate extends FlxSubState
             { ease:FlxEase.quadIn, onComplete: (_)->close() }
         );
         dialogueText.visible = false;
+    }
+}
+
+@:forward
+abstract ZoomDialogueSubstate(DialogueSubstate) to DialogueSubstate
+{
+    inline public function new(dialogue:String, focalPoint:FlxPoint, controls:Controls, camera:PlayCamera, onComplete:()->Void)
+    {
+        final oldZoom = camera.zoom;
+        final oldCamPos = camera.scroll.copyTo();
+        this = new DialogueSubstate(dialogue, controls, camera, false);
+        
+        final zoomAmount = 2;
+        final yOffset = (this.blackBarTop.height - this.blackBarBottom.height) / 2 / zoomAmount;
+        tweenCamera(camera, 0.25, oldZoom * zoomAmount,
+            focalPoint.x - camera.width / 2,
+            focalPoint.y - camera.height / 2 - yOffset,
+            (_)->this.start()
+        );
+        focalPoint.putWeak();
+        
+        this.closeCallback = function ()
+        {
+            tweenCamera(camera, 0.3, oldZoom, oldCamPos.x, oldCamPos.y, (_)->onComplete());
+            oldCamPos.put();
+        };
+    }
+    
+    inline function tweenCamera(camera:FlxCamera, time:Float, zoom:Float, x:Float, y:Float, onComplete:(FlxTween)->Void):FlxTween
+    {
+        return FlxTween.tween(camera, { zoom: zoom, "scroll.x":x, "scroll.y":y }, time, { onComplete:onComplete });
+    }
+    
+    public function getViewRect(?rect:FlxRect):FlxRect
+    {
+        if (rect == null)
+            rect = new FlxRect();
+        
+        rect.y = this.blackBarTop.height;
+        rect.width = this.uiCamera.width;
+        rect.height = this.uiCamera.height - this.blackBarBottom.height;
+        return rect;
     }
 }

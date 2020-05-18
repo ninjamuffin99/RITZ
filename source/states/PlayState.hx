@@ -449,20 +449,16 @@ class PlayState extends flixel.FlxState
 		{
 			checkpoint.onTalk();
 			player.state = Talking;
-			var oldZoom = FlxG.camera.zoom;
-			var subState = new DialogueSubstate(dialogue, player.controls, false);
-			subState.closeCallback = ()->
-			{
-				final tweenTime = 0.3;
-				FlxTween.tween(FlxG.camera, { zoom: oldZoom }, tweenTime, { onComplete: (_)->player.state = Alive } );
-				if (checkpoint.cameraOffsetX != 0)
-					FlxTween.tween(FlxG.camera.targetOffset, { x:0 }, tweenTime);
-			};
-			add(subState);
-			final tweenTime = 0.25;
-			FlxTween.tween(FlxG.camera, { zoom: oldZoom * 2 }, tweenTime, {onComplete:(_)->subState.start() });
-			if (checkpoint.cameraOffsetX != 0)
-				FlxTween.tween(FlxG.camera.targetOffset, { x:checkpoint.cameraOffsetX }, tweenTime);
+			var focalPoint = checkpoint.getGraphicMidpoint(FlxPoint.weak());
+			focalPoint.x += checkpoint.cameraOffsetX;
+			add(new ZoomDialogueSubstate
+				( dialogue
+				, focalPoint
+				, player.controls
+				, playerCameras[player]
+				, ()->player.state = Alive
+				)
+			);
 		}
 		
 		if (checkpoint != curCheckpoint)
