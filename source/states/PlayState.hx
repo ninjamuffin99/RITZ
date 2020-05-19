@@ -124,7 +124,7 @@ class PlayState extends flixel.FlxState
 		add(uiGroup);
 	}
 	
-	function createLevel(levelPath:String, x = 0.0, y = 0.0):FlxGroup
+	function createLevel(levelPath:String, daX = 0.0, daY = 0.0):FlxGroup
 	{
 		var level = new Level();
 		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, levelPath);
@@ -132,6 +132,8 @@ class PlayState extends flixel.FlxState
 		#if debug map.ignoreDrawDebug = true; #end
 		map.setTilesCollisions(40, 4, FlxObject.UP);
 		level.map = map;
+		map.x = daX;
+		map.y = daY;
 		grpTilemaps.add(map);
 		
 		var worldBounds = FlxG.worldBounds;
@@ -139,6 +141,8 @@ class PlayState extends flixel.FlxState
 		if (map.y < worldBounds.y) worldBounds.y = map.y;
 		if (map.x + map.width  > worldBounds.right) worldBounds.right = map.x + map.width;
 		if (map.y + map.height > worldBounds.bottom) worldBounds.bottom = map.y + map.height;
+
+		FlxG.worldBounds.set(0, 0, worldBounds.width, worldBounds.height);
 		
 		var crack = new OgmoTilemap(ogmo, 'Crack', "assets/images/");
 		#if debug crack.ignoreDrawDebug = true; #end
@@ -177,7 +181,7 @@ class PlayState extends flixel.FlxState
 		
 		var camera = new PlayCamera().init(player);
 		camera.minScrollX = FlxG.worldBounds.left;
-		camera.maxScrollX = FlxG.worldBounds.right;
+		// camera.maxScrollX = FlxG.worldBounds.right;
 		camera.minScrollY = FlxG.worldBounds.top;
 		camera.maxScrollY = FlxG.worldBounds.bottom;
 		
@@ -226,6 +230,9 @@ class PlayState extends flixel.FlxState
 	function entity_loader(e:EntityData, layer:FlxGroup, level:Level)
 	{
 		var entity:FlxBasic = null;
+
+		e.x += Std.int(grpTilemaps.members[grpTilemaps.members.length - 1].x);
+
 		switch(e.name)
 		{
 			case "player": 

@@ -41,7 +41,10 @@
       "gridCellHeight": 16,
       "gridCellsX": 28,
       "gridCellsY": 36,
-      "entities": []
+      "entities": [
+        {"name": "coins", "id": 0, "_eid": "46479631", "x": 96, "y": 128, "originX": 0, "originY": 0},
+        {"name": "coins", "id": 1, "_eid": "46479631", "x": 352, "y": 112, "originX": 0, "originY": 0}
+      ]
     },
     {
       "name": "tiles",
