@@ -1,7 +1,7 @@
 package states;
 
-import ui.Controls;
 import OgmoPath;
+import ui.Controls;
 import beat.BeatGame;
 import data.OgmoTilemap;
 import data.Level;
@@ -29,9 +29,8 @@ import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
-import flixel.tweens.FlxTween;
-import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
+import flixel.util.FlxColor;
 
 import flixel.addons.display.FlxBackdrop;
 
@@ -288,7 +287,6 @@ class PlayState extends flixel.FlxState
 			player->
 			{
 				checkPlayerState(player);
-				
 				
 				pressedPause = pressedPause || player.controls.pause;
 			}
