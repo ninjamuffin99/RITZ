@@ -11,10 +11,16 @@ class RaceState extends PlayState
     
     override function createInitialLevel()
     {
-        createLevel(AssetPaths.raceStart0__json);
-        createLevel(AssetPaths.raceSegment0__json, FlxG.worldBounds.width);
-        createLevel(AssetPaths.raceSegment1__json, FlxG.worldBounds.width);
-        createLevel(AssetPaths.raceSegment2__json, FlxG.worldBounds.width);
-        createLevel(AssetPaths.raceSegment3__json, FlxG.worldBounds.width);
+        createLevel(AssetPaths.raceStartFlat0__json);
+        createLevel("assets/data/raceLevels/raceFlatSplit" + FlxG.random.int(0, 2) + '.json', FlxG.worldBounds.width);
+        
+        for (i in 0...FlxG.random.int(4, 12))
+        {
+            createLevel("assets/data/raceLevels/raceSplitSplit" + FlxG.random.int(0, 4) + '.json', FlxG.worldBounds.width);
+        }
+
+
+        createLevel(AssetPaths.raceSplitUpper0__json, FlxG.worldBounds.width);
+        createLevel(AssetPaths.raceUpperFlat0__json, FlxG.worldBounds.width);
     }
 }
