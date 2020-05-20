@@ -131,7 +131,7 @@ class PlayCamera extends FlxCamera
 		}
 		
 		// Look around
-		if (player.controls.down && player.onGround)
+		if (player.controls.DOWN && player.onGround)
 		{
 			panDownTimer += elapsed;
 			if (panDownTimer > PAN_DOWN_DELAY + PAN_DOWN_TIME)

@@ -183,7 +183,7 @@ class Player extends FlxSprite
                 xAirBoost = 0;
                 
                 super.update(elapsed);
-            case Alive if (controls.reset):
+            case Alive if (controls.RESET):
                 state = Hurt;
             case Alive:
                 movement(elapsed);
@@ -312,10 +312,10 @@ class Player extends FlxSprite
                 drag.x = AIR_DRAG;
         }
         
-        if (!onGround && (isTouching(FlxObject.CEILING) || controls.jumpR))
+        if (!onGround && (isTouching(FlxObject.CEILING) || controls.JUMP_R))
             apexReached = true;
         
-        if (controls.left != controls.right)
+        if (controls.LEFT != controls.RIGHT)
         {
             var accel:Float = GROUND_ACCEL;
             if (!onCoyoteGround)
@@ -329,7 +329,7 @@ class Player extends FlxSprite
             // if (hovering)
             //     hoverMulti = 0.6;
             
-            acceleration.x = (controls.left ? -1 : 1) * accel;
+            acceleration.x = (controls.LEFT ? -1 : 1) * accel;
         }
         else
             acceleration.x = 0;
@@ -353,7 +353,7 @@ class Player extends FlxSprite
         
         if (onCoyoteGround)
         {
-            if (controls.jumpP)
+            if (controls.JUMP_P)
                 startJump();
         }
         else
@@ -375,11 +375,11 @@ class Player extends FlxSprite
             }
             
             
-            if (controls.jumpP && !airHopped && !wallClimbing)
+            if (controls.JUMP_P && !airHopped && !wallClimbing)
             {
                 velocity.y = 0;
                 
-                if (USE_NEW_SETTINGS && controls.left != controls.right)
+                if (USE_NEW_SETTINGS && controls.LEFT != controls.RIGHT)
                 {
                     // remove boost if reversing direction
                     if (xAirBoost != 0 && !FlxMath.sameSign(acceleration.x, xAirBoost))
@@ -387,7 +387,7 @@ class Player extends FlxSprite
                         xAirBoost = 0;
                         maxVelocity.x = MAXSPEED;
                     }
-                    velocity.x = maxVelocity.x * (controls.left ? -1 : 1);
+                    velocity.x = maxVelocity.x * (controls.LEFT ? -1 : 1);
                 }
                 // if ((velocity.x > 0 && left) || (velocity.x < 0 && right))
                 // {
@@ -451,7 +451,7 @@ class Player extends FlxSprite
             final allowSkidJump = !onCoyoteGround
                 || (velocity.x != 0 && !FlxMath.sameSign(acceleration.x, velocity.x));
             if (allowSkidJump)
-                velocity.x = maxVelocity.x * (controls.left ? -1 : 1);
+                velocity.x = maxVelocity.x * (controls.LEFT ? -1 : 1);
         }
         maxVelocity.y = Math.max(-airJumpSpeed, -JUMP_SPEED);
         if (platform != null)
@@ -481,7 +481,7 @@ class Player extends FlxSprite
     
     function variableJump_new(elapsed:Float):Void
     {
-        if (controls.jump && !apexReached)
+        if (controls.JUMP && !apexReached)
         {
             if (!jumped)
             {
@@ -505,7 +505,7 @@ class Player extends FlxSprite
     
     function variableJump_old(elapsed:Float):Void
     {
-        if (controls.jump && !apexReached)
+        if (controls.JUMP && !apexReached)
         {
             jumped = true;
             jumpBoost++;

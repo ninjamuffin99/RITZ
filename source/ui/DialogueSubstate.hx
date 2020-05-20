@@ -93,7 +93,7 @@ class DialogueSubstate extends flixel.FlxSubState
     override function update(elapsed:Float) {
 
         if (dialogueText.visible
-        && controls != null && (controls.back || controls.accept || controls.talk))
+        && controls != null && (controls.BACK || controls.ACCEPT || controls.TALK))
         {
             if (dialogueText.isFinished)
                 startClose();

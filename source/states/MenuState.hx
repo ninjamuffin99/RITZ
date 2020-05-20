@@ -43,7 +43,7 @@ class MenuState extends flixel.FlxState
         
         if (title.animation.curAnim.name != 'ritz')
         {
-            if (Controls.solo.any && FlxG.sound.music != null)
+            if (Controls.solo.ANY && FlxG.sound.music != null)
             {
                 FlxFlicker.flicker(pressStart, 1, 0.04, false, true, function(flic:FlxFlicker)
                 {
