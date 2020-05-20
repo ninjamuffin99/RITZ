@@ -35,7 +35,6 @@ class DialogueSubstate extends flixel.FlxSubState
         
         var textSize = 16;//uiCamera.width < FlxG.width ? 8 : 16;
         dialogueText = new TypeTextTwo(0, 0, uiCamera.width, parseDialogue(dialogue), textSize);
-        dialogueText.scrollFactor.set();
         dialogueText.sounds = [FlxG.sound.load('assets/sounds/talksound' + BootState.soundEXT), FlxG.sound.load('assets/sounds/talksound1' + BootState.soundEXT)];
         dialogueText.finishSounds = true;
         dialogueText.skipKeys = [];
@@ -43,13 +42,11 @@ class DialogueSubstate extends flixel.FlxSubState
         
         blackBarBottom = new FlxSprite();
         blackBarBottom.makeGraphic(uiCamera.width, Std.int(uiCamera.height * 0.22), FlxColor.BLACK);
-        blackBarBottom.scrollFactor.set();
         blackBarBottom.y = uiCamera.height;
         
         blackBarTop = new FlxSprite();
         final height = Math.max(blackBarBottom.height, dialogueText.finalHeight);
         blackBarTop.makeGraphic(uiCamera.width, Std.int(height), FlxColor.BLACK);
-        blackBarTop.scrollFactor.set();
         blackBarTop.y = -blackBarTop.height;
         
         add(blackBarBottom);
