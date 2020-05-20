@@ -530,42 +530,6 @@ class Player extends FlxSprite
             }
         }
     }
-
-    private function wallJumping():Void
-    {
-        if (isTouching(FlxObject.WALL))
-        {
-            
-            if (jump && down)
-                jump = down = false;
-            
-            if (jump || down)
-            {
-                if (jump)
-                {
-                    acceleration.y = -GROUND_ACCEL * 0.8;
-                }
-    
-                if (down)
-                {
-                    acceleration.y = 900;
-                }
-            }
-            else
-            {
-                acceleration.y = 0;
-            }
-            
-    
-    
-            wallClimbing = true;
-        }
-        else
-        {
-            wallClimbing = false;
-        }
-
-    }
     
     function makeDust(type:DustType):Dust
     {
