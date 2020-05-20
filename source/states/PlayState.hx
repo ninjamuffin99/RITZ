@@ -79,7 +79,6 @@ class PlayState extends flixel.FlxState
 		bg = new FlxBackdrop(AssetPaths.dumbbg__png);
 		bg.scrollFactor.set(0.75, 0.75);
 		bg.alpha = 0.75;
-		bg.cameras = [];//prevents it from showing in the dialog substates camera
 		#if debug bg.ignoreDrawDebug = true; #end
 		
 		add(bg);
@@ -99,6 +98,7 @@ class PlayState extends flixel.FlxState
 		FlxG.worldBounds.set(0, 0, 0, 0);
 		FlxG.cameras.remove(FlxG.camera);
 		FlxG.camera = null;
+		FlxCamera.defaultCameras = [];// Added to in createPlayer
 		createInitialLevel();
 		createUI();
 	}
@@ -182,9 +182,9 @@ class PlayState extends flixel.FlxState
 		
 		playerCameras[player] = camera;
 		FlxG.cameras.add(camera);
+		FlxCamera.defaultCameras.push(camera);
 		if (FlxG.camera == null)
 			FlxG.camera = camera;
-		bg.cameras.push(camera);
 		
 		splitCameras();
 		

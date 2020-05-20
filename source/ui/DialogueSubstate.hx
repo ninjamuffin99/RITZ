@@ -29,7 +29,6 @@ class DialogueSubstate extends flixel.FlxSubState
         uiCamera.y = playerCamera.y;
         uiCamera.width = playerCamera.width;
         uiCamera.height = playerCamera.height;
-        uiCamera.scroll.x -= uiCamera.width * 2;//showEmpty
         uiCamera.bgColor = 0;
         cameras = [uiCamera];
         FlxG.cameras.add(uiCamera);
