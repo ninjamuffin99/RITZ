@@ -38,7 +38,7 @@ class AdventureState extends PlayState
             {
                 minimap.updateSeen(playerCameras[player]);
                 
-                if (!pressedMap && player.controls.map)
+                if (!pressedMap && player.controls.MAP)
                     openSubState(new MinimapSubstate(minimap, player, warpTo));
             }
         );

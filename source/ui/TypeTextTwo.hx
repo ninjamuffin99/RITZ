@@ -24,6 +24,9 @@ class TypeTextTwo extends flixel.addons.text.FlxTypeText
 	public var pauseData = new Map<String, {time:Float, variance:Float}>();
 	var pauseTime = 0.0;
 	
+	/** The height of the finished text */
+	public var finalHeight(default, null):Float;
+	
 	/**
 	   Text that has break lines included, used to see if the text is done
 	**/
@@ -59,8 +62,10 @@ class TypeTextTwo extends flixel.addons.text.FlxTypeText
 		addPauseChars(".?!", 0.175);
 		addPauseChars(",", 0.1);
 		
-		//addFormat(format1, 8, 15);
-		
+		text = _finalText;
+		insertBreakLines();
+		finalHeight = height;
+		text = "";
 	}
 	
 	public function addPauseChars(chars:String, time:Float, variance = 0.3)
