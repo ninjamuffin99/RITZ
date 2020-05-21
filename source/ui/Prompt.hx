@@ -46,15 +46,15 @@ class Prompt extends flixel.group.FlxGroup {
 	public function setup(text:String, onYes:Void->Void, ?onNo:Void->Void, ?onChoose:Void->Void):Void {
 		
 		label.text = text;
-		label.x = (FlxG.width - label.width) / 2 + 1;
-		label.y = (FlxG.height - label.height - label.lineHeight) / 2;
+		label.x = (FlxG.camera.width - label.width) / 2 + 1;
+		label.y = (FlxG.camera.height - label.height - label.lineHeight) / 2;
 		
 		box.setSize
 			( Std.int(label.width ) + BUFFER * 2
 			, Std.int(label.height) + label.lineHeight + BUFFER * 2
 			);
-		box.x = (FlxG.width  - box.width ) / 2;
-		box.y = (FlxG.height - box.height) / 2;
+		box.x = (FlxG.camera.width  - box.width ) / 2;
+		box.y = (FlxG.camera.height - box.height) / 2;
 		box.scrollFactor.set();
 		
 		yesText.x = label.x;
