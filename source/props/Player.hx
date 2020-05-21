@@ -1,6 +1,7 @@
 package props;
 
 import beat.BeatGame;
+import data.PlayerSettings;
 import props.Dust;
 import props.MovingPlatform;
 import states.BootState;
@@ -86,19 +87,16 @@ class Player extends FlxSprite
     
     public var cheese = new List<Cheese>();
     
-    public var left (default, null):Bool;
-    public var right(default, null):Bool;
-    public var jump (default, null):Bool;
-    public var down (default, null):Bool;
+    public final settings:PlayerSettings;
+    public var controlsType(get, never):ControlsType;
+    inline function get_controlsType():ControlsType return settings.controlsType;
+    public var controls    (get, never):Controls;
+    inline function get_controls    ():Controls return settings.controls;
     
-    public var controlsType(default, null):ControlsType = Solo;
-    public var controls(default, null):Controls;
-    
-    public function new(x:Float, y:Float, controlsType:ControlsType = Solo):Void
+    public function new(x:Float, y:Float, settings:PlayerSettings):Void
     {
+        this.settings = settings;
         super(x, y);
-        
-        initActions(controlsType);
         
         inline function addBeatAnim(name:String, frames:Array<Int>, loopsPerBeat:Float)
         {
@@ -129,23 +127,6 @@ class Player extends FlxSprite
         acceleration.y = GRAVITY;
         maxVelocity.x = MAXSPEED;
         maxVelocity.y = FALL_SPEED;
-    }
-    
-    public function rebindKeys():Void
-    {
-        //TODO:
-    }
-
-    public function initActions(controlsType:ControlsType):Void
-    {
-        this.controlsType = controlsType;
-        controls = switch(controlsType)
-        {
-            case Solo: Controls.solo;
-            case Duo(true): Controls.duo1;
-            case Duo(false): Controls.duo2;
-            case Custom: null;//TODO
-        }
     }
     
     public function hurtAndRespawn(x, y):Void

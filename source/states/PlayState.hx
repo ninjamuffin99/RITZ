@@ -3,8 +3,9 @@ package states;
 import OgmoPath;
 import ui.Controls;
 import beat.BeatGame;
-import data.OgmoTilemap;
 import data.Level;
+import data.OgmoTilemap;
+import data.PlayerSettings;
 import props.Checkpoint;
 import props.Cheese;
 import props.Lock;
@@ -168,13 +169,15 @@ class PlayState extends flixel.FlxState
 	
 	function createPlayer(x:Float, y:Float, controlsType:ControlsType):Player
 	{
-		var player = new Player(x, y, controlsType);
+		final camera = new PlayCamera();
+		final settings = new PlayerSettings(grpPlayers.length, controlsType, camera);
+		final player = new Player(x, y, settings);
 		player.onRespawn.add(onPlayerRespawn);
 		grpPlayers.add(player);
 		if (curCheckpoint == null)
 			curCheckpoint = new Checkpoint(x, y, "");
 		
-		var camera = new PlayCamera().init(player);
+		camera.init(player);
 		camera.minScrollX = FlxG.worldBounds.left;
 		camera.maxScrollX = FlxG.worldBounds.right;
 		camera.minScrollY = FlxG.worldBounds.top;
@@ -197,7 +200,7 @@ class PlayState extends flixel.FlxState
 			throw "Only 2 players allowed right now";
 		
 		var firstPlayer = grpPlayers.members[0];
-		firstPlayer.initActions(Duo(true));
+		firstPlayer.settings.setControlsType(Duo(true));
 		createPlayer(firstPlayer.x, firstPlayer.y, Duo(false));
 	}
 	
@@ -502,14 +505,13 @@ class PlayState extends flixel.FlxState
 			cheeseCount++;
 		
 		if (FlxG.keys.justPressed.SIX)
-		{
 			createSecondPlayer();
-		}
 
-		if (FlxG.keys.justPressed.SEVEN)
-		{
-			grpPlayers.members[0].rebindKeys();
-		}
+		// if (FlxG.keys.justPressed.SEVEN)
+		// 	PlayerSettings.player1.rebindKeys();
+
+		// if (FlxG.keys.justPressed.EIGHT)
+		// 	PlayerSettings.player2.rebindKeys();
 	}
 	
 	function onPlayerRespawn():Void
