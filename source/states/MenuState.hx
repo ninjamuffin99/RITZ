@@ -43,7 +43,7 @@ class MenuState extends flixel.FlxState
         
         if (title.animation.curAnim.name != 'ritz')
         {
-            if (Controls.solo.ANY && FlxG.sound.music != null)
+            if ((FlxG.keys.justPressed.ANY || FlxG.gamepads.anyButton(JUST_PRESSED)) && FlxG.sound.music != null)
             {
                 FlxFlicker.flicker(pressStart, 1, 0.04, false, true, function(flic:FlxFlicker)
                 {
@@ -57,7 +57,6 @@ class MenuState extends flixel.FlxState
                     FlxG.sound.music.stop();
                     FlxG.sound.music = null;
                 }
-                
             }
         }
         else

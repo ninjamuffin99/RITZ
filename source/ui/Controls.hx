@@ -26,7 +26,6 @@ enum abstract Action(String) to String from String
     var MAP        = "map";
     var PAUSE      = "pause";
     var RESET      = "reset";
-    var ANY        = "any";
 }
 
 enum ControlsType
@@ -58,7 +57,6 @@ class Controls extends FlxActionSet
     var _map       = new FlxActionDigital("map");
     var _pause     = new FlxActionDigital("pause");
     var _reset     = new FlxActionDigital("reset");
-    var _any       = new FlxActionDigital("any");
     
     var byName:Map<String, FlxActionDigital> = [];
     
@@ -78,7 +76,6 @@ class Controls extends FlxActionSet
     public var MAP        (get, never):Bool;
     public var PAUSE      (get, never):Bool;
     public var RESET      (get, never):Bool;
-    public var ANY        (get, never):Bool;
     
     inline function get_JUMP       () return _jump     .check();
     inline function get_JUMP_P     () return _jumpP    .check();
@@ -96,7 +93,6 @@ class Controls extends FlxActionSet
     inline function get_MAP        () return _map      .check();
     inline function get_PAUSE      () return _pause    .check();
     inline function get_RESET      () return _reset    .check();
-    inline function get_ANY        () return _any      .check();
     
     function new(name:String)
     {
@@ -118,7 +114,6 @@ class Controls extends FlxActionSet
         add(_map);
         add(_pause);
         add(_reset);
-        add(_any);
         
         for (action in digitalActions)
             byName[action.name] = action;
@@ -200,7 +195,6 @@ class Controls extends FlxActionSet
         addKeys(solo._pause    , [P, ESCAPE, ENTER], JUST_PRESSED);
         addKeys(solo._map      , [M], JUST_PRESSED);
         addKeys(solo._reset    , [R], JUST_PRESSED);
-        addKeys(solo._any      , [ANY], JUST_PRESSED);
         actions.addSet(solo);
         
         duo1 = new Controls("duo1");
@@ -220,7 +214,6 @@ class Controls extends FlxActionSet
         addKeys(duo1._pause    , [ESCAPE], JUST_PRESSED);
         addKeys(duo1._map      , [M], JUST_PRESSED);//Todo
         addKeys(duo1._reset    , [R], JUST_PRESSED);
-        addKeys(duo1._any      , [ANY], JUST_PRESSED);
         actions.addSet(duo1);
         
         duo2 = new Controls("duo2");
@@ -240,7 +233,6 @@ class Controls extends FlxActionSet
         addKeys(duo2._pause    , [ENTER], JUST_PRESSED);
         addKeys(duo2._map      , [M], JUST_PRESSED);//todo
         addKeys(duo2._reset    , [BACKSPACE], JUST_PRESSED);
-        addKeys(duo2._any      , [ANY], JUST_PRESSED);
         actions.addSet(duo2);
     }
     
