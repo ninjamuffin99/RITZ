@@ -1,5 +1,7 @@
 package ui;
 
+import ui.Controls;
+
 import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -16,8 +18,10 @@ class Prompt extends flixel.group.FlxGroup {
 	var keyButtons:ButtonGroup;
 	var yesText:BitmapText;
 	var noText:BitmapText;
+	var controls:Controls;
 	
-	public function new (singleButton = false) {
+	public function new (controls:Controls, singleButton = false) {
+		this.controls = controls;
 		super();
 		
 		add(box = new BgSprite());
@@ -26,9 +30,9 @@ class Prompt extends flixel.group.FlxGroup {
 		label.alignment = CENTER;
 		label.scrollFactor.set();
 		
-		keyButtons = new ButtonGroup(0, false);
-		keyButtons.keysNext = RIGHT;
-		keyButtons.keysPrev = LEFT;
+		keyButtons = new ButtonGroup(0, controls, false);
+		keyButtons.keysNext = MENU_RIGHT;
+		keyButtons.keysPrev = MENU_LEFT;
 		if (singleButton) {
 			keyButtons.addButton(yesText = new BitmapText(0, 0, "OK"), null);
 			yesText.screenCenter(X);
@@ -87,7 +91,7 @@ class Prompt extends flixel.group.FlxGroup {
 	{
 		super.update(elapsed);
 		
-		if (Inputs.justPressed.BACK)
+		if (controls.BACK)
 			cancel();
 	}
 	
@@ -101,9 +105,9 @@ class Prompt extends flixel.group.FlxGroup {
 	 * @param text    the dialog messsage.
 	 * @param buttons the active ui group being interrupted.
 	 */
-	inline static public function showOKInterrupt(text:String, buttons:FlxBasic):Void {
+	inline static public function showOKInterrupt(text:String, controls:Controls, buttons:FlxBasic):Void {
 		
-		var prompt = new Prompt(true);
+		var prompt = new Prompt(controls, true);
 		var parent = FlxG.state;
 		parent.add(prompt);
 		buttons.active = false;

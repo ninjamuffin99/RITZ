@@ -2,7 +2,8 @@ package ui;
 
 // import utils.Sounds;
 
-import ui.Inputs;
+import ui.Controls;
+
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
@@ -43,9 +44,9 @@ abstract DesktopButton(BitmapText) to BitmapText from BitmapText {
 
 class ButtonGroup extends TypedButtonGroup<DesktopButton> {
 	
-	public function new (maxSize, hideForIntro = true) {
+	public function new (maxSize, controls, hideForIntro = true) {
 		
-		super(maxSize, hideForIntro);
+		super(maxSize, controls, hideForIntro);
 		
 		colorHilite = 0xFFffda76;
 		// colorDefault = 0xFF000000;
@@ -97,10 +98,10 @@ class TypedButtonGroup<T:FlxSprite>
 	public var colorHilite:FlxColor = 0xFFffda76;
 	public var colorDefault:FlxColor = 0xFFffffff;
 	
-	public var keysNext  :Null<Input> = DOWN;
-	public var keysPrev  :Null<Input> = UP;
-	public var keysSelect:Null<Input> = ACCEPT;
-	public var keysBack:Null<Input> = null;
+	public var keysNext  :Null<Action> = MENU_DOWN;
+	public var keysPrev  :Null<Action> = MENU_UP;
+	public var keysSelect:Null<Action> = ACCEPT;
+	public var keysBack:Null<Action> = null;
 	var onBack:()->Void;
 	
 	public var selected(default, set) = 0;
@@ -118,10 +119,12 @@ class TypedButtonGroup<T:FlxSprite>
 		return value;
 	}
 	
+	var controls:Controls;
 	var callbacks:Map<FlxSprite, Void->Void> = new Map();
 	
-	public function new(maxSize:Int = 0, hideForIntro = true)
+	public function new(maxSize:Int = 0, controls:Controls, hideForIntro = true)
 	{
+		this.controls = controls;
 		super(maxSize);
 		if (hideForIntro)
 		{
@@ -166,7 +169,7 @@ class TypedButtonGroup<T:FlxSprite>
 	function checkKeys(elapsed:Float):Void {
 		
 		var newSelected = selected;
-		if (keysNext != null && Inputs.justPressed.get(keysNext))
+		if (keysNext != null && controls.checkByName(keysNext))
 		{
 			do
 			{
@@ -178,7 +181,7 @@ class TypedButtonGroup<T:FlxSprite>
 			while(!members[newSelected].alive);
 		}
 		
-		if (keysPrev != null && Inputs.justPressed.get(keysPrev))
+		if (keysPrev != null && controls.checkByName(keysPrev))
 		{
 			do
 			{
@@ -193,10 +196,10 @@ class TypedButtonGroup<T:FlxSprite>
 		if (selected != newSelected)
 			selected = newSelected;
 		
-		if (keysSelect != null && Inputs.justPressed.get(keysSelect))
+		if (keysSelect != null && controls.checkByName(keysSelect))
 			onSelect();
 		
-		if (keysBack != null && Inputs.justPressed.get(keysBack) && onBack != null)
+		if (keysBack != null && controls.checkByName(keysBack) && onBack != null)
 			onBack();
 	}
 	

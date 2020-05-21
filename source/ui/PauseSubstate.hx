@@ -1,6 +1,7 @@
 package ui;
 
 import ui.BitmapText;
+import ui.Controls;
 import ui.Inputs;
 
 import flixel.FlxG;
@@ -11,7 +12,7 @@ import flixel.input.keyboard.FlxKey;
 class PauseSubstate extends flixel.FlxSubState
 {
     var pauseReleased = false;
-    var buttons:ButtonGroup = new ButtonGroup(3, false);
+    var buttons:ButtonGroup = new ButtonGroup(3, Controls.solo, false);
     
     public function new ()
     {
@@ -88,17 +89,17 @@ class PauseSubstate extends flixel.FlxSubState
     {
         super.update(elapsed);
         
-        if (Inputs.justReleased.PAUSE)
+        if (Controls.solo.PAUSE)
             pauseReleased = true;
         
-        if (buttons.active && (Inputs.justPressed.BACK || (Inputs.pressed.PAUSE && pauseReleased)))
+        if (buttons.active && (Controls.solo.BACK || (Controls.solo.PAUSE && pauseReleased)))
             close();
     }
     
     function onSelectRestart():Void
     {
         buttons.active = false;
-        var prompt = new Prompt();
+        var prompt = new Prompt(Controls.solo);
         add(prompt);
         prompt.setup
             ( "Restart game?\n(Lose all progress)"
