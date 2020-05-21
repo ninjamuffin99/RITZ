@@ -284,19 +284,25 @@ class PlayState extends flixel.FlxState
 		
 		updateCollision();
 		
-		var pressedPause = false;
+		var pauseSubstate:PauseSubstate = null;
 		grpPlayers.forEach
 		(
 			player->
 			{
 				checkPlayerState(player);
 				
-				pressedPause = pressedPause || player.controls.PAUSE;
+				if (pauseSubstate == null && player.controls.PAUSE)
+				{
+					if (PlayerSettings.numPlayers == 1)
+						pauseSubstate = new PauseSubstate(PlayerSettings.player1);
+					else
+						pauseSubstate = new PauseSubstate(PlayerSettings.player1, PlayerSettings.player2);
+				}
 			}
 		);
 		
-		if (pressedPause)
-			openSubState(new PauseSubstate());
+		if (pauseSubstate != null)
+			openSubState(pauseSubstate);
 		
 		cheeseCountText.text = cheeseCount + (cheeseNeeded > 0 ? "/" + cheeseNeeded : "");
 		
@@ -537,5 +543,10 @@ class PlayState extends flixel.FlxState
 				BeatGame.beatsPerMinute = 60;//not needed
 		}
 		musicName = name;
+	}
+	
+	function getOtherPlayer(player:Player):Player
+	{
+		return grpPlayers.members[player == grpPlayers.members[0] ? 1 : 0];
 	}
 }
