@@ -12,9 +12,11 @@ class MenuState extends flixel.FlxState
 {
     var pressStart:FlxSprite;
     var title:FlxSprite;
+
+    public static var DXmusic:String = "DX";
     override public function create() {
 
-        FlxG.sound.playMusic('assets/music/fluffydream' + BootState.soundEXT, 0);
+        FlxG.sound.playMusic('assets/music/fluffydream' + MenuState.DXmusic + BootState.soundEXT, 0);
         FlxG.sound.music.fadeIn(5, 0, 1);
         FlxG.camera.fade(FlxColor.WHITE, 5, true);
 
