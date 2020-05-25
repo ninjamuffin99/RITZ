@@ -16,7 +16,7 @@ class RaceState extends PlayState
         
         for (i in 0...FlxG.random.int(4, 12))
         {
-            createLevel("assets/data/raceLevels/raceSplitSplit" + FlxG.random.int(0, 4) + '.json', FlxG.worldBounds.width);
+            createLevel("assets/data/raceLevels/raceSplitSplit" + FlxG.random.int(0, 5) + '.json', FlxG.worldBounds.width);
         }
 
 
