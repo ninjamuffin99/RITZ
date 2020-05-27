@@ -98,8 +98,8 @@ class TypedButtonGroup<T:FlxSprite>
 	public var colorHilite:FlxColor = 0xFFffda76;
 	public var colorDefault:FlxColor = 0xFFffffff;
 	
-	public var keysNext  :Null<Action> = MENU_DOWN;
-	public var keysPrev  :Null<Action> = MENU_UP;
+	public var keysNext  :Null<Action> = DOWN_P;
+	public var keysPrev  :Null<Action> = UP_P;
 	public var keysSelect:Null<Action> = ACCEPT;
 	public var keysBack:Null<Action> = null;
 	var onBack:()->Void;

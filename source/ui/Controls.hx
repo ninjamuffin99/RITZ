@@ -12,22 +12,23 @@ import flixel.input.keyboard.FlxKey;
 
 enum abstract Action(String) to String from String
 {
-    var JUMP       = "jump";
-    var JUMP_P     = "jump-press";
-    var JUMP_R     = "jump-release";
-    var LEFT       = "left";
-    var RIGHT      = "right";
-    var DOWN       = "down";
-    var TALK       = "talk";
-    var MENU_UP    = "menuUp";
-    var MENU_DOWN  = "menuDown";
-    var MENU_LEFT  = "menuLeft";
-    var MENU_RIGHT = "menuRight";
-    var ACCEPT     = "accept";
-    var BACK       = "back";
-    var MAP        = "map";
-    var PAUSE      = "pause";
-    var RESET      = "reset";
+    var UP      = "up";
+    var LEFT    = "left";
+    var RIGHT   = "right";
+    var DOWN    = "down";
+    var UP_P    = "up-press";
+    var LEFT_P  = "left-press";
+    var RIGHT_P = "right-press";
+    var DOWN_P  = "down-press";
+    var JUMP    = "jump";
+    var JUMP_P  = "jump-press";
+    var JUMP_R  = "jump-release";
+    var TALK    = "talk";
+    var ACCEPT  = "accept";
+    var BACK    = "back";
+    var MAP     = "map";
+    var PAUSE   = "pause";
+    var RESET   = "reset";
 }
 
 /**
@@ -67,58 +68,60 @@ class Controls extends FlxActionSet
     static public var duo1(get, null):Controls;
     static public var duo2(get, null):Controls;
     
-    var _jump      = new FlxActionDigital("jump");
-    var _jumpP     = new FlxActionDigital("jump-press");
-    var _jumpR     = new FlxActionDigital("jump-release");
-    var _left      = new FlxActionDigital("left");
-    var _right     = new FlxActionDigital("right");
-    var _down      = new FlxActionDigital("down");
-    var _talk      = new FlxActionDigital("talk");
-    var _menuUp    = new FlxActionDigital("menuUp");
-    var _menuDown  = new FlxActionDigital("menuDown");
-    var _menuLeft  = new FlxActionDigital("menuLeft");
-    var _menuRight = new FlxActionDigital("menuRight");
-    var _accept    = new FlxActionDigital("accept");
-    var _back      = new FlxActionDigital("back");
-    var _map       = new FlxActionDigital("map");
-    var _pause     = new FlxActionDigital("pause");
-    var _reset     = new FlxActionDigital("reset");
+    var _up     = new FlxActionDigital(Action.UP     );
+    var _left   = new FlxActionDigital(Action.LEFT   );
+    var _right  = new FlxActionDigital(Action.RIGHT  );
+    var _down   = new FlxActionDigital(Action.DOWN   );
+    var _upP    = new FlxActionDigital(Action.UP_P   );
+    var _leftP  = new FlxActionDigital(Action.LEFT_P );
+    var _rightP = new FlxActionDigital(Action.RIGHT_P);
+    var _downP  = new FlxActionDigital(Action.DOWN_P );
+    var _jump   = new FlxActionDigital(Action.JUMP   );
+    var _jumpP  = new FlxActionDigital(Action.JUMP_P );
+    var _jumpR  = new FlxActionDigital(Action.JUMP_R );
+    var _talk   = new FlxActionDigital(Action.TALK   );
+    var _accept = new FlxActionDigital(Action.ACCEPT );
+    var _back   = new FlxActionDigital(Action.BACK   );
+    var _map    = new FlxActionDigital(Action.MAP    );
+    var _pause  = new FlxActionDigital(Action.PAUSE  );
+    var _reset  = new FlxActionDigital(Action.RESET  );
     
     var byName:Map<String, FlxActionDigital> = [];
     
-    public var JUMP       (get, never):Bool; inline function get_JUMP       () return _jump     .check();
-    public var JUMP_P     (get, never):Bool; inline function get_JUMP_P     () return _jumpP    .check();
-    public var JUMP_R     (get, never):Bool; inline function get_JUMP_R     () return _jumpR    .check();
-    public var LEFT       (get, never):Bool; inline function get_LEFT       () return _left     .check();
-    public var RIGHT      (get, never):Bool; inline function get_RIGHT      () return _right    .check();
-    public var DOWN       (get, never):Bool; inline function get_DOWN       () return _down     .check();
-    public var TALK       (get, never):Bool; inline function get_TALK       () return _talk     .check();
-    public var MENU_UP    (get, never):Bool; inline function get_MENU_UP    () return _menuUp   .check();
-    public var MENU_DOWN  (get, never):Bool; inline function get_MENU_DOWN  () return _menuDown .check();
-    public var MENU_LEFT  (get, never):Bool; inline function get_MENU_LEFT  () return _menuLeft .check();
-    public var MENU_RIGHT (get, never):Bool; inline function get_MENU_RIGHT () return _menuRight.check();
-    public var ACCEPT     (get, never):Bool; inline function get_ACCEPT     () return _accept   .check();
-    public var BACK       (get, never):Bool; inline function get_BACK       () return _back     .check();
-    public var MAP        (get, never):Bool; inline function get_MAP        () return _map      .check();
-    public var PAUSE      (get, never):Bool; inline function get_PAUSE      () return _pause    .check();
-    public var RESET      (get, never):Bool; inline function get_RESET      () return _reset    .check();
+    public var UP     (get, never):Bool; inline function get_UP     () return _left  .check();
+    public var LEFT   (get, never):Bool; inline function get_LEFT   () return _left  .check();
+    public var RIGHT  (get, never):Bool; inline function get_RIGHT  () return _right .check();
+    public var DOWN   (get, never):Bool; inline function get_DOWN   () return _down  .check();
+    public var UP_P   (get, never):Bool; inline function get_UP_P   () return _upP   .check();
+    public var LEFT_P (get, never):Bool; inline function get_LEFT_P () return _leftP .check();
+    public var RIGHT_P(get, never):Bool; inline function get_RIGHT_P() return _rightP.check();
+    public var DOWN_P (get, never):Bool; inline function get_DOWN_P () return _downP .check();
+    public var JUMP   (get, never):Bool; inline function get_JUMP   () return _jump  .check();
+    public var JUMP_P (get, never):Bool; inline function get_JUMP_P () return _jumpP .check();
+    public var JUMP_R (get, never):Bool; inline function get_JUMP_R () return _jumpR .check();
+    public var TALK   (get, never):Bool; inline function get_TALK   () return _talk  .check();
+    public var ACCEPT (get, never):Bool; inline function get_ACCEPT () return _accept.check();
+    public var BACK   (get, never):Bool; inline function get_BACK   () return _back  .check();
+    public var MAP    (get, never):Bool; inline function get_MAP    () return _map   .check();
+    public var PAUSE  (get, never):Bool; inline function get_PAUSE  () return _pause .check();
+    public var RESET  (get, never):Bool; inline function get_RESET  () return _reset .check();
     
     
     function new(name:String)
     {
-        super("name");
+        super(name);
         
-        add(_jump);
-        add(_jumpP);
-        add(_jumpR);
         add(_left);
         add(_right);
         add(_down);
+        add(_upP);
+        add(_downP);
+        add(_leftP);
+        add(_rightP);
+        add(_jump);
+        add(_jumpP);
+        add(_jumpR);
         add(_talk);
-        add(_menuUp);
-        add(_menuDown);
-        add(_menuLeft);
-        add(_menuRight);
         add(_accept);
         add(_back);
         add(_map);
@@ -150,16 +153,27 @@ class Controls extends FlxActionSet
         }
     }
     
-    public function getDialogueNameFromToken(inputName:String):String
+    public function getDialogueNameFromToken(token:String):String
     {
-        inputName = inputName.toLowerCase();
-        for (action in this.digitalActions)
+        return getDialogueName(getActionFromControl(Control.createByName(token.toUpperCase())));
+    }
+    
+    function getActionFromControl(control:Control):FlxActionDigital
+    {
+        return switch(control)
         {
-            if (action.name == inputName)
-                return getDialogueName(action);
+            case UP    : _up    ;
+            case DOWN  : _down  ;
+            case LEFT  : _left  ;
+            case RIGHT : _right ;
+            case JUMP  : _jump  ;
+            case TALK  : _talk  ;
+            case ACCEPT: _accept;
+            case BACK  : _back  ;
+            case PAUSE : _pause ;
+            case MAP   : _map   ;
+            case RESET : _reset ;
         }
-        
-        throw 'Unrecognised inputName:$inputName';
     }
     
     static function get_solo():Controls
@@ -244,25 +258,23 @@ class Controls extends FlxActionSet
     {
         switch (control)
         {
-            case UP    :func(_menuUp   , JUST_PRESSED);
-                        func(_jump     , PRESSED);
-                        func(_jumpP    , JUST_PRESSED);
-                        func(_jumpR    , JUST_RELEASED);
-            case DOWN  :func(_down     , PRESSED);
-                        func(_menuDown , JUST_PRESSED);
-            case LEFT  :func(_left     , PRESSED);
-                        func(_menuLeft , JUST_PRESSED);
-            case RIGHT :func(_right    , PRESSED);
-                        func(_menuRight, JUST_PRESSED);
-            case JUMP  :func(_jump     , PRESSED);
-                        func(_jumpP    , JUST_PRESSED);
-                        func(_jumpR    , JUST_RELEASED);
-            case TALK  :func(_talk     , JUST_PRESSED);
-            case ACCEPT:func(_accept   , JUST_PRESSED);
-            case BACK  :func(_back     , JUST_PRESSED);
-            case MAP   :func(_map      , JUST_PRESSED);
-            case PAUSE :func(_pause    , JUST_PRESSED);
-            case RESET :func(_reset    , JUST_PRESSED);
+            case UP    :func(_up    , PRESSED);
+                        func(_upP   , JUST_PRESSED);
+            case LEFT  :func(_left  , PRESSED);
+                        func(_leftP , JUST_PRESSED);
+            case RIGHT :func(_right , PRESSED);
+                        func(_rightP, JUST_PRESSED);
+            case DOWN  :func(_down  , PRESSED);
+                        func(_downP , JUST_PRESSED);
+            case JUMP  :func(_jump  , PRESSED);
+                        func(_jumpP , JUST_PRESSED);
+                        func(_jumpR , JUST_RELEASED);
+            case TALK  :func(_talk  , JUST_PRESSED);
+            case ACCEPT:func(_accept, JUST_PRESSED);
+            case BACK  :func(_back  , JUST_PRESSED);
+            case MAP   :func(_map   , JUST_PRESSED);
+            case PAUSE :func(_pause , JUST_PRESSED);
+            case RESET :func(_reset , JUST_PRESSED);
         }
     }
     
