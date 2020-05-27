@@ -13,12 +13,13 @@ class Prompt extends flixel.group.FlxGroup {
 	
 	inline static var BUFFER = 12;
 	
+	public var controls:Controls;
+	
 	var box:BgSprite;
 	var label:BitmapText;
 	var keyButtons:ButtonGroup;
 	var yesText:BitmapText;
 	var noText:BitmapText;
-	var controls:Controls;
 	
 	public function new (controls:Controls, singleButton = false) {
 		this.controls = controls;
@@ -31,8 +32,8 @@ class Prompt extends flixel.group.FlxGroup {
 		label.scrollFactor.set();
 		
 		keyButtons = new ButtonGroup(0, controls, false);
-		keyButtons.keysNext = MENU_RIGHT;
-		keyButtons.keysPrev = MENU_LEFT;
+		keyButtons.keysNext = RIGHT_P;
+		keyButtons.keysPrev = LEFT_P;
 		if (singleButton) {
 			keyButtons.addButton(yesText = new BitmapText(0, 0, "OK"), null);
 			yesText.screenCenter(X);
