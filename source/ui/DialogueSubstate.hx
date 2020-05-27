@@ -1,5 +1,6 @@
 package ui;
 
+import data.PlayerSettings;
 import states.BootState;
 
 import flixel.FlxCamera;
@@ -114,17 +115,19 @@ class DialogueSubstate extends flixel.FlxSubState
             { ease:FlxEase.quadIn, onComplete: (_)->close() }
         );
         dialogueText.visible = false;
+        controls = null;
     }
 }
 
 @:forward
 abstract ZoomDialogueSubstate(DialogueSubstate) to DialogueSubstate
 {
-    inline public function new(dialogue:String, focalPoint:FlxPoint, controls:Controls, camera:PlayCamera, onComplete:()->Void)
+    inline public function new(dialogue:String, focalPoint:FlxPoint, settings:PlayerSettings, onComplete:()->Void)
     {
+        final camera = settings.camera;
         final oldZoom = camera.zoom;
         final oldCamPos = camera.scroll.copyTo();
-        this = new DialogueSubstate(dialogue, controls, camera, false);
+        this = new DialogueSubstate(dialogue, settings.controls, camera, false);
         
         final zoomAmount = 2;
         final yOffset = (this.blackBarTop.height - this.blackBarBottom.height) / 2 / zoomAmount;

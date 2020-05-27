@@ -1,7 +1,6 @@
 package states;
 
 import OgmoPath;
-import ui.Controls;
 import beat.BeatGame;
 import data.Level;
 import data.OgmoTilemap;
@@ -17,8 +16,9 @@ import props.MovingPlatform;
 import props.SecretTrigger;
 import props.MusicTrigger;
 import ui.BitmapText;
+import ui.Controls;
 import ui.DialogueSubstate;
-import ui.PauseSubstate;
+import ui.pause.PauseSubstate;
 
 import io.newgrounds.NG;
 
@@ -461,8 +461,7 @@ class PlayState extends flixel.FlxState
 			add(new ZoomDialogueSubstate
 				( dialogue
 				, focalPoint
-				, player.controls
-				, playerCameras[player]
+				, player.settings
 				, ()->player.state = Alive
 				)
 			);

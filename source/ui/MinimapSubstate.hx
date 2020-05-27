@@ -65,7 +65,7 @@ class MinimapSubstate extends flixel.FlxSubState
                 {
                     state = ConfirmingCheckpoint;
                     cursor.active = false;
-                    var prompt = new Prompt(Controls.solo);
+                    var prompt = new Prompt(Controls.solo);//Todo:
                     add(prompt);
                     prompt.setup
                         ( "Warp to this checkpoint?\n(Lose all trailing cheese)"

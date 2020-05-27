@@ -1,4 +1,4 @@
-package ui;
+package ui.pause;
 
 import data.PlayerSettings;
 import ui.BitmapText;
