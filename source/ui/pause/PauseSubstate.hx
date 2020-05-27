@@ -3,6 +3,7 @@ package ui.pause;
 import data.PlayerSettings;
 import ui.BitmapText;
 import ui.Controls;
+import ui.pause.PausePage;
 
 import flixel.FlxBasic;
 import flixel.FlxCamera;
@@ -12,21 +13,29 @@ import flixel.text.FlxText;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 
+enum PausePageType
+{
+    Main;
+    Ready;
+    Controls;
+    Settings;
+}
+
 class PauseSubstate extends flixel.FlxSubState
 {
     var screen1:PauseScreen;
     var screen2:Null<PauseScreen>;
     
-    public function new (settings1:PlayerSettings, ?settings2:PlayerSettings)
+    public function new (settings1:PlayerSettings, ?settings2:PlayerSettings, ?startingPage:PausePageType)
     {
         super();
         
-        add(screen1 = new PauseScreen(settings1));
+        add(screen1 = new PauseScreen(settings1, startingPage));
         screen1.cameras = [copyCamera(settings1.camera)];
         
         if (settings2 != null)
         {
-            add(screen2 = new PauseScreen(settings2));
+            add(screen2 = new PauseScreen(settings2, startingPage));
             screen2.cameras = [copyCamera(settings2.camera)];
         }
     }
@@ -108,33 +117,38 @@ class PauseSubstate extends flixel.FlxSubState
 
 class PauseScreen extends FlxGroup
 {
-    public var paused(default, null) = true;
+    public var paused(get, never):Bool;
+    
+    final pages:Map<PausePageType, PausePage> = [];
+    final settings:PlayerSettings;
+    
+    var pageType:PausePageType;
+    var currentPage(get,never):PausePage;
     
     var pauseReleased = false;
-    var mainPage:MainPage;
-    var readyPage:ReadyPage;
-    var currentPage:Page;
-    var settings:PlayerSettings;
     
-    public function new(settings:PlayerSettings)
+    public function new(settings:PlayerSettings, ?startingPage:PausePageType)
     {
         this.settings = settings;
-        this.paused = settings.controls.PAUSE;
         super();
         
-        add(readyPage = new ReadyPage()).kill();
-        add(mainPage = new MainPage(settings, showReady)).kill();
+        add(pages[Ready] = new ReadyPage()).kill();
+        add(pages[Main] = new MainPage(settings, setPage)).kill();
+        add(pages[Controls] = new ControlsPage(settings, setPage)).kill();
         
-        selectPage(paused ? mainPage : readyPage);
+        if (startingPage != null)
+            setPage(startingPage);
+        else
+            setPage(settings.controls.PAUSE ? Main : Ready);
     }
     
-    function selectPage(page:Page)
+    function setPage(type:PausePageType)
     {
-        if (currentPage != null)
+        if (pageType != null)
             currentPage.kill();
         
-        currentPage = page;
-        page.revive();
+        pageType = type;
+        currentPage.revive();
     }
     
     override function update(elapsed:Float)
@@ -144,149 +158,17 @@ class PauseScreen extends FlxGroup
         if (!settings.controls.PAUSE)
             pauseReleased = true;
         
-        if (currentPage.allowUnpause() && (settings.controls.BACK || (settings.controls.PAUSE && pauseReleased)))
-        {
-            if (paused) showReady();
-            else showMenu();
-        }
+        if (currentPage.allowUnpause() && settings.controls.PAUSE && pauseReleased)
+            setPage(pageType == Ready ? Main : Ready);
     }
     
-    inline function showReady()
+    override function destroy()
     {
-        paused = false;
-        selectPage(readyPage);
-    }
-    
-    inline function showMenu()
-    {
-        paused = true;
-        selectPage(mainPage);
-    }
-}
-
-class Page extends FlxGroup
-{
-    public function new(maxSize:Int = 0)
-    {
-        super(maxSize);
-    }
-    
-    public function allowUnpause() return true;
-}
-
-abstract ReadyPage(Page) to Page
-{
-    public function new ()
-    {
-        this = new Page(1);
+        super.destroy();
         
-        var title = new BitmapText(0, 4, "Waiting for player");
-        title.x = (FlxG.camera.width - title.width) / 2;
-        title.y = (FlxG.camera.height - title.height) / 2;
-        title.scrollFactor.set();
-        this.add(title);
+        pages.clear();
     }
+    
+    inline function get_paused() return pageType != Ready;
+    inline function get_currentPage() return pages[pageType];
 }
-
-class MainPage extends Page
-{
-    var buttons:ButtonGroup;
-    var settings:PlayerSettings;
-    
-    public function new (settings:PlayerSettings, onContinue:()->Void)
-    {
-        this.settings = settings;
-        super();
-        
-        var title = new BitmapText(0, 4, "PAUSED");
-        title.x = (settings.camera.width - title.width) / 2;
-        title.scrollFactor.set();
-        add(title);
-        
-        buttons = new ButtonGroup(3, settings.controls, false);
-        inline function addButton(text, callback)
-        {
-            var button:BitmapText;
-            button = buttons.addNewButton(0, 0, text, callback);
-            button.y += (buttons.length - 1) * button.lineHeight;
-            button.x = (settings.camera.width - button.width) / 2;
-            button.scrollFactor.set();
-        }
-        
-        addButton("CONTINUE", onContinue);
-        addButton("MUTE", ()->FlxG.sound.muted = !FlxG.sound.muted);
-        addButton("RESTART", onSelectRestart);
-        buttons.y = title.y + title.lineHeight * 2;
-        add(buttons);
-    }
-    
-    function onSelectRestart():Void
-    {
-        buttons.active = false;
-        var prompt = new Prompt(settings.controls);
-        add(prompt);
-        prompt.setup
-            ( "Restart game?\n(Lose all progress)"
-            , FlxG.resetState
-            , ()->buttons.active = true
-            , remove.bind(prompt)
-            );
-    }
-    
-    override function allowUnpause():Bool
-    {
-        return buttons.active;
-    }
-}
-
-typedef RawControlsData = Array<{ action:String, keys:String, buttons:String }>;
-
-// @:forward
-// abstract ControlsData(RawControlsData) from RawControlsData to RawControlsData
-// {
-//     inline public function new () this = [];
-    
-//     inline public function add(action, keys, buttons)
-//         this.push({ action:action, keys:keys, buttons:buttons });
-    
-//     inline public function addFromInput(input:Input, name:String = null)
-//     {
-//         this.push(
-//             { action : name == null ? toTitleCase(input.getName()) : name
-//             , keys   : keysTitleCase(input)
-//             , buttons: buttonsTitleCase(input)
-//             }
-//         );
-//     }
-    
-//     inline function keysTitleCase(input:Input)
-//     {
-//         var strList = "";
-//         var list = Inputs.getKeys(input);
-//         for (i in 0...list.length)
-//         {
-//             strList += toTitleCase(list[i]);
-//             if (i < list.length)
-//                 strList += " ";
-//         }
-//         return strList;
-//     }
-    
-//     inline function buttonsTitleCase(input:Input)
-//     {
-//         var strList = "";
-//         var list = Inputs.getPadButtons(input);
-//         for (i in 0...list.length)
-//         {
-//             strList += toTitleCase(list[i]);
-//             if (i < list.length)
-//                 strList += " ";
-//         }
-//         return strList;
-//     }
-    
-//     inline function toTitleCase(str:String)
-//     {
-//         return str.charAt(0) + str.substr(1).toLowerCase();
-//     }
-// }

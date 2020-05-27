@@ -504,9 +504,6 @@ class PlayState extends flixel.FlxState
 		
 		if (FlxG.keys.justPressed.T)
 			cheeseCount++;
-		
-		if (FlxG.keys.justPressed.SIX)
-			createSecondPlayer();
 
 		// if (FlxG.keys.justPressed.SEVEN)
 		// 	PlayerSettings.player1.rebindKeys();

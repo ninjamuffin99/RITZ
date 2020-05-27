@@ -17,6 +17,7 @@ class PlayerSettings
     
     public final controls:Controls;
     public var avatar:Player;
+    public var camera:PlayCamera;
     inline function get_camera() return avatar.playCamera;
     
     function new(id, scheme)
