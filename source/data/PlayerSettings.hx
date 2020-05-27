@@ -5,6 +5,7 @@ import ui.Controls;
 
 import flixel.FlxCamera;
 import flixel.FlxG;
+import flixel.util.FlxSignal;
 
 class PlayerSettings
 {
@@ -13,11 +14,13 @@ class PlayerSettings
     static public var player1(default, null):PlayerSettings;
     static public var player2(default, null):PlayerSettings;
     
+    static public final onAvatarAdd = new FlxTypedSignal<PlayerSettings->Void>();
+    
     public var id(default, null):Int;
     
     public final controls:Controls;
     public var avatar:Player;
-    public var camera:PlayCamera;
+    public var camera(get, never):PlayCamera;
     inline function get_camera() return avatar.playCamera;
     
     function new(id, scheme)
@@ -66,6 +69,10 @@ class PlayerSettings
         settings.avatar = avatar;
         avatar.settings = settings;
         
+        splitCameras();
+        
+        onAvatarAdd.dispatch(settings);
+        
         return settings;
     }
     
@@ -79,6 +86,26 @@ class PlayerSettings
             throw "Cannot remove avatar that is not for a player";
         
         --numAvatars;
+    }
+    
+    static function splitCameras()
+    {
+        switch(PlayerSettings.numAvatars)
+        {
+            case 1:
+                var cam:PlayCamera = cast player1.camera;
+                cam.width = FlxG.width;
+                cam.resetDeadZones();
+            case 2:
+                var cam:PlayCamera;
+                cam = cast player1.camera;
+                cam.width = Std.int(FlxG.width / 2);
+                cam.resetDeadZones();
+                cam = cast player2.camera;
+                cam.width = Std.int(FlxG.width / 2);
+                cam.x = cam.width;
+                cam.resetDeadZones();
+        }
     }
     
     static public function reset()

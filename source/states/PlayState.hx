@@ -173,18 +173,18 @@ class PlayState extends flixel.FlxState
 		avatar.onRespawn.add(onPlayerRespawn);
 		grpPlayers.add(avatar);
 		
-		splitCameras();
-		
 		return avatar;
 	}
 	
 	@:allow(ui.pause.MainPage)
 	function createSecondPlayer()
 	{
-		if (grpPlayers.length > 1)
+		if (PlayerSettings.player1 == null || PlayerSettings.player1.avatar == null)
+			throw "Creating second player before first";
+		if (PlayerSettings.player2 != null && PlayerSettings.player2.avatar != null)
 			throw "Only 2 players allowed right now";
 		
-		var firstPlayer = grpPlayers.members[0];
+		final firstPlayer = PlayerSettings.player1.avatar;
 		createPlayer(firstPlayer.x, firstPlayer.y);
 	}
 	
@@ -193,27 +193,6 @@ class PlayState extends flixel.FlxState
 	{
 		grpPlayers.remove(avatar);
 		avatar.destroy();
-	}
-	
-	function splitCameras()
-	{
-		switch(PlayerSettings.numAvatars)
-		{
-			case 1:
-				var cam:PlayCamera = cast PlayerSettings.player1.camera;
-				cam.width = FlxG.width;
-				cam.resetDeadZones();
-			case 2:
-				var cam:PlayCamera;
-				cam = cast PlayerSettings.player1.camera;
-				cam.width = Std.int(FlxG.width / 2);
-				cam.resetDeadZones();
-				cam = cast PlayerSettings.player2.camera;
-				cam.width = Std.int(FlxG.width / 2);
-				cam.x = cam.width;
-				cam.resetDeadZones();
-			case num: throw 'Invalid number of players: $num';
-		}
 	}
 	
 	function entity_loader(e:EntityData, layer:FlxGroup, level:Level)

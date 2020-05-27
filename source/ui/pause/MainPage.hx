@@ -41,7 +41,7 @@ class MainPage extends PausePage
             addButton("ADD PLAYER", ()->
                 {
                     cast (FlxG.state, PlayState).createSecondPlayer();
-                    navCallback(Ready);
+                    navCallback(Controls);
                 }
             );
         else if (settings.id > 0)
@@ -49,7 +49,7 @@ class MainPage extends PausePage
             var button = addButton("REMOVE PLAYER", ()->
                 {
                     cast (FlxG.state, PlayState).removeSecondPlayer(settings.avatar);
-                    navCallback(Ready);
+                    navCallback(Controls);
                 }
             );
         }

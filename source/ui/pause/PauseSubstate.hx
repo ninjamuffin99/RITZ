@@ -34,10 +34,21 @@ class PauseSubstate extends flixel.FlxSubState
         screen1.cameras = [copyCamera(settings1.camera)];
         
         if (settings2 != null)
-        {
-            add(screen2 = new PauseScreen(settings2, startingPage));
-            screen2.cameras = [copyCamera(settings2.camera)];
-        }
+            addSecondPlayer(settings2, startingPage);
+        else
+            PlayerSettings.onAvatarAdd.add(addSecondPlayerLate);
+    }
+    
+    inline function addSecondPlayer(settings, startingPage)
+    {
+        add(screen2 = new PauseScreen(settings, startingPage));
+        screen2.cameras = [copyCamera(settings.camera)];
+    }
+    
+    function addSecondPlayerLate(settings)
+    {
+        addSecondPlayer(settings, Controls);
+        PlayerSettings.onAvatarAdd.remove(addSecondPlayerLate);
     }
     
     inline function copyCamera(original:FlxCamera):FlxCamera
@@ -47,55 +58,6 @@ class PauseSubstate extends flixel.FlxSubState
         camera.bgColor = 0;
         return camera;
     }
-    
-    // function addControls()
-    // {
-    //     var controls = new ControlsData();
-    //     controls.add("Action", "Keyboard", "Gamepad");
-    //     controls.add("------", "----------", "---------");
-    //     controls.add("Move", "Arrows WASD", "D-Pad L-Stick");
-    //     controls.addFromInput(ACCEPT);
-    //     controls.addFromInput(BACK  );
-    //     controls.addFromInput(JUMP  );
-    //     controls.addFromInput(TALK  );
-    //     controls.addFromInput(MAP   );
-    //     controls.addFromInput(RESET );
-        
-    //     inline function addColumn()
-    //     {
-    //         var column = new BitmapText();
-    //         column.scrollFactor.set();
-    //         add(column);
-    //         return column;
-    //     }
-        
-    //     var actionsColumn = addColumn();
-    //     var    keysColumn = addColumn();
-    //     var buttonsColumn = addColumn();
-    //     for (input in (controls:RawControlsData))
-    //     {
-    //         actionsColumn.text += input.action + "\n";
-    //         keysColumn.text += input.keys + "\n";
-    //         buttonsColumn.text += input.buttons + "\n";
-    //     }
-    //     // remove last \n
-    //     actionsColumn.text = actionsColumn.text.substr(0, actionsColumn.text.length - 1);
-    //        keysColumn.text =    keysColumn.text.substr(0,    keysColumn.text.length - 1);
-    //     buttonsColumn.text = buttonsColumn.text.substr(0, buttonsColumn.text.length - 1);
-    //     final gap = 32;
-    //     final width = actionsColumn.width + gap + keysColumn.width + gap + buttonsColumn.width;
-    //     // X margin
-    //     var margin = (FlxG.width - width) / 2;
-    //     actionsColumn.x = margin;
-    //     keysColumn.x = actionsColumn.x + actionsColumn.width + gap;
-    //     buttonsColumn.x = keysColumn.x + keysColumn.width + gap;
-    //     // Y margin
-    //     // margin = (FlxG.height - (buttons.y + buttons.length * buttons.group.members[0].lineHeight + actionsColumn.height)) / 2;
-    //     // trace(margin, buttons.y + buttons.length * buttons.group.members[0].lineHeight);
-    //     actionsColumn.y = FlxG.height - actionsColumn.height - margin;
-    //        keysColumn.y = FlxG.height -    keysColumn.height - margin;
-    //     buttonsColumn.y = FlxG.height - buttonsColumn.height - margin;
-    // }
     
     override function update(elapsed:Float)
     {
@@ -112,6 +74,8 @@ class PauseSubstate extends flixel.FlxSubState
         
         if (screen2 != null)
             FlxG.cameras.remove(screen2.camera);
+        else
+            PlayerSettings.onAvatarAdd.remove(addSecondPlayerLate);
     }
 }
 

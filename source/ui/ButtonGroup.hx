@@ -178,7 +178,7 @@ class TypedButtonGroup<T:FlxSprite>
 				else
 					newSelected++;
 			}
-			while(!members[newSelected].alive);
+			while(members[newSelected] == null || !members[newSelected].alive);
 		}
 		
 		if (keysPrev != null && controls.checkByName(keysPrev))
@@ -190,7 +190,7 @@ class TypedButtonGroup<T:FlxSprite>
 				else
 					newSelected--;
 			}
-			while(!members[newSelected].alive);
+			while(members[newSelected] == null || !members[newSelected].alive);
 		}
 		
 		if (selected != newSelected)

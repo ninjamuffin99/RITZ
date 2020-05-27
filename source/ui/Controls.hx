@@ -31,6 +31,12 @@ enum abstract Action(String) to String from String
     var RESET   = "reset";
 }
 
+enum Device
+{
+    Keys;
+    Gamepad(id:Int);
+}
+
 /**
  * Since, in many cases multiple actions should use similar keys, we don't want the
  * rebinding UI to list every action. ActionBinders are what the user percieves as
@@ -88,7 +94,7 @@ class Controls extends FlxActionSet
     var _reset  = new FlxActionDigital(Action.RESET  );
     
     var byName:Map<String, FlxActionDigital> = [];
-    var gamepadsAdded:Array<Int>;
+    public var gamepadsAdded:Array<Int> = [];
     public var keyboardScheme = KeyboardScheme.None;
     
     public var UP     (get, never):Bool; inline function get_UP     () return _left  .check();
@@ -114,13 +120,14 @@ class Controls extends FlxActionSet
     {
         super(name);
         
+        add(_up);
         add(_left);
         add(_right);
         add(_down);
         add(_upP);
-        add(_downP);
         add(_leftP);
         add(_rightP);
+        add(_downP);
         add(_jump);
         add(_jumpP);
         add(_jumpR);
@@ -134,7 +141,7 @@ class Controls extends FlxActionSet
         for (action in digitalActions)
             byName[action.name] = action;
         
-        setKeyboardScheme(scheme);
+        setKeyboardScheme(scheme, false);
     }
     
     // inline
@@ -326,7 +333,7 @@ class Controls extends FlxActionSet
                 inline bindKeys(Control.TALK  , [P]);
                 inline bindKeys(Control.ACCEPT, [O]);
                 inline bindKeys(Control.BACK  , [P]);
-                inline bindKeys(Control.PAUSE , [P, ENTER]);
+                inline bindKeys(Control.PAUSE , [ENTER]);
                 inline bindKeys(Control.MAP   , [M]);
                 inline bindKeys(Control.RESET , [BACKSPACE]);
             case None: //nothing
@@ -338,10 +345,9 @@ class Controls extends FlxActionSet
     {
         for (action in this.digitalActions)
         {
-            var i = action.inputs.length;
-            while (i-- > 0)
+            while (action.inputs.length > 0)
             {
-                var input = action.inputs[i];
+                var input = action.inputs[0];
                 if (input.device == KEYBOARD)
                     action.remove(input, true);
             }
@@ -427,5 +433,28 @@ class Controls extends FlxActionSet
             if (input.device == GAMEPAD && buttons.indexOf(cast input.inputID) != -1)
                 action.remove(input, true);
         }
+    }
+    
+    public function getInputsFor(control:Control, device:Device, ?list:Array<String>):Array<String>
+    {
+        if (list == null)
+            list = [];
+        
+        switch(device)
+        {
+            case Keys:
+                for (input in getActionFromControl(control).inputs)
+                {
+                    if (input.device == KEYBOARD)
+                        list.push(FlxKey.toStringMap[input.inputID]);
+                }
+            case Gamepad(id):
+                for (input in getActionFromControl(control).inputs)
+                {
+                    if (input.deviceID == id)
+                        list.push(FlxGamepadInputID.toStringMap[input.inputID]);
+                }
+        }
+        return list;
     }
 }
