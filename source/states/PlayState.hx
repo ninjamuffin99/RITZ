@@ -44,7 +44,6 @@ class PlayState extends flixel.FlxState
 	inline static var FIRST_CHEESE_MSG = "Thanks for the cheese, buddy! ";
 	
 	var levels:Map<String, Level> = [];
-	var playerCameras:Map<Player, PlayCamera> = [];
 	
 	var bg:FlxBackdrop;
 	var foreground = new FlxGroup();
@@ -167,57 +166,49 @@ class PlayState extends flixel.FlxState
 		return level;
 	}
 	
-	function createPlayer(x:Float, y:Float, controlsType:ControlsType):Player
+	function createPlayer(x:Float, y:Float):Player
 	{
-		final camera = new PlayCamera();
-		final settings = new PlayerSettings(grpPlayers.length, controlsType, camera);
-		final player = new Player(x, y, settings);
-		player.onRespawn.add(onPlayerRespawn);
-		grpPlayers.add(player);
-		if (curCheckpoint == null)
-			curCheckpoint = new Checkpoint(x, y, "");
-		
-		camera.init(player);
-		camera.minScrollX = FlxG.worldBounds.left;
-		camera.maxScrollX = FlxG.worldBounds.right;
-		camera.minScrollY = FlxG.worldBounds.top;
-		camera.maxScrollY = FlxG.worldBounds.bottom;
-		
-		playerCameras[player] = camera;
-		FlxG.cameras.add(camera);
-		FlxCamera.defaultCameras.push(camera);
-		if (FlxG.camera == null)
-			FlxG.camera = camera;
+		var avatar = new Player(x, y);
+		var settings = PlayerSettings.addAvatar(avatar);
+		avatar.onRespawn.add(onPlayerRespawn);
+		grpPlayers.add(avatar);
 		
 		splitCameras();
 		
-		return player;
+		return avatar;
 	}
 	
+	@:allow(ui.pause.MainPage)
 	function createSecondPlayer()
 	{
 		if (grpPlayers.length > 1)
 			throw "Only 2 players allowed right now";
 		
 		var firstPlayer = grpPlayers.members[0];
-		firstPlayer.settings.setControlsType(Duo(true));
-		createPlayer(firstPlayer.x, firstPlayer.y, Duo(false));
+		createPlayer(firstPlayer.x, firstPlayer.y);
+	}
+	
+	@:allow(ui.pause.MainPage)
+	function removeSecondPlayer(avatar:Player)
+	{
+		grpPlayers.remove(avatar);
+		avatar.destroy();
 	}
 	
 	function splitCameras()
 	{
-		switch(grpPlayers.length)
+		switch(PlayerSettings.numAvatars)
 		{
 			case 1:
-				var cam:PlayCamera = cast FlxG.camera;
+				var cam:PlayCamera = cast PlayerSettings.player1.camera;
 				cam.width = FlxG.width;
 				cam.resetDeadZones();
 			case 2:
 				var cam:PlayCamera;
-				cam = cast playerCameras[grpPlayers.members[0]];
+				cam = cast PlayerSettings.player1.camera;
 				cam.width = Std.int(FlxG.width / 2);
 				cam.resetDeadZones();
-				cam = cast playerCameras[grpPlayers.members[1]];
+				cam = cast PlayerSettings.player2.camera;
 				cam.width = Std.int(FlxG.width / 2);
 				cam.x = cam.width;
 				cam.resetDeadZones();
@@ -231,8 +222,13 @@ class PlayState extends flixel.FlxState
 		switch(e.name)
 		{
 			case "player": 
-				level.player = createPlayer(e.x, e.y, Solo);
-				level.add(level.player);
+				if (curCheckpoint == null)
+					curCheckpoint = new Checkpoint(e.x, e.y, "");
+			
+				var player = createPlayer(e.x, e.y);
+				FlxG.camera = player.playCamera;
+				level.player = player;
+				level.add(player);
 				// entity = level.player;
 				//layer not used
 			case "spider":
@@ -420,7 +416,7 @@ class PlayState extends flixel.FlxState
 			FlxG.overlap(grpCameraTiles, player, 
 				(cameraTiles:CameraTilemap, _)->
 				{
-					playerCameras[player].leading = cameraTiles.getTileTypeAt(player.x, player.y);
+					player.playCamera.leading = cameraTiles.getTileTypeAt(player.x, player.y);
 				}
 			);
 		}

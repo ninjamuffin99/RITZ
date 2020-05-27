@@ -51,10 +51,11 @@ enum Control
     MAP;
 }
 
-enum ControlsType
+enum KeyboardScheme
 {
     Solo;
     Duo(first:Bool);
+    None;
     Custom;
 }
 
@@ -87,6 +88,8 @@ class Controls extends FlxActionSet
     var _reset  = new FlxActionDigital(Action.RESET  );
     
     var byName:Map<String, FlxActionDigital> = [];
+    var gamepadsAdded:Array<Int>;
+    public var keyboardScheme = KeyboardScheme.None;
     
     public var UP     (get, never):Bool; inline function get_UP     () return _left  .check();
     public var LEFT   (get, never):Bool; inline function get_LEFT   () return _left  .check();
@@ -107,7 +110,7 @@ class Controls extends FlxActionSet
     public var RESET  (get, never):Bool; inline function get_RESET  () return _reset .check();
     
     
-    function new(name:String)
+    public function new(name, scheme = None)
     {
         super(name);
         
@@ -130,6 +133,8 @@ class Controls extends FlxActionSet
         
         for (action in digitalActions)
             byName[action.name] = action;
+        
+        setKeyboardScheme(scheme);
     }
     
     // inline
@@ -202,49 +207,16 @@ class Controls extends FlxActionSet
         var actions = new FlxActionManager();
         FlxG.inputs.add(actions);
         
-        /*
-         * Inlining bindKeys calls with literal values will change them to a series of direct addKey calls.
-         */
         solo = new Controls("solo");
-        inline solo.bindKeys(ACCEPT, [Z, SPACE]);
-        inline solo.bindKeys(BACK  , [X, ESCAPE]);
-        inline solo.bindKeys(JUMP  , [Z, Y]);
-        inline solo.bindKeys(UP    , [W, UP]);
-        inline solo.bindKeys(DOWN  , [S, DOWN]);
-        inline solo.bindKeys(LEFT  , [A, LEFT]);
-        inline solo.bindKeys(RIGHT , [D, RIGHT]);
-        inline solo.bindKeys(TALK  , [E, F, X]);
-        inline solo.bindKeys(PAUSE , [P, ESCAPE, ENTER]);
-        inline solo.bindKeys(MAP   , [M]);
-        inline solo.bindKeys(RESET , [R]);
+        inline solo.setKeyboardScheme(Solo, false);
         actions.addSet(solo);
         
         duo1 = new Controls("duo1");
-        inline duo1.bindKeys(ACCEPT, [G]);
-        inline duo1.bindKeys(BACK  , [H]);
-        inline duo1.bindKeys(JUMP  , [G]);
-        inline duo1.bindKeys(UP    , [W]);
-        inline duo1.bindKeys(DOWN  , [S]);
-        inline duo1.bindKeys(LEFT  , [A]);
-        inline duo1.bindKeys(RIGHT , [D]);
-        inline duo1.bindKeys(TALK  , [H]);
-        inline duo1.bindKeys(PAUSE , [ESCAPE, ONE]);
-        inline duo1.bindKeys(MAP   , [TWO]);
-        inline duo1.bindKeys(RESET , [R]);
+        inline duo1.setKeyboardScheme(Duo(true), false);
         actions.addSet(duo1);
         
         duo2 = new Controls("duo2");
-        inline duo2.bindKeys(ACCEPT, [O]);
-        inline duo2.bindKeys(BACK  , [P]);
-        inline duo2.bindKeys(JUMP  , [O]);
-        inline duo2.bindKeys(UP    , [UP]);
-        inline duo2.bindKeys(DOWN  , [DOWN]);
-        inline duo2.bindKeys(LEFT  , [LEFT]);
-        inline duo2.bindKeys(RIGHT , [RIGHT]);
-        inline duo2.bindKeys(TALK  , [P]);
-        inline duo2.bindKeys(PAUSE , [P, ENTER]);
-        inline duo2.bindKeys(MAP   , [M]);
-        inline duo2.bindKeys(RESET , [BACKSPACE]);
+        inline duo2.setKeyboardScheme(Duo(false), false);
         actions.addSet(duo2);
     }
     
@@ -313,22 +285,84 @@ class Controls extends FlxActionSet
         }
     }
     
-    public function addDefaultGamepad(id):Void
+    public function setKeyboardScheme(scheme:KeyboardScheme, reset = true)
     {
-        inline bindButtons(Control.ACCEPT, id, [A]);
-        inline bindButtons(Control.BACK  , id, [B]);
-        inline bindButtons(Control.UP    , id, [DPAD_UP   , LEFT_STICK_DIGITAL_UP]);
-        inline bindButtons(Control.DOWN  , id, [DPAD_DOWN , LEFT_STICK_DIGITAL_DOWN]);
-        inline bindButtons(Control.LEFT  , id, [DPAD_LEFT , LEFT_STICK_DIGITAL_LEFT]);
-        inline bindButtons(Control.RIGHT , id, [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT]);
-        inline bindButtons(Control.JUMP  , id, [A]);
-        inline bindButtons(Control.TALK  , id, [X]);
-        inline bindButtons(Control.PAUSE , id, [START]);
-        inline bindButtons(Control.MAP   , id, [GUIDE]);
-        inline bindButtons(Control.RESET , id, [Y]);
+        if (reset)
+            removeKeyboard();
+        
+        keyboardScheme = scheme;
+        switch(scheme)
+        {
+            case Solo:
+                inline bindKeys(Control.UP    , [W, FlxKey.UP]);
+                inline bindKeys(Control.DOWN  , [S, FlxKey.DOWN]);
+                inline bindKeys(Control.LEFT  , [A, FlxKey.LEFT]);
+                inline bindKeys(Control.RIGHT , [D, FlxKey.RIGHT]);
+                inline bindKeys(Control.JUMP  , [Z, Y, W, FlxKey.UP]);
+                inline bindKeys(Control.TALK  , [E, F, X]);
+                inline bindKeys(Control.ACCEPT, [Z, SPACE]);
+                inline bindKeys(Control.BACK  , [X, ESCAPE]);
+                inline bindKeys(Control.PAUSE , [P, ESCAPE, ENTER]);
+                inline bindKeys(Control.MAP   , [M]);
+                inline bindKeys(Control.RESET , [R]);
+            case Duo(true):
+                inline bindKeys(Control.UP    , [W]);
+                inline bindKeys(Control.DOWN  , [S]);
+                inline bindKeys(Control.LEFT  , [A]);
+                inline bindKeys(Control.RIGHT , [D]);
+                inline bindKeys(Control.JUMP  , [G, W]);
+                inline bindKeys(Control.TALK  , [H]);
+                inline bindKeys(Control.ACCEPT, [G]);
+                inline bindKeys(Control.BACK  , [H]);
+                inline bindKeys(Control.PAUSE , [ESCAPE, ONE]);
+                inline bindKeys(Control.MAP   , [TWO]);
+                inline bindKeys(Control.RESET , [R]);
+            case Duo(false):
+                inline bindKeys(Control.UP    , [FlxKey.UP]);
+                inline bindKeys(Control.DOWN  , [FlxKey.DOWN]);
+                inline bindKeys(Control.LEFT  , [FlxKey.LEFT]);
+                inline bindKeys(Control.RIGHT , [FlxKey.RIGHT]);
+                inline bindKeys(Control.JUMP  , [O, FlxKey.UP]);
+                inline bindKeys(Control.TALK  , [P]);
+                inline bindKeys(Control.ACCEPT, [O]);
+                inline bindKeys(Control.BACK  , [P]);
+                inline bindKeys(Control.PAUSE , [P, ENTER]);
+                inline bindKeys(Control.MAP   , [M]);
+                inline bindKeys(Control.RESET , [BACKSPACE]);
+            case None: //nothing
+            case Custom: //nothing
+        }
     }
     
-    public function removeAllGamepad(deviceID:Int = FlxInputDeviceID.ALL):Void
+    function removeKeyboard()
+    {
+        for (action in this.digitalActions)
+        {
+            var i = action.inputs.length;
+            while (i-- > 0)
+            {
+                var input = action.inputs[i];
+                if (input.device == KEYBOARD)
+                    action.remove(input, true);
+            }
+        }
+    }
+    
+    public function addGamepad(id:Int, ?buttonMap:Map<Control, Array<FlxGamepadInputID>>):Void
+    {
+        gamepadsAdded.push(id);
+        for (control=>buttons in buttonMap)
+            bindButtons(control, id, buttons);
+    }
+    
+    inline function addGamepadLiteral(id:Int, ?buttonMap:Map<Control, Array<FlxGamepadInputID>>):Void
+    {
+        gamepadsAdded.push(id);
+        for (control=>buttons in buttonMap)
+            inline bindButtons(control, id, buttons);
+    }
+    
+    public function removeGamepad(deviceID:Int = FlxInputDeviceID.ALL):Void
     {
         for (action in this.digitalActions)
         {
@@ -340,6 +374,24 @@ class Controls extends FlxActionSet
                     action.remove(input, true);
             }
         }
+    }
+    
+    public function addDefaultGamepad(id):Void
+    {
+        addGamepadLiteral(id, 
+            [ Control.ACCEPT => [A]
+            , Control.BACK   => [B]
+            , Control.UP     => [DPAD_UP   , LEFT_STICK_DIGITAL_UP]
+            , Control.DOWN   => [DPAD_DOWN , LEFT_STICK_DIGITAL_DOWN]
+            , Control.LEFT   => [DPAD_LEFT , LEFT_STICK_DIGITAL_LEFT]
+            , Control.RIGHT  => [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT]
+            , Control.JUMP   => [A]
+            , Control.TALK   => [X]
+            , Control.PAUSE  => [START]
+            , Control.MAP    => [GUIDE]
+            , Control.RESET  => [Y]
+            ]
+        );
     }
     
     /**

@@ -7,6 +7,7 @@ import props.MovingPlatform;
 import states.BootState;
 import ui.Controls;
 
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -87,16 +88,16 @@ class Player extends FlxSprite
     
     public var cheese = new List<Cheese>();
     
-    public final settings:PlayerSettings;
-    public var controlsType(get, never):ControlsType;
-    inline function get_controlsType():ControlsType return settings.controlsType;
-    public var controls    (get, never):Controls;
-    inline function get_controls    ():Controls return settings.controls;
+    public var settings:PlayerSettings;
+    public var playCamera(default, null):PlayCamera;
+    public var controls(get, never):Controls;
+    inline function get_controls():Controls return settings.controls;
     
-    public function new(x:Float, y:Float, settings:PlayerSettings):Void
+    public function new(x:Float, y:Float):Void
     {
-        this.settings = settings;
         super(x, y);
+        
+        initCamera();
         
         inline function addBeatAnim(name:String, frames:Array<Int>, loopsPerBeat:Float)
         {
@@ -127,6 +128,20 @@ class Player extends FlxSprite
         acceleration.y = GRAVITY;
         maxVelocity.x = MAXSPEED;
         maxVelocity.y = FALL_SPEED;
+    }
+    
+    function initCamera():Void
+    {
+        playCamera = new PlayCamera();
+        playCamera.init(this);
+        
+        playCamera.minScrollX = FlxG.worldBounds.left;
+        playCamera.maxScrollX = FlxG.worldBounds.right;
+        playCamera.minScrollY = FlxG.worldBounds.top;
+        playCamera.maxScrollY = FlxG.worldBounds.bottom;
+        
+        FlxG.cameras.add(playCamera);
+        FlxCamera.defaultCameras.push(playCamera);
     }
     
     public function hurtAndRespawn(x, y):Void
@@ -515,6 +530,16 @@ class Player extends FlxSprite
             newDust.drag.x = Math.abs(newDust.velocity.x) * 2;
         }
         return newDust;
+    }
+    
+    override function destroy()
+    {
+        super.destroy();
+        if (settings != null)
+        {
+            PlayerSettings.removeAvatar(this);
+            settings = null;
+        }
     }
 }
 
