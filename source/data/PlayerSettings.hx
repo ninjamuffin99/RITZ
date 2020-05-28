@@ -56,7 +56,7 @@ class PlayerSettings
             if (player2 == null)
             {
                 player1.setKeyboardScheme(Duo(true));
-                player2 = new PlayerSettings(0, Duo(false));
+                player2 = new PlayerSettings(1, Duo(false));
                 ++numPlayers;
             }
             
@@ -81,11 +81,17 @@ class PlayerSettings
         if (player1 != null && player1.avatar == avatar)
             player1.avatar = null;
         else if(player2 != null && player2.avatar == avatar)
+        {
             player2.avatar = null;
+            if (player1.controls.keyboardScheme.match(Duo(_)))
+                player1.setKeyboardScheme(Solo);
+        }
         else
             throw "Cannot remove avatar that is not for a player";
         
         --numAvatars;
+        
+        splitCameras();
     }
     
     static function splitCameras()

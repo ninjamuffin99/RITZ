@@ -535,6 +535,8 @@ class Player extends FlxSprite
     override function destroy()
     {
         super.destroy();
+        FlxG.cameras.remove(playCamera);
+        FlxCamera.defaultCameras.remove(playCamera);
         if (settings != null)
         {
             PlayerSettings.removeAvatar(this);

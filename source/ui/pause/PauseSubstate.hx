@@ -33,7 +33,7 @@ class PauseSubstate extends flixel.FlxSubState
         add(screen1 = new PauseScreen(settings1, startingPage));
         screen1.cameras = [copyCamera(settings1.camera)];
         
-        if (settings2 != null)
+        if (settings2 != null && settings2.avatar != null)
             addSecondPlayer(settings2, startingPage);
         else
             PlayerSettings.onAvatarAdd.add(addSecondPlayerLate);
