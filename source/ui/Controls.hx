@@ -317,10 +317,10 @@ class Controls extends FlxActionSet
                 inline bindKeys(Control.DOWN  , [S]);
                 inline bindKeys(Control.LEFT  , [A]);
                 inline bindKeys(Control.RIGHT , [D]);
-                inline bindKeys(Control.JUMP  , [G, W]);
-                inline bindKeys(Control.TALK  , [H]);
-                inline bindKeys(Control.ACCEPT, [G]);
-                inline bindKeys(Control.BACK  , [H]);
+                inline bindKeys(Control.JUMP  , [G, W, Z]);
+                inline bindKeys(Control.TALK  , [H, X]);
+                inline bindKeys(Control.ACCEPT, [G, Z]);
+                inline bindKeys(Control.BACK  , [H, X]);
                 inline bindKeys(Control.PAUSE , [ESCAPE, ONE]);
                 inline bindKeys(Control.MAP   , [TWO]);
                 inline bindKeys(Control.RESET , [R]);
