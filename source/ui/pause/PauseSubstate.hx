@@ -104,6 +104,8 @@ class PauseScreen extends FlxGroup
             setPage(startingPage);
         else
             setPage(settings.controls.PAUSE ? Main : Ready);
+        
+        PlayerSettings.onAvatarRemove.add(onAvatarRemove);
     }
     
     function setPage(type:PausePageType)
@@ -113,6 +115,17 @@ class PauseScreen extends FlxGroup
         
         pageType = type;
         currentPage.revive();
+    }
+    
+    function onAvatarRemove(settings:PlayerSettings)
+    {
+        if (settings == this.settings)
+            kill();
+        else
+        {
+            camera.width = this.settings.camera.width;
+            currentPage.redraw();
+        }
     }
     
     override function update(elapsed:Float)
@@ -131,6 +144,7 @@ class PauseScreen extends FlxGroup
         super.destroy();
         
         pages.clear();
+        PlayerSettings.onAvatarRemove.remove(onAvatarRemove);
     }
     
     inline function get_paused() return pageType != Ready;

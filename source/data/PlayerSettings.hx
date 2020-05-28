@@ -15,6 +15,7 @@ class PlayerSettings
     static public var player2(default, null):PlayerSettings;
     
     static public final onAvatarAdd = new FlxTypedSignal<PlayerSettings->Void>();
+    static public final onAvatarRemove = new FlxTypedSignal<PlayerSettings->Void>();
     
     public var id(default, null):Int;
     
@@ -92,6 +93,8 @@ class PlayerSettings
         --numAvatars;
         
         splitCameras();
+        
+        onAvatarRemove.dispatch(avatar.settings);
     }
     
     static function splitCameras()

@@ -8,9 +8,10 @@ import flixel.FlxG;
 
 class MainPage extends PausePage
 {
-    final buttons:ButtonGroup;
     final settings:PlayerSettings;
     final navCallback:(PausePageType)->Void;
+    final buttons:ButtonGroup;
+    final title:BitmapText;
     
     public function new (settings:PlayerSettings, navCallback:(PausePageType)->Void)
     {
@@ -19,9 +20,8 @@ class MainPage extends PausePage
         buttons = new ButtonGroup(0, settings.controls, false);
         super();
         
-        var title = new BitmapText(32, 4, "PAUSED");
+        title = new BitmapText(32, 4, "PAUSED");
         title.x = (settings.camera.width - title.width) / 2;
-        title.scrollFactor.set();
         add(title);
         
         inline function addButton(text, callback)
@@ -30,7 +30,6 @@ class MainPage extends PausePage
             button = buttons.addNewButton(0, 0, text, callback);
             button.y += (buttons.length - 1) * button.lineHeight;
             button.x = (settings.camera.width - button.width) / 2;
-            button.scrollFactor.set();
             return button;
         }
         
@@ -38,18 +37,23 @@ class MainPage extends PausePage
         addButton("MUTE", ()->FlxG.sound.muted = !FlxG.sound.muted);
         addButton("CONTROLS", navCallback.bind(Controls));
         if (PlayerSettings.numAvatars == 1)
-            addButton("ADD PLAYER", ()->
+        {
+            var button:BitmapText = null;
+            button = addButton("ADD PLAYER", ()->
                 {
+                    buttons.disableButton(button);
+                    buttons.selected = 0;
                     cast (FlxG.state, PlayState).createSecondPlayer();
                     navCallback(Controls);
                 }
             );
+        }
         else if (settings.id > 0)
         {
             var button = addButton("REMOVE PLAYER", ()->
                 {
                     cast (FlxG.state, PlayState).removeSecondPlayer(settings.avatar);
-                    navCallback(Controls);
+                    navCallback(Ready);
                 }
             );
         }
@@ -58,8 +62,11 @@ class MainPage extends PausePage
         add(buttons);
     }
     
-    function removePlayer():Void
+    override function redraw()
     {
+        title.x = (settings.camera.width - title.width) / 2;
+        for (button in buttons.members)
+            button.x = (settings.camera.width - button.width) / 2;
     }
     
     function onSelectRestart():Void

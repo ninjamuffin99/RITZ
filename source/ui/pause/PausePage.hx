@@ -13,6 +13,15 @@ class PausePage extends FlxGroup
     }
     
     public function allowUnpause() return true;
+    
+    override function revive()
+    {
+        super.revive();
+        
+        redraw();
+    }
+    
+    public function redraw():Void {}
 }
 
 abstract ReadyPage(PausePage) to PausePage

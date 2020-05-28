@@ -52,10 +52,8 @@ class ControlsPage extends PausePage
         }
     }
     
-    override function revive()
+    override function redraw()
     {
-        super.revive();
-        
         title.x = (settings.camera.width - title.width) / 2;
         
         if (device != null)
