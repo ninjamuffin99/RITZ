@@ -38,7 +38,6 @@ abstract DesktopButton(BitmapText) to BitmapText from BitmapText {
 		
 		this.color = 0xFF928fb8;
 		this.useTextColor = false;
-		this.alive = false;
 	}
 }
 
@@ -67,10 +66,24 @@ class ButtonGroup extends TypedButtonGroup<DesktopButton> {
 		return button;
 	}
 	
-	override public function disableButon(button:DesktopButton):DesktopButton
-	{
-		if (button.alive && members.indexOf(button) != -1)
+	override public function disableButton(button:DesktopButton):DesktopButton {
+		
+		if (isMember(button) && isEnabled(button)) {
+			
+			disabled.push(button);
 			button.disable();
+		}
+		
+		return button;
+	}
+	
+	override public function enableButton(button:DesktopButton):DesktopButton {
+		
+		if (isMember(button) && isDisabled(button)) {
+			
+			disabled.remove(button);
+			button.deselect(colorDefault, colorHilite);
+		}
 		
 		return button;
 	}
@@ -82,8 +95,8 @@ class ButtonGroup extends TypedButtonGroup<DesktopButton> {
 			
 			// if (selected != value)
 			// 	Sounds.play(MENU_NAV);
-			
-			members[selected].deselect(colorDefault, colorHilite);
+			if (isEnabled(members[selected]))
+				members[selected].deselect(colorDefault, colorHilite);
 			selected = value;
 			members[selected].select(colorDefault, colorHilite);
 		}
@@ -105,6 +118,7 @@ class TypedButtonGroup<T:FlxSprite>
 	var onBack:()->Void;
 	
 	public var selected(default, set) = 0;
+	var disabled:Array<T> = [];
 	function set_selected(value:Int):Int {
 		
 		if (members.length > value) {
@@ -144,15 +158,40 @@ class TypedButtonGroup<T:FlxSprite>
 		return this;
 	}
 	
-	public function disableButon(button:T):T
-	{
-		if (button.alive && members.indexOf(button) != -1)
-		{
+	public function disableButton(button:T):T {
+		
+		if (isMember(button) && isEnabled(button)) {
+			
+			disabled.push(button);
 			button.color = 0xFF928fb8;
-			button.alive = false;
+		}
+		return button;
+	}
+	
+	public function enableButton(button:T):T {
+		
+		if (isMember(button) && isDisabled(button)) {
+			
+			disabled.remove(button);
+			button.color = colorDefault;
 		}
 		
 		return button;
+	}
+	
+	inline public function isMember(button) {
+		
+		return members.indexOf(button) != -1;
+	}
+	
+	inline public function isEnabled(button) {
+		
+		return !isDisabled(button);
+	}
+	
+	inline public function isDisabled(button) {
+		
+		return disabled.indexOf(button) != -1;
 	}
 	
 	public function setCallback(button:T, callback:Void->Void):Void {
@@ -178,7 +217,7 @@ class TypedButtonGroup<T:FlxSprite>
 				else
 					newSelected++;
 			}
-			while(members[newSelected] == null || !members[newSelected].alive);
+			while(members[newSelected] == null || isDisabled(members[newSelected]));
 		}
 		
 		if (keysPrev != null && controls.checkByName(keysPrev))
@@ -190,7 +229,7 @@ class TypedButtonGroup<T:FlxSprite>
 				else
 					newSelected--;
 			}
-			while(members[newSelected] == null || !members[newSelected].alive);
+			while(members[newSelected] == null || isDisabled(members[newSelected]));
 		}
 		
 		if (selected != newSelected)
@@ -223,6 +262,18 @@ class TypedButtonGroup<T:FlxSprite>
 				callback();
 			}
 		);
+	}
+	
+	override function kill()
+	{
+		alive = false;
+		exists = false;
+	}
+	
+	override function revive()
+	{
+		alive = true;
+		exists = true;
 	}
 	
 	public function startIntro(delay = 0.0, ?callback:()->Void):Void
