@@ -40,7 +40,7 @@ class ControlsPage extends PausePage
         }
         else
         {
-            add(devices = new ButtonGroup(0, settings.controls, false));
+            add(devices = new ButtonGroup(settings.controls));
             
             if (settings.controls.keyboardScheme != None)
                 devices.addNewButton(devices.width, 0, "KEYS", showDevice.bind(Keys));
@@ -108,7 +108,7 @@ class DevicePage extends FlxSpriteGroup
     {
         super();
         
-        add(controlNames = new ButtonGroup(0, settings.controls, false));
+        add(controlNames = new ButtonGroup(settings.controls));
         for(i=>control in allControls)
         {
             var button = controlNames.addNewButton(0, 0, control.getName(), onControlSelect.bind(i));

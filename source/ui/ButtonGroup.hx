@@ -43,9 +43,9 @@ abstract DesktopButton(BitmapText) to BitmapText from BitmapText {
 
 class ButtonGroup extends TypedButtonGroup<DesktopButton> {
 	
-	public function new (maxSize, controls, hideForIntro = true) {
+	public function new (controls) {
 		
-		super(maxSize, controls, hideForIntro);
+		super(controls);
 		
 		colorHilite = 0xFFffda76;
 		// colorDefault = 0xFF000000;
@@ -136,15 +136,11 @@ class TypedButtonGroup<T:FlxSprite>
 	var controls:Controls;
 	var callbacks:Map<FlxSprite, Void->Void> = new Map();
 	
-	public function new(maxSize:Int = 0, controls:Controls, hideForIntro = true)
+	public function new(controls:Controls)
 	{
 		this.controls = controls;
-		super(maxSize);
-		if (hideForIntro)
-		{
-			visible = false;
-			active = false;
-		}
+		
+		super(0);
 	}
 	
 	public function addButton(button:T, callback:Void->Void):TypedButtonGroup<T> {
@@ -274,6 +270,15 @@ class TypedButtonGroup<T:FlxSprite>
 	{
 		alive = true;
 		exists = true;
+	}
+	
+	
+	public function hideForIntro()
+	{
+		visible = false;
+		active = false;
+		
+		return this;
 	}
 	
 	public function startIntro(delay = 0.0, ?callback:()->Void):Void

@@ -31,7 +31,7 @@ class Prompt extends flixel.group.FlxGroup {
 		label.alignment = CENTER;
 		label.scrollFactor.set();
 		
-		keyButtons = new ButtonGroup(0, controls, false);
+		keyButtons = new ButtonGroup(controls);
 		keyButtons.keysNext = RIGHT_P;
 		keyButtons.keysPrev = LEFT_P;
 		if (singleButton) {

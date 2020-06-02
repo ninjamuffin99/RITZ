@@ -17,7 +17,7 @@ class MainPage extends PausePage
     {
         this.navCallback = navCallback;
         this.settings = settings;
-        buttons = new ButtonGroup(0, settings.controls, false);
+        buttons = new ButtonGroup(settings.controls);
         super();
         
         title = new BitmapText(32, 4, "PAUSED");
