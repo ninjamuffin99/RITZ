@@ -13,38 +13,38 @@ import flixel.tweens.FlxTween;
 import flixel.tweens.FlxTween.TweenOptions;
 import flixel.util.FlxColor;
 
-interface ITransitionable {
-	
+interface ITransitionable
+{
 	function startIntro(delay:Float = 0.0, ?callback:()->Void):Void;
 	function startOutro(delay:Float = 0.0, ?callback:()->Void):Void;
 }
 
 @:forward
-abstract DesktopButton(BitmapText) to BitmapText from BitmapText {
-	
-	inline public function deselect(colorDefault:Int, colorHilite:Int):Void {
-		
+abstract DesktopButton(BitmapText) to BitmapText from BitmapText
+{
+	inline public function deselect(colorDefault:Int, colorHilite:Int):Void
+	{
 		this.color = colorDefault;
 		this.useTextColor = false;
 	}
 	
-	inline public function select(colorDefault:Int, colorHilite:Int):Void {
-		
+	inline public function select(colorDefault:Int, colorHilite:Int):Void
+	{
 		this.color = colorHilite;
 		this.useTextColor = false;
 	} 
 	
-	inline public function disable():Void {
-		
+	inline public function disable():Void
+	{
 		this.color = 0xFF928fb8;
 		this.useTextColor = false;
 	}
 }
 
-class ButtonGroup extends TypedButtonGroup<DesktopButton> {
-	
-	public function new (controls) {
-		
+class ButtonGroup extends TypedButtonGroup<DesktopButton>
+{
+	public function new (controls)
+	{
 		super(controls);
 		
 		colorHilite = 0xFFffda76;
@@ -52,24 +52,24 @@ class ButtonGroup extends TypedButtonGroup<DesktopButton> {
 		colorDefault = 0xFFffffff;//doesn't work, not sure why
 	}
 	
-	override function add(text:DesktopButton):DesktopButton {
-		
+	override function add(text:DesktopButton):DesktopButton
+	{
 		text.deselect(colorDefault, colorHilite);
 		
 		return super.add(text);
 	}
 	
-	public function addNewButton(x:Float, y:Float, text:String, callback:Void->Void, borderColor = 0xFF202e38):BitmapText {
-		
+	public function addNewButton(x:Float, y:Float, text:String, callback:Void->Void, borderColor = 0xFF202e38):BitmapText
+	{
 		var button = new BitmapText(x, y, text, borderColor);
 		addButton(button, callback);
 		return button;
 	}
 	
-	override public function disableButton(button:DesktopButton):DesktopButton {
-		
-		if (isMember(button) && isEnabled(button)) {
-			
+	override public function disableButton(button:DesktopButton):DesktopButton
+	{
+		if (isMember(button) && isEnabled(button))
+		{
 			disabled.push(button);
 			button.disable();
 		}
@@ -77,10 +77,10 @@ class ButtonGroup extends TypedButtonGroup<DesktopButton> {
 		return button;
 	}
 	
-	override public function enableButton(button:DesktopButton):DesktopButton {
-		
-		if (isMember(button) && isDisabled(button)) {
-			
+	override public function enableButton(button:DesktopButton):DesktopButton
+	{
+		if (isMember(button) && isDisabled(button))
+		{
 			disabled.remove(button);
 			button.deselect(colorDefault, colorHilite);
 		}
@@ -88,7 +88,8 @@ class ButtonGroup extends TypedButtonGroup<DesktopButton> {
 		return button;
 	}
 	
-	override function set_selected(value:Int):Int {
+	override function set_selected(value:Int):Int
+	{
 		// super.set_selected(value);
 		
 		if (members.length > value) {
@@ -106,8 +107,8 @@ class ButtonGroup extends TypedButtonGroup<DesktopButton> {
 
 class TypedButtonGroup<T:FlxSprite>
 	extends FlxTypedSpriteGroup<T>
-	implements ITransitionable {
-	
+	implements ITransitionable
+{
 	public var colorHilite:FlxColor = 0xFFffda76;
 	public var colorDefault:FlxColor = 0xFFffffff;
 	
@@ -121,8 +122,8 @@ class TypedButtonGroup<T:FlxSprite>
 	var disabled:Array<T> = [];
 	function set_selected(value:Int):Int {
 		
-		if (members.length > value) {
-			
+		if (members.length > value)
+		{
 			// if (selected != value)
 				// Sounds.play(MENU_NAV);
 			
@@ -143,8 +144,8 @@ class TypedButtonGroup<T:FlxSprite>
 		super(0);
 	}
 	
-	public function addButton(button:T, callback:Void->Void):TypedButtonGroup<T> {
-		
+	public function addButton(button:T, callback:Void->Void):TypedButtonGroup<T>
+	{
 		add(button);
 		callbacks[button] = callback;
 		
@@ -154,20 +155,20 @@ class TypedButtonGroup<T:FlxSprite>
 		return this;
 	}
 	
-	public function disableButton(button:T):T {
-		
-		if (isMember(button) && isEnabled(button)) {
-			
+	public function disableButton(button:T):T
+	{
+		if (isMember(button) && isEnabled(button))
+		{
 			disabled.push(button);
 			button.color = 0xFF928fb8;
 		}
 		return button;
 	}
 	
-	public function enableButton(button:T):T {
-		
-		if (isMember(button) && isDisabled(button)) {
-			
+	public function enableButton(button:T):T
+	{
+		if (isMember(button) && isDisabled(button))
+		{
 			disabled.remove(button);
 			button.color = colorDefault;
 		}
@@ -175,34 +176,35 @@ class TypedButtonGroup<T:FlxSprite>
 		return button;
 	}
 	
-	inline public function isMember(button) {
-		
+	inline public function isMember(button)
+	{
 		return members.indexOf(button) != -1;
 	}
 	
-	inline public function isEnabled(button) {
-		
+	inline public function isEnabled(button)
+	{
 		return !isDisabled(button);
 	}
 	
-	inline public function isDisabled(button) {
-		
+	inline public function isDisabled(button)
+	{
 		return disabled.indexOf(button) != -1;
 	}
 	
-	public function setCallback(button:T, callback:Void->Void):Void {
-		
+	public function setCallback(button:T, callback:Void->Void):Void
+	{
 		callbacks[button] = callback;
 	}
 	
-	override public function update(elapsed:Float):Void {
+	override public function update(elapsed:Float):Void
+	{
 		super.update(elapsed);
 		
 		checkKeys(elapsed);
 	}
 	
-	function checkKeys(elapsed:Float):Void {
-		
+	function checkKeys(elapsed:Float):Void
+	{
 		var newSelected = selected;
 		if (keysNext != null && controls.checkByName(keysNext))
 		{
@@ -246,14 +248,15 @@ class TypedButtonGroup<T:FlxSprite>
 		onSelect();
 	}
 	
-	function onSelect():Void {
-		
+	function onSelect():Void
+	{
 		// Sounds.play(MENU_SELECT);
 		active = false;
 		
 		var callback = callbacks[members[selected]];
 		FlxFlicker.flicker(members[selected], 0.5, 0.05, true, true,
-			function(_) {
+			function(_)
+			{
 				active = true;
 				callback();
 			}
