@@ -13,7 +13,7 @@ class Main extends openfl.display.Sprite
 				Std.int(stage.stageWidth / SCALE),
 				Std.int(stage.stageHeight / SCALE),
 				
-				#if SKIP_TO_PLAYSTATE states.BootState,
+				#if SKIP_TO_PLAYSTATE states.MainMenuState,
 				#else states.BootState,
 				#end
 				1, 60, 60, true

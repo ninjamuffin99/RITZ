@@ -100,7 +100,7 @@ class EndState extends flixel.FlxState
         {
             if (finishedShit)
             {
-                FlxG.switchState(new MenuState());
+                FlxG.switchState(new TitleState());
             }
             else
             {

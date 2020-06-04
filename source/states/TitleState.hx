@@ -8,7 +8,7 @@ import flixel.effects.FlxFlicker;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.util.FlxColor;
 
-class MenuState extends flixel.FlxState
+class TitleState extends flixel.FlxState
 {
     var pressStart:FlxSprite;
     var title:FlxSprite;
@@ -16,7 +16,7 @@ class MenuState extends flixel.FlxState
     public static var DXmusic:String = "DX";
     override public function create() {
 
-        FlxG.sound.playMusic('assets/music/fluffydream' + MenuState.DXmusic + BootState.soundEXT, 0.7);
+        FlxG.sound.playMusic('assets/music/fluffydream' + TitleState.DXmusic + BootState.soundEXT, 0.7);
         // FlxG.sound.music.fadeIn(5, 0, 1);
         FlxG.camera.fade(FlxColor.WHITE, 2, true);
         FlxG.sound.play('assets/sounds/titleCrash' + BootState.soundEXT, 0.4);
@@ -50,8 +50,11 @@ class MenuState extends flixel.FlxState
             {
                 FlxFlicker.flicker(pressStart, 1, 0.04, false, true, function(flic:FlxFlicker)
                 {
-                    FlxG.sound.play('assets/sounds/ritzstartjingle' + BootState.soundEXT);
-                    title.animation.play('ritz');
+                    //FlxG.sound.play('assets/sounds/ritzstartjingle' + BootState.soundEXT);
+                    FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
+                    {
+                        FlxG.switchState(new MainMenuState());
+                    });
                 });
                 
                 FlxG.sound.play('assets/sounds/startbleep' + BootState.soundEXT);
@@ -61,16 +64,6 @@ class MenuState extends flixel.FlxState
                     FlxG.sound.music = null;
                 }
                 
-            }
-        }
-        else
-        {
-            if (title.animation.curAnim.finished)
-            {
-                FlxG.camera.fade(FlxColor.BLACK, 1, false, function()
-                {
-                    FlxG.switchState(new PlayState());
-                });
             }
         }
         

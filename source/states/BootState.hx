@@ -80,7 +80,7 @@ class BootState extends FlxState
         
         if (titleJump.animation.curAnim.name == 'start' && titleJump.animation.curAnim.curFrame == 7)
         {
-            FlxG.switchState(new MenuState());  
+            FlxG.switchState(new TitleState());  
         }
 
 
