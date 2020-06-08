@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- MAIN MENU ADDED. Cooler UI, feels like an actual game now.
 - Minimap generation from the OGMO level data. Shows when a key gets pressed (M key/SELECT/Y on gamepad or something like that)
 - Minimap also shows areas they've been, and the cheese and checkpoints they've collected.
 - Able to warp to any checkpoint you've already reached.
@@ -33,6 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Landing at a new hieght (within the deadzone) gradually snaps the camera to the new height
 - Sections of levels can specify camera modes, which currently only affect whether to show more above or below the player
 - Falling more than 3 tiles will make the camera pan down
+- Intro sequence, now it plays a jingle, Ritz jumps into the title ina  different way.
+- Title screen doesn't immediately put you into the game
 
 
 ## [1.0.0] - 2020-01-25
