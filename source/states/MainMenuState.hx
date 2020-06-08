@@ -38,6 +38,7 @@ class MainMenuState extends flixel.FlxState
         {
             var menuItem:MenuItem = new MenuItem(0, 0, text);
             menuItem.daAngle = bullshit;
+            menuItem.targetAngle = bullshit;
             grpMenuItems.add(menuItem);
 
             bullshit--;
@@ -48,9 +49,6 @@ class MainMenuState extends flixel.FlxState
         
         var overlay:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuOverlay.png');
         add(overlay);
-
-        
-
 
         super.create();
     }
@@ -76,7 +74,7 @@ class MainMenuState extends flixel.FlxState
         var bullshit:Int = 0;
         for (item in grpMenuItems.members)
         {
-            item.daAngle = bullshit + curSelected;
+            item.targetAngle = bullshit + curSelected;
             bullshit--;
         }
 
