@@ -78,6 +78,25 @@ class MainMenuState extends flixel.FlxState
             bullshit--;
         }
 
+        // 281 58
+
+
+        if (FlxG.keys.justPressed.SPACE)
+        {
+            var daText:String = textMenuItems[curSelected];
+
+            switch(daText)
+            {
+                case 'Single Player':
+                    FlxG.switchState(new AdventureState());
+                case 'Credits':
+                    FlxG.switchState(new EndState());
+                default:
+                    trace('no UI item!');
+
+            }
+        }
+
 
         super.update(elapsed);
 

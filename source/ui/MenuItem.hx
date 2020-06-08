@@ -16,15 +16,14 @@ class MenuItem extends FlxSpriteGroup
     public function new(x:Float, y:Float, title:String)
     {
         super(x, y);
-        var textBG:FlxSprite = new FlxSprite().makeGraphic(Std.int(FlxG.width / 2), 22, FlxColor.RED);
+        var textBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuBar.png');
 
         textBG.alpha = 0.4;
         add(textBG);
 
-        var coolText:FlxText = new FlxText(0, 0, 0, title, 16);
-        coolText.color = FlxColor.BLACK;
+        var coolText:BitmapText = new BitmapText(0, 0, title);
         coolText.alignment = FlxTextAlign.CENTER;
-        coolText.x = textBG.x;
+        coolText.x = textBG.x + 5;
         coolText.y = textBG.y;
         add(coolText);
 
@@ -36,7 +35,7 @@ class MenuItem extends FlxSpriteGroup
         super.update(elapsed);
 
         x = 330 + Math.cos(FlxAngle.asRadians((daAngle * daAngleOffset) + 180)) * 330;
-        y = 140 + Math.sin(FlxAngle.asRadians((daAngle * daAngleOffset)+ 180)) * 100;
+        y = 140 + Math.sin(FlxAngle.asRadians((daAngle * daAngleOffset)+ 180)) * 140;
 
         
         if (targetAngle > daAngle)
