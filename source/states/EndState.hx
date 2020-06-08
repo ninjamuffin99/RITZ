@@ -37,6 +37,8 @@ class EndState extends flixel.FlxState
         "",
         "Made with HaxeFlixel",
         "",
+        "Shoutouts to mike for trigonomety math help lmao",
+        "",
         "Source code",
         "github.com/ninjamuffin99/actualPixelDay2020",
         "",
