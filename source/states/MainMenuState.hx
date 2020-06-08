@@ -1,5 +1,6 @@
 package states;
 
+import flixel.effects.FlxFlicker;
 import flixel.math.FlxAngle;
 import flixel.util.FlxColor;
 import flixel.text.FlxText;
@@ -19,6 +20,7 @@ class MainMenuState extends flixel.FlxState
     var grpMenuBars:FlxTypedGroup<FlxSprite>;
 
     var curSelected:Int = 0;
+    var selected:Bool = false;
 
     override function create() {
         FlxG.sound.playMusic('assets/music/ultracheddar' + BootState.soundEXT);
@@ -54,16 +56,28 @@ class MainMenuState extends flixel.FlxState
     }
 
     override function update(elapsed:Float) {
-        if (FlxG.keys.justPressed.ONE)
-            FlxG.switchState(new AdventureState());
-        if (FlxG.keys.justPressed.TWO)
-            FlxG.switchState(new RaceState());
         
+        if (FlxG.keys.anyJustPressed(['DOWN', 'UP']))
+        {
 
-        if (FlxG.keys.justPressed.UP)
-            curSelected -= 1;
-        if (FlxG.keys.justPressed.DOWN)
-            curSelected += 1;
+            var randomSound:Int = 0;
+
+            if (FlxG.random.bool())
+                randomSound = 2;
+
+            if (FlxG.keys.justPressed.UP)
+            {
+                curSelected -= 1;
+                FlxG.sound.play('assets/sounds/Munchsound' + Std.string(2 + randomSound) + BootState.soundEXT);
+            }  
+            else
+            {
+
+                curSelected += 1;
+                FlxG.sound.play('assets/sounds/Munchsound' + Std.string(1 + randomSound) + BootState.soundEXT);
+            }
+        }
+            
         
         if (curSelected < 0)
             curSelected = textMenuItems.length - 1;
@@ -80,21 +94,31 @@ class MainMenuState extends flixel.FlxState
 
         // 281 58
 
-
-        if (FlxG.keys.justPressed.SPACE)
+        if (FlxG.keys.justPressed.SPACE && !selected)
         {
-            var daText:String = textMenuItems[curSelected];
+            FlxG.sound.play('assets/sounds/startbleep' + BootState.soundEXT);
+            FlxFlicker.flicker(grpMenuItems.members[curSelected], 0.5, 0.04, false, true, function(flic:FlxFlicker)
+                {
+                    // FlxG.sound.play('assets/sounds/ritzstartjingle' + BootState.soundEXT);
+                    FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
+                    {
 
-            switch(daText)
-            {
-                case 'Single Player':
-                    FlxG.switchState(new AdventureState());
-                case 'Credits':
-                    FlxG.switchState(new EndState());
-                default:
-                    trace('no UI item!');
+                        var daText:String = textMenuItems[curSelected];
 
-            }
+                        switch(daText)
+                        {
+                            case 'Single Player':
+                                FlxG.switchState(new AdventureState());
+                            case 'Credits':
+                                FlxG.switchState(new EndState());
+                            case 'Race Mode':
+                                FlxG.switchState(new RaceState());
+                            default:
+                                trace('no UI item!');
+
+                        }
+                    });
+                });
         }
 
 
