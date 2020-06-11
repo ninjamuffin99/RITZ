@@ -25,8 +25,10 @@ class MenuItem extends FlxSpriteGroup
     public var percentage:Float = 100;
 
     public var txtPercentage:BitmapText;
+    public var txtOff:BitmapText;
+    public var txtOn:BitmapText;
     public var isSelected:Bool = false;
-    public function new(x:Float, y:Float, title:String, itemType:Int = 0)
+    public function new(x:Float, y:Float, title:String, itemType:Int = 0, ?initValue:Dynamic)
     {
         super(x, y);
         var textBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuBar.png');
@@ -45,9 +47,23 @@ class MenuItem extends FlxSpriteGroup
         if (itemType == PERCENTAGE)
         {
             txtPercentage = new BitmapText(170, 0, "100%");
-		    add(txtPercentage);
+            add(txtPercentage);
+            
+            if (initValue != null)
+                percentage = initValue;
         }
 
+        if (itemType == TOGGLE)
+        {
+            txtOff = new BitmapText(130, 0, "OFF");
+            add(txtOff);
+
+            txtOn = new BitmapText(180, 0, 'ON');
+            add(txtOn);
+
+            if (initValue != null)
+                isOn = initValue;
+        }
 
         angleSpeed = 11 * 0.0166;
     }
@@ -69,7 +85,36 @@ class MenuItem extends FlxSpriteGroup
 
                 txtPercentage.text = percentage + "%";
             }
+
+            if (itemType == TOGGLE)
+            {
+                if (FlxG.keys.justPressed.SPACE)
+                {
+                    isOn = !isOn;
+                }
+            }
         }
+
+        var toggleOffset:Float = 0;
+        
+        if (itemType == TOGGLE)
+        {
+
+            txtOff.color = txtOn.color = FlxColor.WHITE;
+
+            if (isOn)
+            {
+                txtOff.color = 0xFF928fb8;
+                toggleOffset = 4;
+            }
+            else
+            {
+                txtOn.color = 0xFF928fb8;
+            }
+                
+        }
+        
+
         
 
         x = 330 + Math.cos(FlxAngle.asRadians((daAngle * daAngleOffset) + 180)) * 330;

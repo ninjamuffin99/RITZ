@@ -14,10 +14,10 @@ import ui.MenuItem;
 class MainMenuState extends flixel.FlxState
 {
     var cheese:FlxTiledSprite;
-    var textMenuItems:Array<String> = ['Single Player', 'Race Mode', 'Options', 'Credits', 'Battle Royale', 'Competitive', "Arms Race", 'Kart Racing']; 
+    public static var textMenuItems:Array<String> = ['Single Player', 'Race Mode', 'Options', 'Credits', 'Battle Royale', 'Competitive', "Arms Race", 'Kart Racing']; 
 
     override function create() {
-        FlxG.sound.playMusic('assets/music/ultracheddar' + BootState.soundEXT);
+        FlxG.sound.playMusic('assets/music/ultracheddar' + BootState.soundEXT, OptionsSubState.masterVol * OptionsSubState.musicVol);
 
         var cheeseBG:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFFf2a348);
         add(cheeseBG);
@@ -32,15 +32,11 @@ class MainMenuState extends flixel.FlxState
 
         openSubState(new MenuBackend(textMenuItems));
         
-        
-        
 
         super.create();
     }
 
     override function update(elapsed:Float) {
-        
-        
 
         super.update(elapsed);
 
