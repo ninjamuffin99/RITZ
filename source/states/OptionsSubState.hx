@@ -19,7 +19,7 @@ class OptionsSubState extends MenuBackend
 		if (DXmusic != '')
 			isDX = true;
 
-		super(['Master Volume', 'Music Volume', 'SFX Volume', 'DX OST', 'Back'], [[masterVol, musicVol, soundVol, isDX], [1, 1, 1, 2, 0]]);
+		super(['Master Volume', 'Music Volume', 'SFX Volume', 'DX OST', 'Back'], [[masterVol * 100, musicVol * 100, soundVol * 100, isDX], [1, 1, 1, 2, 0]]);
 
 	}
 

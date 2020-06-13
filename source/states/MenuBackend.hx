@@ -128,6 +128,9 @@ class MenuBackend extends FlxSubState
                         stateShit(new EndState());
                     case 'Race Mode':
                         stateShit(new RaceState());
+                    case 'Gallery':
+                        close();
+                        FlxG.state.openSubState(new GalleryMenuState());
                     case 'Options':
                         close();
                         FlxG.state.openSubState(new OptionsSubState());

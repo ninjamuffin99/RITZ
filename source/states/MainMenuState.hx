@@ -14,7 +14,7 @@ import ui.MenuItem;
 class MainMenuState extends flixel.FlxState
 {
     var cheese:FlxTiledSprite;
-    public static var textMenuItems:Array<String> = ['Single Player', 'Race Mode', 'Options', 'Credits', 'Battle Royale', 'Competitive', "Arms Race", 'Kart Racing']; 
+    public static var textMenuItems:Array<String> = ['Single Player', 'Race Mode', "Gallery", 'Options', 'Credits']; 
 
     override function create() {
         FlxG.sound.playMusic('assets/music/ultracheddar' + BootState.soundEXT, OptionsSubState.masterVol * OptionsSubState.musicVol);
