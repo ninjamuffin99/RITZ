@@ -1,5 +1,7 @@
 package states;
 
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.text.FlxText;
 import flixel.system.FlxSound;
 import lime.utils.Assets;
@@ -21,11 +23,12 @@ class MusicGalleryState extends FlxSubState
     
     var data:Array<Dynamic>;
     var songLengths:Array<String> = [];
-    var ffadsf:FlxText;
+    var isPlaying:Bool = false;
 
     public function new()
     {
         super();
+        
 
         data = Json.parse(Assets.getText('assets/data/musicMetadata.json'));
 
@@ -36,6 +39,11 @@ class MusicGalleryState extends FlxSubState
         txtDescription.fieldWidth = Std.int(FlxG.width - 100);
         txtDescription.autoSize = false;
         add(txtDescription);
+        
+
+        txtCurSong = new BitmapText(20, FlxG.height - 20);
+        add(txtCurSong);
+
 
         for (i in data)
         {
@@ -73,15 +81,36 @@ class MusicGalleryState extends FlxSubState
             trace(data[curSelected].description);
 
         }
+
+        if (FlxG.keys.justPressed.ESCAPE)
+        {
+            close();
+            FlxG.state.openSubState(new GalleryMenuState());
+        }
+        
         
 
 
         txtDescription.text = data[curSelected].description;
-        txtSelectedSong.text = data[curSelected].title + " - " + songLengths[curSelected];
+        txtSelectedSong.text = Std.string(curSelected + 1) + ". " + data[curSelected].title + " - " + songLengths[curSelected];
 
         if (FlxG.keys.justPressed.SPACE)
         {
             FlxG.sound.playMusic(data[curSelected].path + BootState.soundEXT);
+            
+            if (!isPlaying)
+            {
+                txtCurSong.y += 20;
+                FlxTween.tween(txtCurSong, {y: txtCurSong.y - 20}, 0.8, {ease:FlxEase.quadOut});
+            }
+
+            isPlaying = true;
+            curSong = data[curSelected].title;
+        }
+
+        if (isPlaying)
+        {
+            txtCurSong.text = "Currently Playing: " + curSong;
         }
 
         super.update(elapsed);

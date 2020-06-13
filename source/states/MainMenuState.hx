@@ -17,6 +17,7 @@ class MainMenuState extends flixel.FlxState
     public static var textMenuItems:Array<String> = ['Single Player', 'Race Mode', "Gallery", 'Options', 'Credits']; 
 
     override function create() {
+        FlxG.autoPause = false;
         FlxG.sound.playMusic('assets/music/ultracheddar' + BootState.soundEXT, OptionsSubState.masterVol * OptionsSubState.musicVol);
 
         var cheeseBG:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFFf2a348);
