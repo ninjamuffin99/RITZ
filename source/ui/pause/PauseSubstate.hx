@@ -96,9 +96,9 @@ class PauseScreen extends FlxGroup
         this.settings = settings;
         super();
         
-        add(pages[Ready] = new ReadyPage()).kill();
-        add(pages[Main] = new MainPage(settings, setPage)).kill();
-        add(pages[Controls] = new ControlsPage(settings, setPage)).kill();
+        addPage(Ready, new ReadyPage());
+        addPage(Main, new MainPage(settings, setPage));
+        addPage(Controls, new ControlsPage(settings, setPage));
         
         if (startingPage != null)
             setPage(startingPage);
@@ -106,6 +106,15 @@ class PauseScreen extends FlxGroup
             setPage(settings.controls.PAUSE ? Main : Ready);
         
         PlayerSettings.onAvatarRemove.add(onAvatarRemove);
+    }
+    
+    function addPage(type:PausePageType, page:PausePage):PausePage
+    {
+        add(pages[type] = page);
+        if (type != pageType)
+            page.kill();
+        
+        return page;
     }
     
     function setPage(type:PausePageType)
@@ -130,7 +139,10 @@ class PauseScreen extends FlxGroup
     
     override function update(elapsed:Float)
     {
+        var oldCameras = FlxCamera.defaultCameras;
+        FlxCamera.defaultCameras = cameras;
         super.update(elapsed);
+        FlxCamera.defaultCameras = oldCameras;
         
         if (!settings.controls.PAUSE)
             pauseReleased = true;

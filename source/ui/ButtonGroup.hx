@@ -111,6 +111,7 @@ class TypedButtonGroup<T:FlxSprite>
 {
 	public var colorHilite:FlxColor = 0xFFffda76;
 	public var colorDefault:FlxColor = 0xFFffffff;
+	public var selectFlickerTime = 0.5;
 	
 	public var keysNext  :Null<Action> = DOWN_P;
 	public var keysPrev  :Null<Action> = UP_P;
@@ -242,10 +243,15 @@ class TypedButtonGroup<T:FlxSprite>
 	
 	public function choose(button:T):Void
 	{
+		inline hilite(button);
+		onSelect();
+	}
+	
+	function hilite(button:T)
+	{
 		selected = members.indexOf(button);
 		if (selected == -1)
 			throw "Specified button not a member of this button group";
-		onSelect();
 	}
 	
 	function onSelect():Void
@@ -254,14 +260,17 @@ class TypedButtonGroup<T:FlxSprite>
 		active = false;
 		
 		var callback = callbacks[members[selected]];
-		FlxFlicker.flicker(members[selected], 0.5, 0.05, true, true,
+		FlxFlicker.flicker(members[selected], selectFlickerTime, 0.05, true, true,
 			function(_)
 			{
 				active = true;
+				onSelectAnimComplete();
 				callback();
 			}
 		);
 	}
+	
+	function onSelectAnimComplete() {}
 	
 	override function kill()
 	{

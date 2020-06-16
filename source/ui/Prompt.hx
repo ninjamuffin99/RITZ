@@ -9,6 +9,15 @@ import flixel.text.FlxBitmapText;
 
 using flixel.util.FlxSpriteUtil;
 
+enum Options
+{
+	Ok;
+	Cancel;
+	YesNo;
+	Single(text:String);
+	Double(yesText:String, noText:String);
+}
+
 class Prompt extends flixel.group.FlxGroup {
 	
 	inline static var BUFFER = 12;
@@ -21,7 +30,7 @@ class Prompt extends flixel.group.FlxGroup {
 	var yesText:BitmapText;
 	var noText:BitmapText;
 	
-	public function new (controls:Controls, singleButton = false) {
+	public function new (controls:Controls, options:Options = YesNo) {
 		this.controls = controls;
 		super();
 		
@@ -34,16 +43,28 @@ class Prompt extends flixel.group.FlxGroup {
 		keyButtons = new ButtonGroup(controls);
 		keyButtons.keysNext = RIGHT_P;
 		keyButtons.keysPrev = LEFT_P;
-		if (singleButton) {
-			keyButtons.addButton(yesText = new BitmapText(0, 0, "OK"), null);
-			yesText.screenCenter(X);
-			yesText.scrollFactor.set();
-		} else {
-			keyButtons.addButton(yesText = new BitmapText("YES"), null);
-			keyButtons.addButton(noText  = new BitmapText("NO"), null);
-			yesText.scrollFactor.set();
-			noText.scrollFactor.set();
-			
+		
+		options = switch options
+		{
+			case Ok    : Single("OK");
+			case Cancel: Single("CANCEL");
+			case YesNo : Double("YES", "NO");
+			default: options;
+		}
+		
+		switch options
+		{
+			case Single(text):
+				keyButtons.addButton(yesText = new BitmapText(0, 0, text), null);
+				yesText.screenCenter(X);
+				yesText.scrollFactor.set();
+			case Double(yes, no):
+				keyButtons.addButton(yesText = new BitmapText(yes), null);
+				keyButtons.addButton(noText  = new BitmapText(no ), null);
+				yesText.scrollFactor.set();
+				noText.scrollFactor.set();
+			default:
+				throw "Invalid options type: " + options;// Should not be possible
 		}
 		add(keyButtons);
 	}
@@ -108,7 +129,7 @@ class Prompt extends flixel.group.FlxGroup {
 	 */
 	inline static public function showOKInterrupt(text:String, controls:Controls, buttons:FlxBasic):Void {
 		
-		var prompt = new Prompt(controls, true);
+		var prompt = new Prompt(controls, Ok);
 		var parent = FlxG.state;
 		parent.add(prompt);
 		buttons.active = false;

@@ -3,6 +3,7 @@ package ui.pause;
 import ui.BitmapText;
 
 import flixel.FlxG;
+import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 
 class PausePage extends FlxGroup
@@ -14,9 +15,20 @@ class PausePage extends FlxGroup
     
     public function allowUnpause() return true;
     
+    override function kill()
+    {
+        // super.kill();
+        
+        alive = false;
+        exists = false;
+    }
+    
     override function revive()
     {
-        super.revive();
+        // super.revive();
+        
+        alive = true;
+        exists = true;
         
         redraw();
     }
@@ -24,16 +36,23 @@ class PausePage extends FlxGroup
     public function redraw():Void {}
 }
 
-abstract ReadyPage(PausePage) to PausePage
+class ReadyPage extends PausePage
 {
     public function new ()
     {
-        this = new PausePage(1);
+        super(1);
         
         var title = new BitmapText(0, 4, "Waiting for player");
         title.x = (FlxG.camera.width - title.width) / 2;
         title.y = (FlxG.camera.height - title.height) / 2;
         title.scrollFactor.set();
-        this.add(title);
+        add(title);
+    }
+    
+    override function redraw()
+    {
+        super.redraw();
+        var title:FlxSprite = cast members[0];
+        title.x = (FlxG.camera.width - title.width) / 2;
     }
 }

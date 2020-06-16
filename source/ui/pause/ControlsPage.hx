@@ -1,13 +1,17 @@
 package ui.pause;
 
-import flixel.input.keyboard.FlxKey;
 import data.PlayerSettings;
 import ui.BitmapText;
-import ui.ButtonGroup;
 import ui.Controls;
+import ui.MouseButtonGroup;
+import ui.Prompt;
 import ui.pause.PauseSubstate;
 
+import flixel.FlxG;
+import flixel.FlxCamera;
+import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup;
+import flixel.input.keyboard.FlxKey;
 
 class ControlsPage extends PausePage
 {
@@ -15,7 +19,7 @@ class ControlsPage extends PausePage
     final navCallback:(PausePageType)->Void;
     
     final title:BitmapText;
-    final devices:ButtonGroup;
+    final deviceList:ButtonGroup;
     var devicePage:DevicePage;
     var device:Device = null;
     
@@ -40,15 +44,15 @@ class ControlsPage extends PausePage
         }
         else
         {
-            add(devices = new ButtonGroup(settings.controls));
+            add(deviceList = new ButtonGroup(settings.controls));
             
             if (settings.controls.keyboardScheme != None)
-                devices.addNewButton(devices.width, 0, "KEYS", showDevice.bind(Keys));
+                deviceList.addNewButton(deviceList.width, 0, "KEYS", showDevice.bind(Keys));
             
             for (id in settings.controls.gamepadsAdded)
-                devices.addNewButton(devices.width, 0, 'PAD $id', showDevice.bind(Gamepad(id)));
+                deviceList.addNewButton(deviceList.width, 0, 'PAD $id', showDevice.bind(Gamepad(id)));
             
-            devices.x = (settings.camera.width - devices.width) / 2;
+            deviceList.x = (settings.camera.width - deviceList.width) / 2;
         }
     }
     
@@ -60,14 +64,21 @@ class ControlsPage extends PausePage
             showDevice(device);
     }
     
+    override function kill()
+    {
+        super.kill();
+        FlxG.mouse.visible = false;
+        FlxG.mouse.useSystemCursor = true;
+    }
+    
     function showDevice(device:Device):Void
     {
         if (devicePage == null)
         {
             add(devicePage = new DevicePage(settings));
             // add to bottom
-            if (devices != null)
-                devicePage.y = devices.y + devices.height + 8;
+            if (deviceList != null)
+                devicePage.y = deviceList.y + deviceList.height + 8;
             else
                 devicePage.y = title.y + title.lineHeight + 2;
         }
@@ -76,133 +87,274 @@ class ControlsPage extends PausePage
         devicePage.showDeviceControls(settings.controls, device);
         devicePage.x = (settings.camera.width - devicePage.width) / 2;
         
-        if (devices != null)
-            devices.active = false;
+        if (deviceList != null)
+            deviceList.active = false;
+        
+        FlxG.mouse.visible = true;
+        FlxG.mouse.useSystemCursor = false;
     }
     
     override function update(elapsed:Float)
     {
         super.update(elapsed);
         
-        if (settings.controls.BACK)
+        if (!getControlsBlocked() && settings.controls.BACK)
         {
-            if (devices == null || devices.active)
+            if (deviceList == null || deviceList.active)
                 navCallback(Main);
             else
             {
                 devicePage.kill();
-                devices.active = true;
+                deviceList.active = true;
             }
         }
     }
+    
+    override function allowUnpause() return !getControlsBlocked();
+    
+    inline function getControlsBlocked() return devicePage != null && devicePage.alive && devicePage.blockingKeys;
 }
 
-class DevicePage extends FlxSpriteGroup
+private typedef ButtonData = { button:MouseButton, control:Control, ?id:Int};
+private class DevicePage extends FlxSpriteGroup
 {
     static final allControls = Control.createAll();
     
-    var controlNames:ButtonGroup;
-    var buttonMap = new Array<BitmapText>();
+    var inputs:MouseButtonGroup;
+    var buttonMap = new Array<Array<ButtonData>>();
+    var settings:PlayerSettings;
+    var currentDevice:Device;
+    var prompt = new InputSelectionPrompt();
+    
+    public var blockingKeys(get, never):Bool;
+    inline function get_blockingKeys():Bool return prompt.alive;
     
     public function new (settings:PlayerSettings)
     {
+        this.settings = settings;
         super();
         
-        add(controlNames = new ButtonGroup(settings.controls));
+        final startY = 8;
+        final gap = 1;
+        final buttonHeight = 15;
+        var controlsRight = 0.0;
         for(i=>control in allControls)
         {
-            var button = controlNames.addNewButton(0, 0, control.getName(), onControlSelect.bind(i));
-            button.y += i * button.lineHeight;
+            var controlName = new Nokia8Text(0, 0, control.getName());
+            add(controlName);
+            controlName.y += startY + i * (buttonHeight + gap);
+            if (controlsRight < controlName.x + controlName.width)
+                controlsRight = controlName.x + controlName.width;
         }
         
+        inputs = new InputGrid(settings.controls);
+        add(inputs);
+        inputs.x = controlsRight + 8;
+        final buttonWidth = 23;
+        final spacing = buttonWidth + gap;
         for(i in 0...allControls.length)
         {
-            var inputs = new BitmapText(controlNames.x + controlNames.width, controlNames.members[i].y);
-            buttonMap[i] = inputs;
-            add(inputs);
+            buttonMap.push([]);
+            for (j in 0...4)
+            {
+                var button = inputs.addNewButton(j * spacing, members[i].y, " ");
+                button.y -= button.labelOffsets[0].y;//match text
+                var data = { control:allControls[i], button:button };
+                inputs.setCallback(button, onInputSelect.bind(data));
+                buttonMap[i].push(data);
+            }
         }
+        
+        add(prompt).kill();
     }
     
     public function showDeviceControls(controls:Controls, device:Device)
     {
-        var list:Array<String> = [];
+        var format = InputFormatter.format.bind(_, device);
+        
+        currentDevice = device;
+        var list:Array<Int> = [];
         var inputsX = 0;
         for(i=>control in allControls)
         {
-            list = controls.getInputsFor(control, device, list);
-            var buttons = buttonMap[i].text = " - " + list.map(shortenInput).join(" ");
             list.resize(0);
-        }
-    }
-    
-    function onControlSelect(index:Int)
-    {
-    }
-    
-    static function shortenInput(input:String):String
-    {
-        if (FlxKey.fromStringMap.exists(input))
-        {
-            return switch(FlxKey.fromStringMap[input])
+            list = controls.getInputsFor(control, device, list);
+            for (j=>buttonData in buttonMap[i])
             {
-                case ZERO          : "0";
-                case ONE           : "1";
-                case TWO           : "2";
-                case THREE         : "3";
-                case FOUR          : "4";
-                case FIVE          : "5";
-                case SIX           : "6";
-                case SEVEN         : "7";
-                case EIGHT         : "8";
-                case NINE          : "9";
-                case PAGEUP        : "PgUp";
-                case PAGEDOWN      : "PgDn";
-                case HOME          : "Home";
-                case END           : "End";
-                case INSERT        : "Insert";
-                case ESCAPE        : "Esc";
-                case MINUS         : "-";
-                case PLUS          : "+";
-                case DELETE        : "Del";
-                case BACKSPACE     : "BckSpc";
-                case LBRACKET      : "[";
-                case RBRACKET      : "]";
-                case BACKSLASH     : "\\";
-                case CAPSLOCK      : "Caps";
-                case SEMICOLON     : ";";
-                case QUOTE         : "'";
-                case ENTER         : "Ent";
-                case SHIFT         : "Shift";
-                case COMMA         : ",";
-                case PERIOD        : ".";
-                case SLASH         : "/";
-                case GRAVEACCENT   : "`";
-                case CONTROL       : "Ctrl";
-                case ALT           : "Alt";
-                case SPACE         : "Spc";
-                case UP            : "Up";
-                case DOWN          : "Down";
-                case LEFT          : "Left";
-                case RIGHT         : "Right";
-                case TAB           : "Tab";
-                case PRINTSCREEN   : "PrtScn";
-                case NUMPADZERO    : "#0";
-                case NUMPADONE     : "#1";
-                case NUMPADTWO     : "#2";
-                case NUMPADTHREE   : "#3";
-                case NUMPADFOUR    : "#4";
-                case NUMPADFIVE    : "#5";
-                case NUMPADSIX     : "#6";
-                case NUMPADSEVEN   : "#7";
-                case NUMPADEIGHT   : "#8";
-                case NUMPADNINE    : "#9";
-                case NUMPADMINUS   : "#-";
-                case NUMPADPLUS    : "#+";
-                case NUMPADPERIOD  : "#.";
-                case NUMPADMULTIPLY: "#*";
-                default: input;
+                buttonData.id = list[j];
+                buttonData.button.text = list.length > j ? format(list[j]) : " ";
             }
         }
-        return input;
+    }
+    
+    function onInputSelect(data:ButtonData):Void
+    {
+        inputs.active = false;
+        
+        prompt.revive();
+        prompt.show(currentDevice, 
+            function(?inputId)
+            {
+                if (inputId != null)
+                {
+                    for (buttonData in buttonMap[data.control.getIndex()])
+                    {
+                        if (data != buttonData && buttonData.id == inputId)
+                        {
+                            inputId = null;
+                            break;
+                        }
+                    }
+                }
+                settings.controls.replaceKeyBinding(data.control, currentDevice, inputId, data.id);
+                data.button.text = inputId == null ? " " : InputFormatter.format(inputId, currentDevice);
+                data.id = inputId;
+                prompt.kill();
+                inputs.active = true;
+            }
+        );
+    }
+    
+}
+
+private class InputGrid extends MouseButtonGroup
+{
+    var columns:Int;
+    public function new (controls, columns = 4)
+    {
+        this.columns = columns;
+        super(controls);
+        
+        selectFlickerTime = 0.25;
+    }
+    
+    override function checkKeys(elapsed:Float):Void
+    {
+        var newSelected = selected;
+        if (keysNext != null && controls.RIGHT_P)
+        {
+            do
+            {
+                if ((newSelected + 1) % columns == 0)
+                    newSelected -= columns - 1;
+                else
+                    newSelected++;
+            }
+            while(members[newSelected] == null || isDisabled(members[newSelected]));
+        }
+        
+        if (keysPrev != null && controls.LEFT_P)
+        {
+            do
+            {
+                if ((newSelected % columns) == 0)
+                    newSelected += columns - 1;
+                else
+                    newSelected--;
+            }
+            while(members[newSelected] == null || isDisabled(members[newSelected]));
+        }
+        
+        if (keysNext != null && controls.DOWN_P)
+        {
+            do
+            {
+                if (newSelected + columns > members.length - 1)
+                    newSelected -= members.length;
+                
+                newSelected += columns;
+            }
+            while(members[newSelected] == null || isDisabled(members[newSelected]));
+        }
+        
+        if (keysPrev != null && controls.UP_P)
+        {
+            do
+            {
+                if (newSelected - columns < 0)
+                    newSelected += members.length;
+                
+                newSelected -= columns;
+            }
+            while(members[newSelected] == null || isDisabled(members[newSelected]));
+        }
+        
+        if (selected != newSelected)
+            selected = newSelected;
+        
+        if (keysSelect != null && controls.checkByName(keysSelect))
+            onSelect();
+        
+        if (keysBack != null && controls.checkByName(keysBack) && onBack != null)
+            onBack();
+    }
+}
+
+private class InputSelectionPrompt extends FlxSpriteGroup
+{
+    inline static var BUFFER = 12;
+    
+    // public final button = new MouseButton(;
+    final bg = new Prompt.BgSprite();
+    final label = new BitmapText();
+    final button:MouseButton;
+    var inputCheck:()->Int = null;
+    var callback:(Null<Int>)->Void = null;
+    
+    public function new ()
+    {
+        button = new MouseButton(0, 0, "CLEAR", "orange38x17", hide.bind(null));
+        super();
+        
+        add(bg);
+        add(label);
+        label.alignment = CENTER;
+        add(button);
+    }
+    
+    public function show(device:Device, callback:(Null<Int>)->Void)
+    {
+        revive();
+        label.text = "Press any " + (device == Device.Keys ? "key" : "button");
+        this.callback = callback;
+        inputCheck = switch (device)
+        {
+            case Keys: FlxG.keys.firstJustReleased;
+            case Gamepad(id): FlxG.gamepads.getByID(id).firstJustReleasedID;
+        }
+        
+        bg.setSize
+            ( Std.int(label.width ) + BUFFER * 2
+            , Std.int(label.height) + label.lineHeight + BUFFER * 2
+            );
+        bg.x = (FlxG.camera.width - bg.width) / 2;
+        bg.y = (FlxG.camera.height - bg.height) / 2;
+        
+        label.x = bg.x + Math.floor((bg.width - label.width) / 2);
+        label.y = bg.y + BUFFER;
+        
+        button.x = bg.x + (bg.width - button.width) / 2;
+        button.y = bg.y + bg.height - button.height - BUFFER;
+    }
+    
+    override function update(elapsed:Float)
+    {
+        super.update(elapsed);
+        
+        var firstReleased = inputCheck();
+        if (firstReleased != -1)
+            hide(firstReleased);
+    }
+    
+    function hide(response:Null<Int>):Void
+    {
+        if (callback == null)
+            throw "button clicked when hidden";
+        
+        inputCheck = null;
+        var func = callback;
+        callback = null;
+        
+        func(response);
     }
 }

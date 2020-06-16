@@ -23,7 +23,6 @@ abstract Nokia8Text(BitmapText) to BitmapText
 				( "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&*()-_+=[]',.|:?/"
 				, "Nokia8"
 				, 4
-				, 2
 				);
 		}
 		return font;
@@ -48,7 +47,6 @@ abstract Nokia16Text(BitmapText) to BitmapText
 				( "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&*()-_+=[]',.|:?/"
 				, "Nokia16"
 				, 8
-				, 4
 				);
 		}
 		return font;
@@ -105,6 +103,11 @@ class BitmapText extends flixel.text.FlxBitmapText
 				);
 		
 		return super.set_alpha(value);
+	}
+	
+	override function get_lineHeight():Int
+	{
+		return super.get_lineHeight() + Std.int(borderSize) * 2;
 	}
 }
 
