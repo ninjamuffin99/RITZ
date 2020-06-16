@@ -1,5 +1,8 @@
 package ui;
 
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.graphics.FlxGraphic;
 import ui.BitmapText;
 import ui.ButtonGroup;
 
@@ -36,27 +39,37 @@ abstract MouseButton(SimpleMouseButton) from SimpleMouseButton to SimpleMouseBut
         return value;
     }
     
-    inline public function new (x, y, text, bg = "orange38x17", ?onClick)
+    inline public function new (x, y, text, type:MouseButtonType = Orange8, ?onClick)
     {
-        if (bg.endsWith("x17"))
-            this = new SimpleMouseButton(x, y, new Nokia8Text(0, 0, text, 0x0), onClick);
-        else if (bg.endsWith("x22"))
-            this = new SimpleMouseButton(x, y, new Nokia16Text(0, 0, text, 0x0), onClick);
-        else
-            throw "Unhandled height: " + bg.split("x").pop();
+        type = switch (type)
+        {
+            case Orange8: Nokia8("orange");
+            case InputGrid: Nokia8("orange", 23);
+            default: type;
+        }
         
-        if (bg == null)
+        var label:BitmapText;
+        var graphicType:String;
+        var graphicWidth:Int;
+        var graphicHeight:Int;
+        switch (type)
         {
-            this.makeGraphic(1, 1, 0x0, false, emptyBgKey);
-            this.width = this.label.width;
-            this.height = this.label.height;
+            case Nokia8(type, width, height):
+                label = new Nokia8Text(0, 0, text, 0x0);
+                graphicType = type;
+                graphicWidth = width == null ? Std.int(label.width) + 4 : width;
+                graphicHeight = height == null ? Std.int(label.lineHeight) + 6 : height;
+            case Nokia16(type, width, height):
+                label = new Nokia16Text(0, 0, text, 0x0);
+                graphicType = type;
+                graphicWidth = width == null ? Std.int(label.width) + 4 : width;
+                graphicHeight = height == null ? Std.int(label.lineHeight) + 6 : height;
+            case _: throw "Unhandled type:" + type.getName();
         }
-        else
-        {
-            bg = 'assets/images/ui/buttons/$bg.png';
-            this.loadGraphic(bg);
-            this.loadGraphic(bg, true, Std.int(this.width / 3), Std.int(this.height));
-        }
+        
+        this = new SimpleMouseButton(x, y, label, onClick);
+        var graphic:BitmapData = new MouseButtonDrawer(graphicWidth, graphicHeight, graphicType);
+        this.loadGraphic(graphic, true, graphicWidth, graphicHeight);
         
         for (i in 0...3)
             this.labelAlphas[i] = 1;
@@ -66,40 +79,26 @@ abstract MouseButton(SimpleMouseButton) from SimpleMouseButton to SimpleMouseBut
     
     public function recenterLabels():Void
     {
-        if (this.graphic.key == emptyBgKey)
-        {
-            for (i in 0...3)
-                this.labelOffsets[i].set(0, 0);
-        }
-        else
-        {
-            var offset = FlxPoint.get
-            (
-                (this.width - this.label.width) / 2,
-                (this.height - 2 - lineHeight) / 2
-            );
-            
-            switch this.height
-            {
-                case 17: offset.add(1, 2);
-                case 22: offset.add(2, 0);
-            }
-            
-            this.labelOffsets[0].copyFrom(offset);
-            this.labelOffsets[1].copyFrom(offset);
-            this.labelOffsets[2].copyFrom(offset);
-            this.labelOffsets[2].y += 2;
-            
-            offset.put();
-        }
+        var offset = FlxPoint.get
+        (
+            Math.round((this.width - this.label.width + 1) / 2),
+            Math.ceil((this.height - 2 - this.label.textHeight) / 2)
+        );
+        
+        this.labelOffsets[0].copyFrom(offset);
+        this.labelOffsets[1].copyFrom(offset);
+        this.labelOffsets[2].copyFrom(offset);
+        this.labelOffsets[2].y += 2;
+        
+        offset.put();
     }
 }
 
 class MouseButtonGroup extends TypedMouseButtonGroup<MouseButton>
 {
-    var buttonType:String;
+    var buttonType:MouseButtonType;
     
-    public function new(controls, buttonType = "orange25x17")
+    public function new(controls, buttonType:MouseButtonType = Orange8)
     {
         this.buttonType = buttonType;
         super(controls);
@@ -140,12 +139,35 @@ class TypedMouseButton<T:FlxSprite> extends FlxTypedButton<T>
         status = frame;
         animation.play(statusAnimations[frame]);
         updateLabelPosition();
+        
+        var scale = frame == FlxButton.HIGHLIGHT ? 1.4 : 1;
+        var angle = frame == FlxButton.HIGHLIGHT ? FlxG.random.int(-10, 10) : 0;
+        FlxTween.tween
+        (
+            this,
+            { "scale.x":scale, "scale.y":scale, angle:angle },
+            0.15,
+            { ease: FlxEase.backOut }
+        );
+        FlxTween.tween
+        (
+            this.label,
+            { "scale.x":scale, "scale.y":scale, angle:angle },
+            0.15,
+            { ease: FlxEase.backOut }
+        );
     }
     
     public function deselect() setAnimation(FlxButton.NORMAL);
     public function select() setAnimation(FlxButton.HIGHLIGHT);
     public function press() setAnimation(FlxButton.PRESSED);
     inline public function release() select();
+    
+    override function updateButton()
+    {
+        if (FlxG.mouse.justMoved)
+            super.updateButton();
+    }
 }
 
 class TypedMouseButtonGroup<T:TypedMouseButton<Dynamic>> extends TypedButtonGroup<T>
@@ -189,5 +211,12 @@ class TypedMouseButtonGroup<T:TypedMouseButton<Dynamic>> extends TypedButtonGrou
     {
         super.onSelectAnimComplete();
         members[selected].release();
+    }
+    override function draw()
+    {
+        super.draw();
+        
+        if (selected != -1)
+            members[selected].draw();
     }
 }

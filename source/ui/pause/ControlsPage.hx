@@ -136,7 +136,7 @@ private class DevicePage extends FlxSpriteGroup
         
         final startY = 8;
         final gap = 1;
-        final buttonHeight = 15;
+        final buttonHeight = 14;
         var controlsRight = 0.0;
         for(i=>control in allControls)
         {
@@ -223,7 +223,7 @@ private class InputGrid extends MouseButtonGroup
     public function new (controls, columns = 4)
     {
         this.columns = columns;
-        super(controls);
+        super(controls, InputGrid);
         
         selectFlickerTime = 0.25;
     }
@@ -303,7 +303,7 @@ private class InputSelectionPrompt extends FlxSpriteGroup
     
     public function new ()
     {
-        button = new MouseButton(0, 0, "CLEAR", "orange38x17", hide.bind(null));
+        button = new MouseButton(0, 0, "CLEAR", Orange8, hide.bind(null));
         super();
         
         add(bg);

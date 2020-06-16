@@ -90,6 +90,8 @@ class BitmapText extends flixel.text.FlxBitmapText
 		
 		if (borderColor >= 0xFF000000)
 			setBorderStyle(OUTLINE, borderColor, borderSize, 0);
+		else
+			borderSize = 0;
 	}
 	
 	override function set_alpha(value:Float):Float
@@ -107,7 +109,7 @@ class BitmapText extends flixel.text.FlxBitmapText
 	
 	override function get_lineHeight():Int
 	{
-		return super.get_lineHeight() + Std.int(borderSize) * 2;
+		return super.get_lineHeight() + ((borderColor:UInt) >= 0xFF000000 ? Std.int(borderSize) * 2 : 0);
 	}
 }
 
