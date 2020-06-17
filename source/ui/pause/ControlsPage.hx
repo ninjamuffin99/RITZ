@@ -1,7 +1,5 @@
 package ui.pause;
 
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
 import data.PlayerSettings;
 import ui.BitmapText;
 import ui.Controls;
@@ -14,6 +12,8 @@ import flixel.FlxCamera;
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.input.keyboard.FlxKey;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 
 class ControlsPage extends PausePage
 {
