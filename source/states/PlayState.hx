@@ -319,6 +319,7 @@ class PlayState extends flixel.FlxState
 		grpOneWayPlatforms.forEach((platform)->platform.cloudSolid = !player.controls.DOWN);
 		grpTilemaps.forEach((level)->level.setTilesCollisions(40, 4, player.controls.DOWN ? FlxObject.NONE : FlxObject.UP));
 		FlxG.collide(grpTilemaps, player);
+		FlxG.collide(grpPlatforms, player);
 	}
 	
 	inline function checkDoors()
