@@ -257,7 +257,7 @@ class Controls extends FlxActionSet
         }
     }
     
-    public function replaceKeyBinding(control:Control, device:Device, ?toAdd:Int, ?toRemove:Int)
+    public function replaceBinding(control:Control, device:Device, ?toAdd:Int, ?toRemove:Int)
     {
         if (toAdd == toRemove)
             return;
@@ -327,8 +327,8 @@ class Controls extends FlxActionSet
                 inline bindKeys(Control.JUMP  , [Z, Y, W, FlxKey.UP]);
                 inline bindKeys(Control.TALK  , [E, F, X]);
                 inline bindKeys(Control.ACCEPT, [Z, SPACE]);
-                inline bindKeys(Control.BACK  , [X, ESCAPE]);
-                inline bindKeys(Control.PAUSE , [P, ESCAPE, ENTER]);
+                inline bindKeys(Control.BACK  , [X]);
+                inline bindKeys(Control.PAUSE , [P, ENTER]);
                 inline bindKeys(Control.MAP   , [M]);
                 inline bindKeys(Control.RESET , [R]);
             case Duo(true):
@@ -340,7 +340,7 @@ class Controls extends FlxActionSet
                 inline bindKeys(Control.TALK  , [H, X]);
                 inline bindKeys(Control.ACCEPT, [G, Z]);
                 inline bindKeys(Control.BACK  , [H, X]);
-                inline bindKeys(Control.PAUSE , [ESCAPE, ONE]);
+                inline bindKeys(Control.PAUSE , [ONE]);
                 inline bindKeys(Control.MAP   , [TWO]);
                 inline bindKeys(Control.RESET , [R]);
             case Duo(false):

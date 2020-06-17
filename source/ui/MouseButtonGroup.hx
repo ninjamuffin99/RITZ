@@ -165,7 +165,7 @@ class TypedMouseButton<T:FlxSprite> extends FlxTypedButton<T>
     
     override function updateButton()
     {
-        if (FlxG.mouse.justMoved)
+        if (FlxG.mouse.justMoved || FlxG.mouse.justPressed || FlxG.mouse.justReleased)
             super.updateButton();
     }
 }

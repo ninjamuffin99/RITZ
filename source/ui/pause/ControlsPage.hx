@@ -1,5 +1,7 @@
 package ui.pause;
 
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import data.PlayerSettings;
 import ui.BitmapText;
 import ui.Controls;
@@ -120,7 +122,7 @@ private class DevicePage extends FlxSpriteGroup
 {
     static final allControls = Control.createAll();
     
-    var inputs:MouseButtonGroup;
+    var inputs:InputGrid;
     var buttonMap = new Array<Array<ButtonData>>();
     var settings:PlayerSettings;
     var currentDevice:Device;
@@ -187,6 +189,17 @@ private class DevicePage extends FlxSpriteGroup
         }
     }
     
+    override function update(elapsed:Float)
+    {
+        super.update(elapsed);
+        
+        if (!blockingKeys && settings.controls.RESET)
+        {
+            var data = buttonMap[Math.floor(inputs.selected / inputs.columns)][inputs.selected % inputs.columns];
+            replaceBinding(data, null);
+        }
+    }
+    
     function onInputSelect(data:ButtonData):Void
     {
         inputs.active = false;
@@ -206,20 +219,42 @@ private class DevicePage extends FlxSpriteGroup
                         }
                     }
                 }
-                settings.controls.replaceKeyBinding(data.control, currentDevice, inputId, data.id);
-                data.button.text = inputId == null ? " " : InputFormatter.format(inputId, currentDevice);
-                data.id = inputId;
+                replaceBinding(data, inputId);
                 prompt.kill();
                 inputs.active = true;
             }
         );
     }
     
+    function replaceBinding(data:ButtonData, inputId:Null<Int>)
+    {
+        settings.controls.replaceBinding(data.control, currentDevice, inputId, data.id);
+        
+        var newText = inputId == null ? " " : InputFormatter.format(inputId, currentDevice);
+        if ((data.button.text == " ") != (newText == " "))
+        {
+            // disappearing/reappearing text anim
+            var scale = inputId == null ? 0 : data.button.scale.x;
+            var options:TweenOptions = { ease:inputId == null ? FlxEase.backIn : FlxEase.backOut };
+            if (newText == " ")
+                options.onComplete = (_)->data.button.text = newText;
+            else
+            {
+                data.button.label.scale.set();
+                data.button.text = newText;
+            }
+            FlxTween.tween(data.button.label.scale, { x:scale, y:scale }, 0.1, options);
+        }
+        else
+            data.button.text = newText;
+        
+        data.id = inputId;
+    }
 }
 
 private class InputGrid extends MouseButtonGroup
 {
-    var columns:Int;
+    public var columns(default, null):Int;
     public function new (controls, columns = 4)
     {
         this.columns = columns;
