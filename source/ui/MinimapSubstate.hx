@@ -1,5 +1,6 @@
 package ui;
 
+import data.PlayerSettings;
 import props.Player;
 import ui.Minimap;
 import ui.Prompt;
@@ -67,7 +68,7 @@ class MinimapSubstate extends flixel.FlxSubState
                 {
                     state = ConfirmingCheckpoint;
                     cursor.active = false;
-                    var prompt = new Prompt(Controls.solo);//Todo:
+                    var prompt = new Prompt(PlayerSettings.player1.controls);//Todo:
                     add(prompt);
                     prompt.setup
                         ( "Warp to this checkpoint?\n(Lose all trailing cheese)"

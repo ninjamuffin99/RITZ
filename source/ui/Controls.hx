@@ -71,10 +71,6 @@ enum KeyboardScheme
  */
 class Controls extends FlxActionSet
 {
-    static public var solo(get, null):Controls;
-    static public var duo1(get, null):Controls;
-    static public var duo2(get, null):Controls;
-    
     var _up     = new FlxActionDigital(Action.UP     );
     var _left   = new FlxActionDigital(Action.LEFT   );
     var _right  = new FlxActionDigital(Action.RIGHT  );
@@ -188,43 +184,10 @@ class Controls extends FlxActionSet
         }
     }
     
-    static function get_solo():Controls
-    {
-        if (solo == null)
-            init();
-        return solo;
-    }
-    
-    static function get_duo1():Controls
-    {
-        if (duo1 == null)
-            init();
-        return duo1;
-    }
-    
-    static function get_duo2():Controls
-    {
-        if (duo2 == null)
-            init();
-        return duo2;
-    }
-    
     static function init():Void
     {
         var actions = new FlxActionManager();
         FlxG.inputs.add(actions);
-        
-        solo = new Controls("solo");
-        inline solo.setKeyboardScheme(Solo, false);
-        actions.addSet(solo);
-        
-        duo1 = new Controls("duo1");
-        inline duo1.setKeyboardScheme(Duo(true), false);
-        actions.addSet(duo1);
-        
-        duo2 = new Controls("duo2");
-        inline duo2.setKeyboardScheme(Duo(false), false);
-        actions.addSet(duo2);
     }
     
     /**
