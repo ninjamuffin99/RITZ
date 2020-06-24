@@ -52,8 +52,10 @@ class PlayerSettings
         {
             if (player2 == null)
             {
-                player1.setKeyboardScheme(Duo(true));
-                player2 = new PlayerSettings(1, Duo(false));
+                if (player1.controls.keyboardScheme.match(Duo(true)))
+                    player2 = new PlayerSettings(1, Duo(false));
+                else
+                    player2 = new PlayerSettings(1, None);
                 ++numPlayers;
             }
             
@@ -116,7 +118,10 @@ class PlayerSettings
     static public function init():Void
     {
         if (player1 == null)
+        {
             player1 = new PlayerSettings(0, Solo);
+            ++numPlayers;
+        }
         
         var numGamepads = FlxG.gamepads.numActiveGamepads;
         if (numGamepads > 0)
@@ -130,9 +135,11 @@ class PlayerSettings
         
         if (numGamepads > 1)
         {
-            player1.controls.setKeyboardScheme(Duo(true));
             if (player2 == null)
-                player2 = new PlayerSettings(1, Duo(false));
+            {
+                player2 = new PlayerSettings(1, None);
+                ++numPlayers;
+            }
             
             var gamepad = FlxG.gamepads.getByID(1);
             if (gamepad == null)
