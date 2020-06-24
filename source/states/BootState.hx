@@ -11,7 +11,19 @@ class BootState extends FlxState
     inline public static var soundEXT = #if desktop ".ogg" #else ".mp3" #end;
     override function create() 
     {
-        var daText:FlxText = new FlxText(0, 0, 0, "ninjamuffin99\nMKMaffo\nKawaisprite\nand Digimin\npresent...",16);
+        #if SKIP_TO_PLAYSTATE
+        FlxG.switchState(new AdventureState());
+        #else
+        startIntro();
+        #end
+        
+        super.create();
+    }
+    
+    @:keep// So menustate code is always checked for errors
+    public function startIntro():Void
+    {
+        var daText:FlxText = new FlxText(0, 0, 0, "ninjamuffin99\nMKMaffo\nKawaisprite\nand Digimin\npresent...", 16);
         daText.alignment = CENTER;
         daText.screenCenter();
         add(daText);
