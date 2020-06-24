@@ -37,6 +37,9 @@ class PauseSubstate extends flixel.FlxSubState
             addSecondPlayer(settings2, startingPage);
         else
             PlayerSettings.onAvatarAdd.add(addSecondPlayerLate);
+        
+        if (!screen1.paused && (screen2 == null || !screen2.paused))
+            throw "Error: Started off in a ready to unpause state";
     }
     
     inline function addSecondPlayer(settings, startingPage)
