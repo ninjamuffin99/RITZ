@@ -163,6 +163,6 @@ abstract Font(FlxBitmapFont) to FlxBitmapFont
         if (curWidth > 0)
             widths.push(curWidth + 1);
         
-        return new Font(chars, widths, path, bmd.height - 1 + leading, 8);
+        return new Font(chars, widths, path, bmd.height - 1 + leading, spaceWidth);
     }
 }
