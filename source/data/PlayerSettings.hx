@@ -2,6 +2,7 @@ package data;
 
 import props.Player;
 import ui.Controls;
+import ui.GamepadAlert;
 
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -33,11 +34,6 @@ class PlayerSettings
     public function setKeyboardScheme(scheme)
     {
         controls.setKeyboardScheme(scheme);
-    }
-    
-    function loadSettings():Void
-    {
-        //Todo:
     }
     
     static public function addAvatar(avatar:Player):PlayerSettings
@@ -115,6 +111,37 @@ class PlayerSettings
                 cam.x = cam.width;
                 cam.resetDeadZones();
         }
+    }
+    
+    static public function init():Void
+    {
+        if (player1 == null)
+            player1 = new PlayerSettings(0, Solo);
+        
+        var numGamepads = FlxG.gamepads.numActiveGamepads;
+        if (numGamepads > 0)
+        {
+            var gamepad = FlxG.gamepads.getByID(0);
+            if (gamepad == null)
+                throw 'Unexpected null gamepad. id:0';
+            
+            player1.controls.addDefaultGamepad(0);
+        }
+        
+        if (numGamepads > 1)
+        {
+            player1.controls.setKeyboardScheme(Duo(true));
+            if (player2 == null)
+                player2 = new PlayerSettings(1, Duo(false));
+            
+            var gamepad = FlxG.gamepads.getByID(1);
+            if (gamepad == null)
+                throw 'Unexpected null gamepad. id:0';
+            
+            player2.controls.addDefaultGamepad(1);
+        }
+        
+        GamepadAlert.init();
     }
     
     static public function reset()

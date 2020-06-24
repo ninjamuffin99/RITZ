@@ -8,8 +8,10 @@ import flixel.math.FlxRect;
 @:forward
 abstract Nokia8Text(BitmapText) to BitmapText
 {
+	inline static public var DEFAULT_BORDER_COLOR = BitmapText.DEFAULT_BORDER_COLOR;
+	
 	static var font:Font = null;
-	inline public function new (x = 0.0, y = 0.0, text = "", borderColor = 0xFF202e38)
+	inline public function new (x = 0.0, y = 0.0, text = "", borderColor = DEFAULT_BORDER_COLOR)
 	{
 		this = new BitmapText(x, y, text, borderColor, 1, getFont());
 	}
@@ -32,8 +34,10 @@ abstract Nokia8Text(BitmapText) to BitmapText
 @:forward
 abstract Nokia16Text(BitmapText) to BitmapText
 {
+	inline static public var DEFAULT_BORDER_COLOR = BitmapText.DEFAULT_BORDER_COLOR;
+	
 	static var font:Font = null;
-	inline public function new (x = 0.0, y = 0.0, text = "", borderColor = 0xFF202e38, borderSize = 2)
+	inline public function new (x = 0.0, y = 0.0, text = "", borderColor = DEFAULT_BORDER_COLOR, borderSize = 2)
 	{
 		this = new BitmapText(x, y, text, borderColor, borderSize, getFont());
 	}
@@ -56,8 +60,10 @@ abstract Nokia16Text(BitmapText) to BitmapText
 @:forward
 abstract GravText(BitmapText) to BitmapText
 {
+	inline static public var DEFAULT_BORDER_COLOR = BitmapText.DEFAULT_BORDER_COLOR;
+	
 	static var font:Font = null;
-	inline public function new (x = 0.0, y = 0.0, text = "", borderColor = 0xFF202e38)
+	inline public function new (x = 0.0, y = 0.0, text = "", borderColor = DEFAULT_BORDER_COLOR)
 	{
 		this = new BitmapText(x, y, text, borderColor, 1, getFont());
 	}
@@ -75,7 +81,9 @@ abstract GravText(BitmapText) to BitmapText
 
 class BitmapText extends flixel.text.FlxBitmapText
 {
-	public function new (x = 0.0, y = 0.0, text = "", borderColor = 0xFF202e38, borderSize = 2, ?font:FlxBitmapFont):Void
+	inline static public var DEFAULT_BORDER_COLOR = 0xFF202e38;
+	
+	public function new (x = 0.0, y = 0.0, text = "", borderColor = DEFAULT_BORDER_COLOR, borderSize = 2, ?font:FlxBitmapFont):Void
 	{
 		if (font == null)
 			font = Nokia16Text.getFont();

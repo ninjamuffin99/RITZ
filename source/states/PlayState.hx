@@ -18,6 +18,7 @@ import props.MusicTrigger;
 import ui.BitmapText;
 import ui.Controls;
 import ui.DialogueSubstate;
+import ui.GamepadAlert;
 import ui.pause.PauseSubstate;
 
 import io.newgrounds.NG;
@@ -177,6 +178,7 @@ class PlayState extends flixel.FlxState
 	}
 	
 	@:allow(ui.pause.MainPage)
+	@:allow(ui.GamepadAlert)
 	function createSecondPlayer()
 	{
 		if (PlayerSettings.player1 == null || PlayerSettings.player1.avatar == null)
@@ -256,6 +258,12 @@ class PlayState extends flixel.FlxState
 	override function update(elapsed)
 	{
 		super.update(elapsed);
+		
+		if (GamepadAlert.hasNewGamepads())
+		{
+			openSubState(new GamepadAlert());
+			return;
+		}
 		
 		updateCollision();
 		

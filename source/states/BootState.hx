@@ -1,5 +1,7 @@
 package states;
 
+import data.PlayerSettings;
+
 import flixel.util.FlxTimer;
 import flixel.FlxG;
 import flixel.system.FlxSoundGroup;
@@ -11,6 +13,8 @@ class BootState extends FlxState
     inline public static var soundEXT = #if desktop ".ogg" #else ".mp3" #end;
     override function create() 
     {
+        PlayerSettings.init();
+        
         #if SKIP_TO_PLAYSTATE
         FlxG.switchState(new AdventureState());
         #else
@@ -31,7 +35,5 @@ class BootState extends FlxState
         FlxG.sound.play('assets/sounds/checkpoint' + soundEXT, 0.6);
         
         new FlxTimer().start(2, function(tmr:FlxTimer){FlxG.switchState(new MenuState());});
-        
-        super.create();
     }
 }

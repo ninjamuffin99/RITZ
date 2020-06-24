@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.input.FlxInput;
 import flixel.input.actions.FlxAction;
 import flixel.input.actions.FlxActionInput;
+import flixel.input.actions.FlxActionInputDigital;
 import flixel.input.actions.FlxActionManager;
 import flixel.input.actions.FlxActionSet;
 import flixel.input.gamepad.FlxGamepadButton;
@@ -140,6 +141,11 @@ class Controls extends FlxActionSet
         setKeyboardScheme(scheme, false);
     }
     
+    override function update()
+    {
+        super.update();
+    }
+    
     // inline
     public function checkByName(name:Action):Bool
     {
@@ -237,6 +243,38 @@ class Controls extends FlxActionSet
                 if (toRemove != null) unbindButtons(control, id, [toRemove]);
                 if (toAdd != null) bindButtons(control, id, [toAdd]);
         }
+    }
+    
+    public function copyFrom(controls:Controls, ?device:Device)
+    {
+        for (name=>action in controls.byName)
+        {
+            for (input in action.inputs)
+            {
+                if (device == null || isDevice(input, device))
+                    byName[name].add(copyInput(input));
+            }
+        }
+    }
+    
+    public function copyTo(controls:Controls, ?device:Device)
+    {
+        for (name=>action in byName)
+        {
+            for (input in action.inputs)
+            {
+                if (device == null || isDevice(input, device))
+                    controls.byName[name].add(copyInput(input));
+            }
+        }
+    }
+    
+    function copyInput(input:FlxActionInput):FlxActionInputDigital
+    {
+        return if (input.device == KEYBOARD)
+            new FlxActionInputDigitalKeyboard(input.inputID, input.trigger);
+        else
+            new FlxActionInputDigitalGamepad(input.inputID, input.trigger, input.deviceID);
     }
     
     /**
@@ -438,6 +476,15 @@ class Controls extends FlxActionSet
                 }
         }
         return list;
+    }
+    
+    public function removeDevice(device:Device)
+    {
+        switch (device)
+        {
+            case Keys: setKeyboardScheme(None);
+            case Gamepad(id): removeGamepad(id);
+        }
     }
     
     static function isDevice(input:FlxActionInput, device:Device)
