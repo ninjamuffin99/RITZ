@@ -2,6 +2,8 @@ package ui;
 
 import ui.Controls;
 
+import flixel.FlxG;
+import flixel.input.gamepad.FlxGamepad;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 
@@ -12,7 +14,7 @@ class InputFormatter
         return switch (device)
         {
             case Keys: getKeyName(id);
-            case Gamepad(_): FlxGamepadInputID.toStringMap[id];
+            case Gamepad(gamepadID): getButtonName(id, FlxG.gamepads.getByID(gamepadID));
         }
     }
     
@@ -78,6 +80,36 @@ class InputFormatter
             default: 
                 var input = FlxKey.toStringMap[id];
                 return input.charAt(0) + input.substr(1, 2).toLowerCase();
+        }
+    }
+    
+    static var dirReg = ~/^(l|r).?-(left|right|down|up)$/;
+    static public function getButtonName(id:Int, gamepad:FlxGamepad):String
+    {
+        return switch (gamepad.getInputLabel(id))
+        {
+            case null: "";
+            case "square"  : "[]";
+            case "circle"  : "()";
+            case "triangle": "/\\";
+            case "plus"    : "+";
+            case "minus"   : "-";
+            case "home"    : "Hm";
+            case "left"    : "Lf";
+            case "right"   : "Rt";
+            case "down"    : "Dn";
+            case "up"      : "Up";
+            case dir if (dirReg.match(dir)):
+                dirReg.matched(1).toUpperCase() + "-"
+                + switch (dirReg.matched(2))
+                {
+                    case "left" : "L";
+                    case "right": "R";
+                    case "down" : "D";
+                    case "up"   : "U";
+                    default: throw "Unreachable exaustiveness case";
+                };
+            case label: label.charAt(0).toUpperCase() + label.substr(1, 2).toLowerCase();
         }
     }
 }
