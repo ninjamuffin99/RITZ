@@ -255,16 +255,35 @@ class Controls extends FlxActionSet
                     byName[name].add(copyInput(input));
             }
         }
+        
+        switch (device)
+        {
+            case null:
+                // add all
+                for (gamepad in controls.gamepadsAdded)
+                    if (!gamepadsAdded.contains(gamepad))
+                        gamepadsAdded.push(gamepad);
+                
+                mergeKeyboardScheme(controls.keyboardScheme);
+                
+            case Gamepad(id): gamepadsAdded.push(id);
+            case Keys: mergeKeyboardScheme(controls.keyboardScheme);
+        }
     }
     
-    public function copyTo(controls:Controls, ?device:Device)
+    inline public function copyTo(controls:Controls, ?device:Device)
     {
-        for (name=>action in byName)
+        controls.copyFrom(this, device);
+    }
+    
+    function mergeKeyboardScheme(scheme:KeyboardScheme):Void
+    {
+        if (scheme != None)
         {
-            for (input in action.inputs)
+            switch (keyboardScheme)
             {
-                if (device == null || isDevice(input, device))
-                    controls.byName[name].add(copyInput(input));
+                case None: keyboardScheme = scheme;
+                default: keyboardScheme = Custom;
             }
         }
     }
