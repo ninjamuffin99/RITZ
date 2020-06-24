@@ -140,21 +140,26 @@ class TypedMouseButton<T:FlxSprite> extends FlxTypedButton<T>
         animation.play(statusAnimations[frame]);
         updateLabelPosition();
         
-        var scale = frame == FlxButton.HIGHLIGHT ? 1.4 : 1;
-        var angle = frame == FlxButton.HIGHLIGHT ? FlxG.random.int(-10, 10) : 0;
-        FlxTween.tween
-        (
-            this,
-            { "scale.x":scale, "scale.y":scale, angle:angle },
-            0.15,
-            { ease: FlxEase.backOut }
-        );
-        FlxTween.tween
-        (
-            this.label,
-            { "scale.x":scale, "scale.y":scale, angle:angle },
-            0.15,
-            { ease: FlxEase.backOut }
+        var fromScale = scale.x;
+        var fromAngle = angle;
+        var toScale = frame == FlxButton.HIGHLIGHT ? 1.4 : 1;
+        var toAngle = frame == FlxButton.HIGHLIGHT ? FlxG.random.int(-10, 10) : 0;
+        
+        //Todo: FlxTween.num with null checks
+        FlxTween.num(0, 1, 0.2, null,
+            (factor)->
+            {
+                // check if destroyed
+                if (animation != null)
+                {
+                    final currentScaleX = (toScale - fromScale) * FlxEase.backOut  (factor) + fromScale;
+                    final currentScaleY = (toScale - fromScale) * FlxEase.cubeInOut(factor) + fromScale;
+                    final currentAngle  = (toAngle - fromAngle) * FlxEase.cubeOut  (factor) + fromAngle;
+                    scale.x = label.scale.x = currentScaleX;
+                    scale.y = label.scale.y = currentScaleY;
+                    angle = label.angle = currentAngle;
+                }
+            }
         );
     }
     
