@@ -43,6 +43,7 @@ class MainPage extends PausePage
                 {
                     buttons.disableButton(button);
                     buttons.selected = 0;
+                    // give p2 other half of the keyboard
                     PlayerSettings.player1.setKeyboardScheme(Duo(true));
                     cast (FlxG.state, PlayState).createSecondPlayer();
                     navCallback(Controls);
