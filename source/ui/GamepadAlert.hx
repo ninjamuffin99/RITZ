@@ -26,6 +26,8 @@ class GamepadAlert extends FlxSubState
     var controllers = new FlxTypedGroup<Controller>();
     var state:State;
     
+    var lastLocked:Controller = null;
+    
     override function create()
     {
         super.create();
@@ -87,24 +89,36 @@ class GamepadAlert extends FlxSubState
         if (state == Selecting)
             prevUnlocked = controllers.members.filter((controller)->!controller.locked);
         
-        controllers.alive = state == Selecting;
+        controllers.active = state == Selecting;
         super.update(elapsed);
         
         if (state == Selecting)
         {
+            // track last locked
+            for (controller in prevUnlocked)
+                if (controller.locked)
+                    lastLocked = controller;
+        }
+        
+        if (state.match(Selecting | Animating))
+        {
+            // get controller states;
             var allLocked = true;
-            for (i=>controller in controllers.members)
+            var noneAnimating = true;
+            for (controller in controllers.members)
             {
                 if (!controller.locked)
-                {
                     allLocked = false;
-                    break;
-                }
+                
+                if (controller.animating)
+                    noneAnimating = false;
             }
             
             p1.borderColor = BitmapText.DEFAULT_BORDER_COLOR;
             p2.textColor = BitmapText.DEFAULT_BORDER_COLOR;
-            if (allLocked)
+            if (allLocked && !noneAnimating)
+                state = Animating;// wait for animation to finish
+            else if (allLocked && noneAnimating)
             {
                 // check valid selection
                 var p1Devices = new Array<Controller>();
@@ -146,8 +160,10 @@ class GamepadAlert extends FlxSubState
                             confirmDeviceSelections,
                             ()->
                             {
-                                for (controller in p2Devices)
-                                    controller.unlock();
+                                if (lastLocked != null)
+                                    lastLocked.unlock();
+                                else
+                                    throw "expecting non-null lastLocked";
                             }
                         );
                     }
@@ -160,8 +176,10 @@ class GamepadAlert extends FlxSubState
                             confirmDeviceSelections,
                             ()->
                             {
-                                for (controller in prevUnlocked)
-                                    controller.unlock();
+                                if (lastLocked != null)
+                                    lastLocked.unlock();
+                                else
+                                    throw "expecting non-null lastLocked";
                             }
                         );
                     }
@@ -170,8 +188,10 @@ class GamepadAlert extends FlxSubState
                 {
                     state = Invalid;
                     
-                    for (controller in prevUnlocked)
-                        controller.unlock();
+                    if (lastLocked != null)
+                        lastLocked.unlock();
+                    else
+                        throw "expecting non-null lastLocked";
                     
                     new FlxTimer().start(wiggleTime, (_)-> state = Selecting);
                 }
@@ -181,7 +201,7 @@ class GamepadAlert extends FlxSubState
     
     function showConfirmationPrompt(controlsList:Array<Controller>, msg, onYes, ?onNo, ?onChoose)
     {
-        if(state != Selecting)
+        if(!state.match(Selecting|Animating))
             throw "Going to State.Selection from State." + state.getName();
         
         state = Confirming;
@@ -206,9 +226,6 @@ class GamepadAlert extends FlxSubState
                 state = Selecting;
                 if (onNo != null)
                     onNo();
-                
-                if (controlsList.length > 1)
-                    controls.destroy();
                 
                 prompt.kill();
                 remove(prompt);
@@ -350,10 +367,12 @@ private class Controller extends FlxSpriteGroup
     public final controls:Controls;
     public var player(default, null):SelectedPlayer;
     public var locked(default, null) = false;
+    public var animating(default, null) = false;
     
     final deviceSprite:FlxSprite;
     final arrowRight:FlxSprite;
     final arrowLeft:FlxSprite;
+    
     public function new (x = 0.0, y = 0.0, ?gamepad:FlxGamepad, player:SelectedPlayer = None)
     {
         final graphic = gamepad == null ? KEYBOARD_IMAGE : GAMEPAD_IMAGE;
@@ -500,13 +519,16 @@ private class Controller extends FlxSpriteGroup
     
     inline function scaleDeviceToInTime(scaleFactor, duration, ?onComplete)
     {
-        return GamepadAlert.scaleToInTime(deviceSprite, scaleFactor, duration, onComplete);
-    }
-    
-    override function destroy()
-    {
-        super.destroy();
-        controls.destroy();
+        animating = true;
+        return GamepadAlert.scaleToInTime(deviceSprite, scaleFactor, duration,
+            ()->
+            {
+                animating = false;
+                
+                if (onComplete != null)
+                    onComplete();
+            }
+        );
     }
     
     public function getDevice():Device
@@ -526,6 +548,7 @@ private enum State
 {
     Intro;
     Selecting;
+    Animating;
     Invalid;
     Confirming;
     Outro;
