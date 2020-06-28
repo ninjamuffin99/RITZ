@@ -252,7 +252,7 @@ class Controls extends FlxActionSet
             for (input in action.inputs)
             {
                 if (device == null || isDevice(input, device))
-                    byName[name].add(copyInput(input));
+                    byName[name].add(cast input);
             }
         }
         
@@ -286,14 +286,6 @@ class Controls extends FlxActionSet
                 default: keyboardScheme = Custom;
             }
         }
-    }
-    
-    function copyInput(input:FlxActionInput):FlxActionInputDigital
-    {
-        return if (input.device == KEYBOARD)
-            new FlxActionInputDigitalKeyboard(input.inputID, input.trigger);
-        else
-            new FlxActionInputDigitalGamepad(input.inputID, input.trigger, input.deviceID);
     }
     
     /**
