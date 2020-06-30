@@ -47,6 +47,9 @@ class ControlsPage extends PausePage
         else
         {
             add(deviceList = new ButtonGroup(settings.controls));
+            deviceList.y = title.y + title.lineHeight + 8;
+            deviceList.keysNext = RIGHT_P;
+            deviceList.keysPrev = LEFT_P;
             
             if (settings.controls.keyboardScheme != None)
                 deviceList.addNewButton(deviceList.width, 0, "KEYS", showDevice.bind(Keys));
@@ -84,6 +87,8 @@ class ControlsPage extends PausePage
             else
                 devicePage.y = title.y + title.lineHeight + 2;
         }
+        else
+            devicePage.revive();
         
         this.device = device;
         devicePage.showDeviceControls(settings.controls, device);
@@ -169,6 +174,11 @@ private class DevicePage extends FlxSpriteGroup
         
         add(prompt).kill();
     }
+    
+    override function kill() exists = alive = false;
+    override function revive() exists = alive = true;
+    override function set_exists(value:Bool):Bool return this.exists = value;
+    override function set_alive(value:Bool):Bool return this.alive = value;
     
     public function showDeviceControls(controls:Controls, device:Device)
     {
@@ -346,6 +356,11 @@ private class InputSelectionPrompt extends FlxSpriteGroup
         label.alignment = CENTER;
         add(button);
     }
+    
+    override function kill() exists = alive = false;
+    override function revive() exists = alive = true;
+    override function set_exists(value:Bool):Bool return this.exists = value;
+    override function set_alive(value:Bool):Bool return this.alive = value;
     
     public function show(device:Device, callback:(Null<Int>)->Void)
     {
