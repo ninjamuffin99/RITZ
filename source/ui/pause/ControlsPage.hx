@@ -54,14 +54,27 @@ class ControlsPage extends PausePage
             deviceList.keysNext = RIGHT_P;
             deviceList.keysPrev = LEFT_P;
             
+            var nextX = 0.0;
             if (settings.controls.keyboardScheme != None)
-                deviceList.addNewButton(deviceList.width + 8, 0, "KEYS", showDevice.bind(Keys, true));
+            {
+                var button = deviceList.addNewButton(0, 0, "KEYS", onDeviceSelect.bind(Keys));
+                nextX += button.width * 1.25;
+            }
             
             for (id in settings.controls.gamepadsAdded)
-                deviceList.addNewButton(deviceList.width + 8, 0, 'PAD $id', showDevice.bind(Gamepad(id), true));
+            {
+                var button = deviceList.addNewButton(nextX, 0, 'PAD $id', onDeviceSelect.bind(Gamepad(id)));
+                nextX += button.width * 1.25;
+            }
             
             deviceList.x = (settings.camera.width - deviceList.width) / 2;
         }
+    }
+    
+    function onDeviceSelect(device:Device)
+    {
+        FlxTween.tween(deviceList.members[deviceList.selected].scale, {x:1.2, y:1.2}, 0.25, { ease:FlxEase.backOut });
+        showDevice(device, true);
     }
     
     override function redraw()
@@ -115,11 +128,15 @@ class ControlsPage extends PausePage
             if (deviceList == null || deviceList.active)
                 navCallback(Main);
             else
-            {
-                devicePage.hide(true);
-                deviceList.active = true;
-            }
+                hideDevicePage();
         }
+    }
+    
+    function hideDevicePage()
+    {
+        FlxTween.tween(deviceList.members[deviceList.selected].scale, {x:1, y:1}, 0.25, { ease:FlxEase.backIn });
+        devicePage.hide(true);
+        deviceList.active = true;
     }
     
     override function allowUnpause() return !getControlsBlocked();
