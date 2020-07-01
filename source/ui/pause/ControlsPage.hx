@@ -21,7 +21,7 @@ class ControlsPage extends PausePage
     final navCallback:(PausePageType)->Void;
     
     final title:BitmapText;
-    final deviceList:ButtonGroup;
+    var deviceList:ButtonGroup;
     var devicePage:DevicePage;
     var device:Device = null;
     
@@ -34,15 +34,18 @@ class ControlsPage extends PausePage
         title = new BitmapText(32, 4, "CONTROLS");
         title.x = (settings.camera.width - title.width) / 2;
         add(title);
-        
+    }
+    
+    function firstDraw()
+    {
         final hasKeys = settings.controls.keyboardScheme != None;
         final numDevices = settings.controls.gamepadsAdded.length + (hasKeys ? 1 : 0);
         if (numDevices == 1)
         {
             if (!hasKeys)
-                showDevice(Gamepad(settings.controls.gamepadsAdded[0]));
+                showDevice(Gamepad(settings.controls.gamepadsAdded[0]), false);
             else
-                showDevice(Keys);
+                showDevice(Keys, false);
         }
         else
         {
@@ -52,10 +55,10 @@ class ControlsPage extends PausePage
             deviceList.keysPrev = LEFT_P;
             
             if (settings.controls.keyboardScheme != None)
-                deviceList.addNewButton(deviceList.width, 0, "KEYS", showDevice.bind(Keys));
+                deviceList.addNewButton(deviceList.width + 8, 0, "KEYS", showDevice.bind(Keys, true));
             
             for (id in settings.controls.gamepadsAdded)
-                deviceList.addNewButton(deviceList.width, 0, 'PAD $id', showDevice.bind(Gamepad(id)));
+                deviceList.addNewButton(deviceList.width + 8, 0, 'PAD $id', showDevice.bind(Gamepad(id), true));
             
             deviceList.x = (settings.camera.width - deviceList.width) / 2;
         }
@@ -65,8 +68,10 @@ class ControlsPage extends PausePage
     {
         title.x = (settings.camera.width - title.width) / 2;
         
-        if (device != null)
-            showDevice(device);
+        if (device == null && deviceList == null)
+            firstDraw();
+        else if (device != null)
+            showDevice(device, false);
     }
     
     override function kill()
@@ -76,7 +81,7 @@ class ControlsPage extends PausePage
         FlxG.mouse.useSystemCursor = true;
     }
     
-    function showDevice(device:Device):Void
+    function showDevice(device:Device, animateIn:Bool):Void
     {
         if (devicePage == null)
         {
@@ -91,7 +96,7 @@ class ControlsPage extends PausePage
             devicePage.revive();
         
         this.device = device;
-        devicePage.showDeviceControls(settings.controls, device);
+        devicePage.showDeviceControls(settings.controls, device, animateIn);
         devicePage.x = (settings.camera.width - devicePage.width) / 2;
         
         if (deviceList != null)
@@ -111,7 +116,7 @@ class ControlsPage extends PausePage
                 navCallback(Main);
             else
             {
-                devicePage.kill();
+                devicePage.hide(true);
                 deviceList.active = true;
             }
         }
@@ -132,6 +137,9 @@ private class DevicePage extends FlxSpriteGroup
     var settings:PlayerSettings;
     var currentDevice:Device;
     var prompt = new InputSelectionPrompt();
+    
+    var fullWidth:Float = 0;
+    override function get_width() return fullWidth;
     
     public var blockingKeys(get, never):Bool;
     inline function get_blockingKeys():Bool return prompt.alive;
@@ -171,6 +179,7 @@ private class DevicePage extends FlxSpriteGroup
                 buttonMap[i].push(data);
             }
         }
+        fullWidth = super.get_width();
         
         add(prompt).kill();
     }
@@ -180,7 +189,7 @@ private class DevicePage extends FlxSpriteGroup
     override function set_exists(value:Bool):Bool return this.exists = value;
     override function set_alive(value:Bool):Bool return this.alive = value;
     
-    public function showDeviceControls(controls:Controls, device:Device)
+    public function showDeviceControls(controls:Controls, device:Device, animateIn:Bool)
     {
         var format = InputFormatter.format.bind(_, device);
         
@@ -196,6 +205,38 @@ private class DevicePage extends FlxSpriteGroup
                 buttonData.id = list[j];
                 buttonData.button.text = list.length > j ? format(list[j]) : " ";
             }
+        }
+        
+        if (animateIn)
+        {
+            inputs.active = false;
+            scale.x = scale.y = 0.01;
+            FlxTween.tween(this,
+                { "scale.x":1, "scale.y":1 },
+                0.25,
+                { ease:FlxEase.backOut, onComplete:(_)->inputs.active = true }
+            );
+        }
+    }
+    
+    public function hide(animateOut:Bool)
+    {
+        if (animateOut)
+        {
+            inputs.active = false;
+            scale.x = scale.y = 1;
+            FlxTween.tween(this,
+                { "scale.x":0.01, "scale.y":0.01 },
+                0.25,
+                {
+                    ease:FlxEase.backIn,
+                    onComplete:(_)->
+                    {
+                        inputs.active = true;
+                        kill();
+                    }
+                }
+            );
         }
     }
     
