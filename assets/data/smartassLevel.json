@@ -76,11 +76,11 @@
           "name": "checkpoint",
           "id": 16,
           "_eid": "62845470",
-          "x": 834,
+          "x": 882,
           "y": 3936,
           "originX": 0,
           "originY": 0,
-          "values": {"dialogue": "Woah watch out for those spikes over there Ritz, you don't wanna be messin with those...", "autoTalk": true, "cameraOffsetX": 96}
+          "values": {"dialogue": "*Woah* watch out for those spikes over there Ritz, you don't wanna be messin with those...", "autoTalk": true, "cameraOffsetX": 32}
         },
         {"name": "coins", "id": 18, "_eid": "46479631", "x": 3008, "y": 3968, "originX": 0, "originY": 0},
         {
@@ -1176,7 +1176,7 @@
           "originY": 0,
           "values": {"unit": "HalfBeats", "startDelay": 1.5, "showTime": 1, "warnTime": 0.5, "hideTime": 0, "trigger": "Load"}
         },
-        {"name": "player", "id": 1229, "_eid": "29962948", "x": 96, "y": 4000, "originX": 0, "originY": 0}
+        {"name": "player", "id": 1229, "_eid": "29962948", "x": 176, "y": 4032, "originX": 0, "originY": 0}
       ]
     },
     {

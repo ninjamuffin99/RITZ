@@ -1,0 +1,10 @@
+frame_00_delay-0.1s = 0 0 480 288
+frame_01_delay-0.1s = 481 0 480 288
+frame_02_delay-0.1s = 0 289 480 288
+frame_03_delay-0.1s = 0 578 480 288
+frame_04_delay-0.1s = 481 289 480 288
+frame_05_delay-0.1s = 481 578 480 288
+frame_06_delay-0.1s = 962 0 480 288
+frame_07_delay-0.1s = 962 289 480 288
+frame_08_delay-0.1s = 1443 0 480 288
+frame_09_delay-0.6s = 962 578 480 288

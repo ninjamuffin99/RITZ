@@ -89,6 +89,9 @@ class PlayCamera extends FlxCamera
 	
 	override function update(elapsed:Float)
 	{
+		if (player.state == Talking)// todo: set deadzone to null and call super?
+			return;
+		
 		// Deadzone: taller when jumping, but snap to center when on the ground
 		if (player.state == Alive && player.onGround != player.wasOnGround)
 		{
@@ -128,7 +131,7 @@ class PlayCamera extends FlxCamera
 		}
 		
 		// Look around
-		if (player.controls.down && player.onGround)
+		if (player.controls.DOWN && player.onGround)
 		{
 			panDownTimer += elapsed;
 			if (panDownTimer > PAN_DOWN_DELAY + PAN_DOWN_TIME)

@@ -183,7 +183,7 @@ class Player extends FlxSprite
                 xAirBoost = 0;
                 
                 super.update(elapsed);
-            case Alive if (controls.reset):
+            case Alive if (controls.RESET):
                 state = Hurt;
             case Alive:
                 movement(elapsed);
@@ -270,14 +270,6 @@ class Player extends FlxSprite
             return;
         }
         
-        jump  = controls.jump;
-        left  = controls.left;
-        right = controls.right;
-        down  = controls.down;
-        
-        var jumpR  = controls.jumpR; 
-        var jumpP  = controls.jumpP;
-        
         if (velocity.y > 0)
             maxVelocity.y = FALL_SPEED;
         
@@ -320,10 +312,10 @@ class Player extends FlxSprite
                 drag.x = AIR_DRAG;
         }
         
-        if (!onGround && (isTouching(FlxObject.CEILING) || jumpR))
+        if (!onGround && (isTouching(FlxObject.CEILING) || controls.JUMP_R))
             apexReached = true;
         
-        if (left != right)
+        if (controls.LEFT != controls.RIGHT)
         {
             var accel:Float = GROUND_ACCEL;
             if (!onCoyoteGround)
@@ -337,7 +329,7 @@ class Player extends FlxSprite
             // if (hovering)
             //     hoverMulti = 0.6;
             
-            acceleration.x = (left ? -1 : 1) * accel;
+            acceleration.x = (controls.LEFT ? -1 : 1) * accel;
         }
         else
             acceleration.x = 0;
@@ -361,7 +353,7 @@ class Player extends FlxSprite
         
         if (onCoyoteGround)
         {
-            if (jumpP)
+            if (controls.JUMP_P)
                 startJump();
         }
         else
@@ -383,11 +375,11 @@ class Player extends FlxSprite
             }
             
             
-            if (jumpP && !airHopped && !wallClimbing)
+            if (controls.JUMP_P && !airHopped && !wallClimbing)
             {
                 velocity.y = 0;
                 
-                if (USE_NEW_SETTINGS && left != right)
+                if (USE_NEW_SETTINGS && controls.LEFT != controls.RIGHT)
                 {
                     // remove boost if reversing direction
                     if (xAirBoost != 0 && !FlxMath.sameSign(acceleration.x, xAirBoost))
@@ -395,7 +387,7 @@ class Player extends FlxSprite
                         xAirBoost = 0;
                         maxVelocity.x = MAXSPEED;
                     }
-                    velocity.x = maxVelocity.x * (left ? -1 : 1);
+                    velocity.x = maxVelocity.x * (controls.LEFT ? -1 : 1);
                 }
                 // if ((velocity.x > 0 && left) || (velocity.x < 0 && right))
                 // {
@@ -459,7 +451,7 @@ class Player extends FlxSprite
             final allowSkidJump = !onCoyoteGround
                 || (velocity.x != 0 && !FlxMath.sameSign(acceleration.x, velocity.x));
             if (allowSkidJump)
-                velocity.x = maxVelocity.x * (left ? -1 : 1);
+                velocity.x = maxVelocity.x * (controls.LEFT ? -1 : 1);
         }
         maxVelocity.y = Math.max(-airJumpSpeed, -JUMP_SPEED);
         if (platform != null)
@@ -489,7 +481,7 @@ class Player extends FlxSprite
     
     function variableJump_new(elapsed:Float):Void
     {
-        if (jump && !apexReached)
+        if (controls.JUMP && !apexReached)
         {
             if (!jumped)
             {
@@ -513,7 +505,7 @@ class Player extends FlxSprite
     
     function variableJump_old(elapsed:Float):Void
     {
-        if (jump && !apexReached)
+        if (controls.JUMP && !apexReached)
         {
             jumped = true;
             jumpBoost++;
@@ -529,42 +521,6 @@ class Player extends FlxSprite
                 velocity.y -= C * (baseJumpStrength * 1.6) * 2;
             }
         }
-    }
-
-    private function wallJumping():Void
-    {
-        if (isTouching(FlxObject.WALL))
-        {
-            
-            if (jump && down)
-                jump = down = false;
-            
-            if (jump || down)
-            {
-                if (jump)
-                {
-                    acceleration.y = -GROUND_ACCEL * 0.8;
-                }
-    
-                if (down)
-                {
-                    acceleration.y = 900;
-                }
-            }
-            else
-            {
-                acceleration.y = 0;
-            }
-            
-    
-    
-            wallClimbing = true;
-        }
-        else
-        {
-            wallClimbing = false;
-        }
-
     }
     
     function makeDust(type:DustType):Dust

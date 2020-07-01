@@ -37,6 +37,8 @@ class EndState extends flixel.FlxState
         "",
         "Made with HaxeFlixel",
         "",
+        "Shoutouts to mike for trigonomety math help lmao",
+        "",
         "Source code",
         "github.com/ninjamuffin99/actualPixelDay2020",
         "",
@@ -100,12 +102,12 @@ class EndState extends flixel.FlxState
         {
             if (finishedShit)
             {
-                FlxG.switchState(new MenuState());
+                FlxG.switchState(new TitleState());
             }
             else
             {
                 finishedShit = true;
-                openSubState(new DialogueSubstate(dumbass.dialogue));
+                openSubState(new DialogueSubstate(dumbass.dialogue, null));
             }
         }
 

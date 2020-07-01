@@ -1,0 +1,37 @@
+[
+    {
+        "path": "assets/music/fluffydream",
+        "title": "Ritz's Dream",
+        "description": "The title theme for the game."
+    },
+    {
+        "path": "assets/music/fluffydreamDX",
+        "title": "Ritz's Dream (DX version)",
+        "description": "The title theme for the game, but the DX version of it. Kawaisprite is pretty cool."
+    },
+    {
+        "path": "assets/music/pillow",
+        "title": "Frozen Cheese",
+        "description": "This is the song that plays when you play the game. I don't know what else to add."
+    },
+    {
+        "path": "assets/music/pillowDX",
+        "title": "Frozen Cheese (DX version)",
+        "description": "This is the DX remake of Frozen Cheese. It's got all that god damn classic shit yo. Bumping my boys. Can you believe it?"
+    },
+    {
+        "path": "assets/music/ritz",
+        "title": "Ritz The Rat!",
+        "description": "The credits theme for the game."
+    },
+    {
+        "path": "assets/music/ultracheddar",
+        "title": "Ultra Cheddar!",
+        "description": "The main menu music for the game. Introduced in the DX version of the game. Pretty awesome."
+    },
+    {
+        "path": "assets/music/radical",
+        "title": "Radical Rat",
+        "description": "This song is so radical!"
+    }
+]

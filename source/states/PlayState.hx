@@ -1,7 +1,7 @@
 package states;
 
-import ui.Controls;
 import OgmoPath;
+import ui.Controls;
 import beat.BeatGame;
 import data.OgmoTilemap;
 import data.Level;
@@ -29,9 +29,8 @@ import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
-import flixel.tweens.FlxTween;
-import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
+import flixel.util.FlxColor;
 
 import flixel.addons.display.FlxBackdrop;
 
@@ -80,7 +79,6 @@ class PlayState extends flixel.FlxState
 		bg = new FlxBackdrop(AssetPaths.dumbbg__png);
 		bg.scrollFactor.set(0.75, 0.75);
 		bg.alpha = 0.75;
-		bg.cameras = [];//prevents it from showing in the dialog substates camera
 		#if debug bg.ignoreDrawDebug = true; #end
 		
 		add(bg);
@@ -100,6 +98,7 @@ class PlayState extends flixel.FlxState
 		FlxG.worldBounds.set(0, 0, 0, 0);
 		FlxG.cameras.remove(FlxG.camera);
 		FlxG.camera = null;
+		FlxCamera.defaultCameras = [];// Added to in createPlayer
 		createInitialLevel();
 		createUI();
 	}
@@ -187,9 +186,9 @@ class PlayState extends flixel.FlxState
 		
 		playerCameras[player] = camera;
 		FlxG.cameras.add(camera);
+		FlxCamera.defaultCameras.push(camera);
 		if (FlxG.camera == null)
 			FlxG.camera = camera;
-		bg.cameras.push(camera);
 		
 		splitCameras();
 		
@@ -296,8 +295,7 @@ class PlayState extends flixel.FlxState
 			{
 				checkPlayerState(player);
 				
-				
-				pressedPause = pressedPause || player.controls.pause;
+				pressedPause = pressedPause || player.controls.PAUSE;
 			}
 		);
 		
@@ -325,9 +323,10 @@ class PlayState extends flixel.FlxState
 	function updatePlatforms(player:Player)
 	{
 		// Disable one way platforms when pressing down
-		grpOneWayPlatforms.forEach((platform)->platform.cloudSolid = !player.down);
-		grpTilemaps.forEach((level)->level.setTilesCollisions(40, 4, player.down ? FlxObject.NONE : FlxObject.UP));
+		grpOneWayPlatforms.forEach((platform)->platform.cloudSolid = !player.controls.DOWN);
+		grpTilemaps.forEach((level)->level.setTilesCollisions(40, 4, player.controls.DOWN ? FlxObject.NONE : FlxObject.UP));
 		FlxG.collide(grpTilemaps, player);
+		FlxG.collide(grpPlatforms, player);
 	}
 	
 	inline function checkDoors()
@@ -452,28 +451,20 @@ class PlayState extends flixel.FlxState
 		dialogueBubble.visible = true;
 		dialogueBubble.setPosition(checkpoint.x + 20, checkpoint.y - 10);
 		
-		if (player.controls.talk || autoTalk)
+		if (player.controls.TALK || autoTalk)
 		{
 			checkpoint.onTalk();
-			persistentUpdate = true;
-			persistentDraw = true;
 			player.state = Talking;
-			var oldZoom = FlxG.camera.zoom;
-			var subState = new DialogueSubstate(dialogue, false);
-			subState.closeCallback = ()->
-			{
-				persistentUpdate = false;
-				persistentDraw = false;
-				final tweenTime = 0.3;
-				FlxTween.tween(FlxG.camera, { zoom: oldZoom }, tweenTime, { onComplete: (_)->player.state = Alive } );
-				if (checkpoint.cameraOffsetX != 0)
-					FlxTween.tween(FlxG.camera.targetOffset, { x:0 }, tweenTime);
-			};
-			openSubState(subState);
-			final tweenTime = 0.25;
-			FlxTween.tween(FlxG.camera, { zoom: oldZoom * 2 }, tweenTime, {onComplete:(_)->subState.start() });
-			if (checkpoint.cameraOffsetX != 0)
-				FlxTween.tween(FlxG.camera.targetOffset, { x:checkpoint.cameraOffsetX }, tweenTime);
+			var focalPoint = checkpoint.getGraphicMidpoint(FlxPoint.weak());
+			focalPoint.x += checkpoint.cameraOffsetX;
+			add(new ZoomDialogueSubstate
+				( dialogue
+				, focalPoint
+				, player.controls
+				, playerCameras[player]
+				, ()->player.state = Alive
+				)
+			);
 		}
 		
 		if (checkpoint != curCheckpoint)
