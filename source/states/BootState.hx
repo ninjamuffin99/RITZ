@@ -24,6 +24,7 @@ class BootState extends FlxState
 
     override function create() 
     {
+        FlxG.autoPause = false;
         FlxG.camera.bgColor = FlxColor.WHITE;
 
         var blackBG:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);

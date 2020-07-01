@@ -13,10 +13,10 @@ class TitleState extends flixel.FlxState
     var pressStart:FlxSprite;
     var title:FlxSprite;
 
-    public static var DXmusic:String = "DX";
+    
     override public function create() {
 
-        FlxG.sound.playMusic('assets/music/fluffydream' + TitleState.DXmusic + BootState.soundEXT, 0.7);
+        FlxG.sound.playMusic('assets/music/fluffydream' + OptionsSubState.DXmusic + BootState.soundEXT, 0.7);
         // FlxG.sound.music.fadeIn(5, 0, 1);
         FlxG.camera.fade(FlxColor.WHITE, 2, true);
         FlxG.sound.play('assets/sounds/titleCrash' + BootState.soundEXT, 0.4);
