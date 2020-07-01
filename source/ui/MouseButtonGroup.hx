@@ -120,6 +120,9 @@ class TypedMouseButton<T:FlxSprite> extends FlxTypedButton<T>
         
         if (label != null)
             this.label = label;
+        
+        scale = new FlxCallbackPoint(setLabelScaleX, setLabelScaleY);
+        scale.set(1, 1);
     }
     
     override function update(elapsed:Float)
@@ -152,12 +155,9 @@ class TypedMouseButton<T:FlxSprite> extends FlxTypedButton<T>
                 // check if destroyed
                 if (animation != null)
                 {
-                    final currentScaleX = (toScale - fromScale) * FlxEase.backOut  (factor) + fromScale;
-                    final currentScaleY = (toScale - fromScale) * FlxEase.cubeInOut(factor) + fromScale;
-                    final currentAngle  = (toAngle - fromAngle) * FlxEase.cubeOut  (factor) + fromAngle;
-                    scale.x = label.scale.x = currentScaleX;
-                    scale.y = label.scale.y = currentScaleY;
-                    angle = label.angle = currentAngle;
+                    scale.x = (toScale - fromScale) * FlxEase.backOut  (factor) + fromScale;
+                    scale.y = (toScale - fromScale) * FlxEase.cubeInOut(factor) + fromScale;
+                    angle   = (toAngle - fromAngle) * FlxEase.cubeOut  (factor) + fromAngle;
                 }
             }
         );
@@ -173,6 +173,17 @@ class TypedMouseButton<T:FlxSprite> extends FlxTypedButton<T>
         if (FlxG.mouse.justMoved || FlxG.mouse.justPressed || FlxG.mouse.justReleased)
             super.updateButton();
     }
+    
+    override function set_angle(value:Float)
+    {
+        if (label != null)
+            label.angle = value;
+        
+        return super.set_angle(value);
+    }
+    
+    function setLabelScaleX(point:FlxPoint) if (label != null) label.scale.x = point.x;
+    function setLabelScaleY(point:FlxPoint) if (label != null) label.scale.y = point.y;
 }
 
 class TypedMouseButtonGroup<T:TypedMouseButton<Dynamic>> extends TypedButtonGroup<T>
