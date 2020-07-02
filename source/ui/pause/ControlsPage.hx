@@ -15,6 +15,8 @@ import flixel.input.keyboard.FlxKey;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 
+using flixel.util.FlxStringUtil;
+
 class ControlsPage extends PausePage
 {
     final settings:PlayerSettings;
@@ -57,18 +59,50 @@ class ControlsPage extends PausePage
             var nextX = 0.0;
             if (settings.controls.keyboardScheme != None)
             {
-                var button = deviceList.addNewButton(0, 0, "KEYS", onDeviceSelect.bind(Keys));
+                final button = deviceList.addNewButton(0, 0, "KEYS", onDeviceSelect.bind(Keys));
                 nextX += button.width * 1.25;
             }
             
             for (id in settings.controls.gamepadsAdded)
             {
-                var button = deviceList.addNewButton(nextX, 0, 'PAD $id', onDeviceSelect.bind(Gamepad(id)));
+                final name = getPadName(FlxG.gamepads.getByID(id).name).toUpperCase();
+                final button = deviceList.addNewButton(nextX, 0, name, onDeviceSelect.bind(Gamepad(id)));
                 nextX += button.width * 1.25;
             }
             
             deviceList.x = (settings.camera.width - deviceList.width) / 2;
         }
+    }
+    
+    function getPadName(name:String):String
+    {
+        name = name.toLowerCase().remove("-").remove("_");
+        return if (name.contains("ouya"))
+                "Ouya"; // "OUYA Game Controller"
+            else if (name.contains("wireless controller") || name.contains("ps4"))
+                "PS4"; // "Wireless Controller" or "PS4 controller"
+            else if (name.contains("logitech"))
+                "Logi";
+            else if (name.contains("xbox"))
+                "XBox"
+            else if (name.contains("xinput"))
+                "XInput";
+            else if (name.contains("nintendo rvlcnt01tr") || name.contains("nintendo rvlcnt01"))
+                "Wii"; // WiiRemote w/o  motion plus
+            else if (name.contains("mayflash wiimote pc adapter"))
+                "Wii"; // WiiRemote paired to MayFlash DolphinBar (with or w/o motion plus)
+            else if (name.contains("pro controller"))
+                "Pro_Con";
+            else if (name.contains("joycon l+r"))
+                "Joycons";
+            else if (name.contains("joycon (l)"))
+                "Joycon_L";
+            else if (name.contains("joycon (r)"))
+                "Joycon_R";
+            else if (name.contains("mfi"))
+                "MFI";
+            else
+                "Pad";
     }
     
     function onDeviceSelect(device:Device)
