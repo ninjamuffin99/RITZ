@@ -6,6 +6,7 @@ import ui.Controls;
 import ui.MouseButtonGroup;
 import ui.Prompt;
 import ui.pause.PauseSubstate;
+import utils.SpriteEffects;
 
 import flixel.FlxG;
 import flixel.FlxCamera;
@@ -157,13 +158,13 @@ class ControlsPage extends PausePage
     {
         super.update(elapsed);
         
-        if (!getControlsBlocked() && settings.controls.BACK)
+        if (deviceList == null || deviceList.active)
         {
-            if (deviceList == null || deviceList.active)
+            if (!getControlsBlocked() && settings.controls.BACK)
                 navCallback(Main);
-            else
-                hideDevicePage();
         }
+        else if (devicePage != null && devicePage.exists && devicePage.hideRequested)
+            hideDevicePage();
     }
     
     function hideDevicePage()
@@ -175,7 +176,7 @@ class ControlsPage extends PausePage
     
     override function allowUnpause() return !getControlsBlocked();
     
-    inline function getControlsBlocked() return devicePage != null && devicePage.alive && devicePage.blockingKeys;
+    inline function getControlsBlocked() return devicePage != null && devicePage.alive && devicePage.blockingParentKeys;
 }
 
 private typedef ButtonData = { button:MouseButton, control:Control, ?id:Int};
@@ -184,6 +185,7 @@ private class DevicePage extends FlxSpriteGroup
     static final allControls = Control.createAll();
     
     var inputs:InputGrid;
+    var controlNames = new Array<BitmapText>();
     var buttonMap = new Array<Array<ButtonData>>();
     var settings:PlayerSettings;
     var currentDevice:Device;
@@ -192,8 +194,13 @@ private class DevicePage extends FlxSpriteGroup
     var fullWidth:Float = 0;
     override function get_width() return fullWidth;
     
-    public var blockingKeys(get, never):Bool;
+    public var hideRequested(default, null) = false;
+    public var blockingParentKeys(get, never):Bool;
+    inline function get_blockingParentKeys():Bool return !isValidSetup || blockingKeys;
+    var blockingKeys(get, never):Bool;
     inline function get_blockingKeys():Bool return prompt.alive;
+    
+    var isValidSetup = true;
     
     public function new (settings:PlayerSettings)
     {
@@ -208,6 +215,7 @@ private class DevicePage extends FlxSpriteGroup
         {
             var controlName = new Nokia8Text(0, 0, control.getName());
             add(controlName);
+            controlNames.push(controlName);
             controlName.y += startY + i * (buttonHeight + gap);
             if (controlsRight < controlName.x + controlName.width)
                 controlsRight = controlName.x + controlName.width;
@@ -242,6 +250,8 @@ private class DevicePage extends FlxSpriteGroup
     
     public function showDeviceControls(controls:Controls, device:Device, animateIn:Bool)
     {
+        hideRequested = false;
+        isValidSetup = true;
         var format = InputFormatter.format.bind(_, device);
         
         currentDevice = device;
@@ -262,16 +272,13 @@ private class DevicePage extends FlxSpriteGroup
         {
             inputs.active = false;
             scale.x = scale.y = 0.01;
-            FlxTween.tween(this,
-                { "scale.x":1, "scale.y":1 },
-                0.25,
-                { ease:FlxEase.backOut, onComplete:(_)->inputs.active = true }
-            );
+            SpriteEffects.scaleToInTime(this, 1, 0.25, ()->inputs.active = true);
         }
     }
     
     public function hide(animateOut:Bool)
     {
+        hideRequested = false;
         if (animateOut)
         {
             inputs.active = false;
@@ -289,16 +296,48 @@ private class DevicePage extends FlxSpriteGroup
                 }
             );
         }
+        else
+            kill();
     }
     
     override function update(elapsed:Float)
     {
         super.update(elapsed);
         
-        if (!blockingKeys && settings.controls.RESET)
+        if (!blockingKeys)
         {
-            var data = buttonMap[Math.floor(inputs.selected / inputs.columns)][inputs.selected % inputs.columns];
-            replaceBinding(data, null);
+            if (settings.controls.RESET)
+            {
+                var data = buttonMap[Math.floor(inputs.selected / inputs.columns)][inputs.selected % inputs.columns];
+                replaceBinding(data, null);
+            }
+            
+            if (isValidSetup)
+            {
+                if (settings.controls.BACK)
+                    hideRequested = isValidSetup;
+            }
+            else if (settings.controls.BACK || settings.controls.PAUSE)
+            {
+                function showAnim(control)
+                {
+                    var text = controlNames[allControls.indexOf(control)];
+                    if (text.borderColor == BitmapText.DEFAULT_BORDER_COLOR)
+                    {
+                        text.borderColor = 0xFFac3232;
+                        SpriteEffects.wiggleX(text, 4, 0.25, ()->text.borderColor = BitmapText.DEFAULT_BORDER_COLOR);
+                    }
+                }
+                
+                if (settings.controls.getInputsFor(ACCEPT, currentDevice).length == 0)
+                    showAnim(ACCEPT);
+                
+                if (settings.controls.getInputsFor(BACK, currentDevice).length == 0)
+                    showAnim(BACK);
+                
+                if (settings.controls.getInputsFor(PAUSE, currentDevice).length == 0)
+                    showAnim(PAUSE);
+            }
         }
     }
     
@@ -330,6 +369,15 @@ private class DevicePage extends FlxSpriteGroup
     
     function replaceBinding(data:ButtonData, inputId:Null<Int>)
     {
+        if (inputId != null)
+        {
+            // Don't allow ACCEPT and BACK to share an input
+            if (data.control == ACCEPT)
+                removeInputFromControl(BACK, inputId);
+            else if (data.control == BACK)
+                removeInputFromControl(ACCEPT, inputId);
+        }
+        
         settings.controls.replaceBinding(data.control, currentDevice, inputId, data.id);
         
         var newText = inputId == null ? " " : InputFormatter.format(inputId, currentDevice);
@@ -351,6 +399,25 @@ private class DevicePage extends FlxSpriteGroup
             data.button.text = newText;
         
         data.id = inputId;
+        
+        checkValidSetup();
+    }
+    
+    function removeInputFromControl(control, inputId:Int)
+    {
+        final buttonIndex = settings.controls.getInputsFor(control, currentDevice).indexOf(inputId);
+        final controlIndex = allControls.indexOf(control);
+        if (buttonIndex != -1)
+            replaceBinding(buttonMap[controlIndex][buttonIndex], null); // remove binding
+    }
+    
+    public function checkValidSetup()
+    {
+        isValidSetup
+            =  settings.controls.getInputsFor(ACCEPT, currentDevice).length > 0
+            && settings.controls.getInputsFor(BACK  , currentDevice).length > 0
+            && settings.controls.getInputsFor(PAUSE , currentDevice).length > 0
+            ;
     }
 }
 
