@@ -3,6 +3,7 @@ package ui;
 import states.PlayState;
 import data.PlayerSettings;
 import ui.Controls;
+import utils.SpriteEffects;
 
 import flixel.FlxCamera;
 import flixel.FlxSprite;
@@ -61,7 +62,7 @@ class GamepadAlert extends FlxSubState
             );
             field.offset.set(Std.int(field.width / 2), Std.int(field.height / 2));
             field.scale.set(0, 0);
-            scaleToInTime(field, 1, 0.15);
+            SpriteEffects.scaleToInTime(field, 1, 0.15);
             add(field);
             return field;
         }
@@ -139,14 +140,14 @@ class GamepadAlert extends FlxSubState
                 {
                     isValid = false;
                     p1.borderColor = 0xFFac3232;
-                    wiggleX(p1, 16, wiggleTime);
+                    SpriteEffects.wiggleX(p1, 16, wiggleTime);
                 }
                 
                 if (PlayerSettings.numAvatars == 2 && p2Devices.length == 0)
                 {
                     isValid = false;
                     p2.borderColor = 0xFFac3232;
-                    wiggleX(p2, 16, wiggleTime);
+                    SpriteEffects.wiggleX(p2, 16, wiggleTime);
                 }
                 
                 if (isValid)
@@ -303,51 +304,6 @@ class GamepadAlert extends FlxSubState
     
     static function onDeviceDisconnected(gamepad:FlxGamepad):Void
     {
-    }
-    
-    inline static public function scaleToInTime(sprite:FlxSprite, scaleFactor:Float, duration:Float, ?onComplete:()->Void)
-    {
-        var options:TweenOptions = { ease:FlxEase.backOut };
-        if (onComplete != null)
-            options.onComplete = (_)->onComplete();
-        return FlxTween.tween(sprite.scale, {x:scaleFactor, y:scaleFactor}, duration, options);
-    }
-    
-    static function wiggleX(target, ?distance, duration = 0.5, ?onComplete, numWiggles = 5)
-        inline wiggle(target, distance, true, duration, onComplete);
-    
-    static function wiggleY(target, ?distance, duration = 0.5, ?onComplete, numWiggles = 5)
-        inline wiggle(target, distance, false, duration, onComplete);
-    
-    @:noCompletion
-    static function wiggle(target:FlxSprite, ?distance:Float, horizontal = true, duration = 0.5, ?onComplete:()->Void, numWiggles = 5)
-    {
-        if (distance == null)
-            distance = horizontal ? target.width : target.height;
-        
-        var start = horizontal ? target.x : target.y;
-        function end(_)
-        {
-            if (horizontal)
-                target.x = start;
-            else
-                target.y = start;
-            if (onComplete != null)
-                onComplete();
-        }
-        
-        FlxTween.num(0, 1, duration, { onComplete:end }, 
-            function (n)
-            {
-                final tSin = Math.sin(n * Math.PI * numWiggles);
-                final strength = 1 - FlxEase.quadIn(n);
-                
-                if (horizontal)
-                    target.x = start + distance * tSin * strength;
-                else
-                    target.y = start + distance * tSin * strength;
-            }
-        );
     }
 }
 
@@ -520,7 +476,7 @@ private class Controller extends FlxSpriteGroup
     inline function scaleDeviceToInTime(scaleFactor, duration, ?onComplete)
     {
         animating = true;
-        return GamepadAlert.scaleToInTime(deviceSprite, scaleFactor, duration,
+        return SpriteEffects.scaleToInTime(deviceSprite, scaleFactor, duration,
             ()->
             {
                 animating = false;
