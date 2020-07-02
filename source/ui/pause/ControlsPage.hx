@@ -169,7 +169,7 @@ class ControlsPage extends PausePage
     
     function hideDevicePage()
     {
-        FlxTween.tween(deviceList.members[deviceList.selected].scale, {x:1, y:1}, 0.25, { ease:FlxEase.backIn });
+        SpriteEffects.scaleToInTime(deviceList.members[deviceList.selected], 1, 0.25);
         devicePage.hide(true);
         deviceList.active = true;
     }
@@ -393,7 +393,7 @@ private class DevicePage extends FlxSpriteGroup
                 data.button.label.scale.set();
                 data.button.text = newText;
             }
-            FlxTween.tween(data.button.label.scale, { x:scale, y:scale }, 0.1, options);
+            SpriteEffects.scaleToInTime(data.button.label, scale, 0.1, options);
         }
         else
             data.button.text = newText;

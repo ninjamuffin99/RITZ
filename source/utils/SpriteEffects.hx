@@ -14,12 +14,12 @@ class SpriteEffects
         ?options:TweenOptions)
     {
         if (options == null)
-            options = { ease: FlxEase.backOut };
+            options = { ease: sprite.scale.x < scaleFactor ? FlxEase.backOut : FlxEase.backIn };
         
         if (onComplete != null)
             options.onComplete = (_)->onComplete();
         
-        return FlxTween.tween(sprite.scale, {x:scaleFactor, y:scaleFactor}, duration, options);
+        return FlxTween.tween(sprite.scale, { x:scaleFactor, y:scaleFactor }, duration, options);
     }
     
     static public function wiggleX(target, ?distance, duration = 0.5, ?onComplete, numWiggles = 5)
