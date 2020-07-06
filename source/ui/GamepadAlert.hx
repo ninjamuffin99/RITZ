@@ -21,9 +21,12 @@ class GamepadAlert extends FlxSubState
 {
     // @:allow(ui.GamepadAlert.Controller)
     static public inline var DISTANCE = 100;
+    
     var title:BitmapText;
+    var bg:SliceBg;
     var p1:BitmapText;
     var p2:BitmapText;
+    var none:BitmapText;
     var controllers = new FlxTypedGroup<Controller>();
     var state:State;
     
@@ -34,17 +37,28 @@ class GamepadAlert extends FlxSubState
         super.create();
         state = Intro;
         
-        camera = new FlxCamera();
+        final camera = new FlxCamera(0, 0, FlxG.width, FlxG.height);
         camera.bgColor = 0x0;
         FlxG.cameras.add(camera);
+        cameras = [camera];
         
-        title = new BitmapText(0, 0, "GAMEPAD CONNECTED");
+        final border = 8;
+        bg = SliceBg.alert();
+        bg.setSize(Std.int(FlxG.width - border * 2), Std.int(FlxG.height - border * 2));
+        bg.screenCenter(XY);
+        add(bg);
+        
+        title = new BitmapText(0, bg.y + 8, newGamepads.length > 0 ? "GAMEPAD CONNECTED" : "DEVICES");
         title.screenCenter(X);
-        title.y = -title.lineHeight;
         add(title);
         
         controllers.kill();
-        FlxTween.tween(title, { y: 8 }, 0.25, { ease:FlxEase.backOut, onComplete:(_)->onAlertIn() });
+        final tweenTime = 0.5;
+        bg.scale.set(0,0);
+        SpriteEffects.scaleToInTime(bg, 1, tweenTime, { ease:FlxEase.quartOut });
+        title.scale.set(0,0);
+        SpriteEffects.scaleToInTime(title, 1, tweenTime, { ease:FlxEase.quartOut });
+        new FlxTimer().start(0.2, (_)->onAlertIn());
     }
     
     function onAlertIn()
@@ -57,7 +71,7 @@ class GamepadAlert extends FlxSubState
             var field = new BitmapText
             (
                 title.x + title.width / 2 + alignment * DISTANCE,
-                title.y + title.height + 8,
+                title.y + title.height + 16,
                 text
             );
             field.offset.set(Std.int(field.width / 2), Std.int(field.height / 2));
@@ -69,16 +83,37 @@ class GamepadAlert extends FlxSubState
         
         p1 = createPlayerSlot(-1, "P1");
         p2 = createPlayerSlot(1, "P2");
-        createPlayerSlot(0, "NONE");
+        none = createPlayerSlot(0, "NONE");
         
         var rowY = p1.y + p1.height;
-        var keysSprite = new Controller(0, rowY, null, P1);
+        var keysSprite = new Controller(0, rowY, null);
         controllers.add(keysSprite);
         rowY += keysSprite.height * 1.5;
         
         for (i in 0...newGamepads.length)
         {
             var padSprite = new Controller(0, rowY, newGamepads[i]);
+            controllers.add(padSprite);
+            rowY += padSprite.height * 1.5;
+        }
+        
+        final requestingPlayer = switch(GamepadAlert.requestingPlayer)
+        {
+            case -1: None;
+            case 0: P1;
+            case 1: P2;
+            case unhandled:
+                throw "Unexpected requestingPlayer: " + unhandled;
+        }
+        
+        if (keysSprite.initialPlayer == requestingPlayer)
+            keysSprite.unlock(false);
+        
+        for (i in 0...oldGamepads.length)
+        {
+            var padSprite = new Controller(0, rowY, oldGamepads[i], false);
+            if (padSprite.initialPlayer != requestingPlayer)
+                padSprite.lock(false);
             controllers.add(padSprite);
             rowY += padSprite.height * 1.5;
         }
@@ -203,7 +238,7 @@ class GamepadAlert extends FlxSubState
     function showConfirmationPrompt(controlsList:Array<Controller>, msg, onYes, ?onNo, ?onChoose)
     {
         if(!state.match(Selecting|Animating))
-            throw "Going to State.Selection from State." + state.getName();
+            throw "Going to State.Selecting from State." + state.getName();
         
         state = Confirming;
         
@@ -218,6 +253,7 @@ class GamepadAlert extends FlxSubState
         }
         
         var prompt = new Prompt(controls);
+        prompt.camera = camera;
         prompt.setup
         (
             msg,
@@ -227,19 +263,21 @@ class GamepadAlert extends FlxSubState
                 state = Selecting;
                 if (onNo != null)
                     onNo();
-                
+            },
+            ()->
+            {
                 prompt.kill();
                 remove(prompt);
-            },
-            onChoose
+                
+                if (onChoose != null)
+                    onChoose();
+            }
         );
         add(prompt);
     }
     
     function confirmDeviceSelections()
     {
-        state = Outro;
-        
         if (PlayerSettings.numAvatars < 2)
         {
             var hasP2Devices = false;
@@ -253,7 +291,12 @@ class GamepadAlert extends FlxSubState
             }
             
             if (hasP2Devices)
+            {
                 cast (FlxG.state, PlayState).createSecondPlayer();
+                // bring to front
+                FlxG.cameras.remove(camera, false);
+                FlxG.cameras.add(camera);
+            }
         }
         
         for (controller in controllers.members)
@@ -269,31 +312,65 @@ class GamepadAlert extends FlxSubState
                 
                 switch (controller.player)
                 {
+                    case None:
                     case P1: PlayerSettings.player1.controls.copyFrom(controller.controls);
                     case P2: PlayerSettings.player2.controls.copyFrom(controller.controls);
-                    case None:
-                        if (oldGamepads.indexOf(controller.gamepad) == -1)
-                            oldGamepads.push(controller.gamepad);
                 }
             }
         }
         
-        newGamepads.resize(0);
+        requestingPlayer = -1;
+        while (newGamepads.length > 0)
+            oldGamepads.push(newGamepads.shift());
         
-        close();
+        startOutro();
     }
     
+    function startOutro()
+    {
+        state = Outro;
+        
+        FlxTween.num(1, 0, 0.25, { ease: FlxEase.backIn },
+            (value)->
+            {
+                p1.scale.set(value, value);
+                p2.scale.set(value, value);
+                none.scale.set(value, value);
+                for (controller in controllers.members)
+                    controller.scale.set(value, value);
+            }
+        );
+        
+        final tweenTime = 0.5;
+        SpriteEffects.scaleToInTime(bg, 0, tweenTime, { ease:FlxEase.quartIn });
+        SpriteEffects.scaleToInTime(title, 0, tweenTime, close, { ease:FlxEase.quartIn });
+    }
+    
+    override function close()
+    {
+        super.close();
+        FlxG.cameras.remove(camera);
+    }
+    
+    /** The device Used to bring up the */
+    static var requestingPlayer:Int = -1;
     static var newGamepads:Array<FlxGamepad> = [];
     static var oldGamepads:Array<FlxGamepad> = [];
-    static public function hasNewGamepads():Bool
+    static public function alertPending():Bool
     {
-        return newGamepads.length > 0;
+        return newGamepads.length > 0
+            || requestingPlayer != -1;
     }
     
     static public function init():Void
     {
         FlxG.gamepads.deviceConnected.add(onDeviceConnected);
         FlxG.gamepads.deviceDisconnected.add(onDeviceDisconnected);
+    }
+    
+    static public function request(player:Int)
+    {
+        requestingPlayer = player;
     }
     
     static function onDeviceConnected(gamepad:FlxGamepad):Void
@@ -329,7 +406,7 @@ private class Controller extends FlxSpriteGroup
     final arrowRight:FlxSprite;
     final arrowLeft:FlxSprite;
     
-    public function new (x = 0.0, y = 0.0, ?gamepad:FlxGamepad, player:SelectedPlayer = None)
+    public function new (x = 0.0, y = 0.0, ?gamepad:FlxGamepad, autoLock = true)
     {
         final graphic = gamepad == null ? KEYBOARD_IMAGE : GAMEPAD_IMAGE;
         deviceSprite = new FlxSprite(0, 0, graphic);
@@ -354,9 +431,27 @@ private class Controller extends FlxSpriteGroup
         add(arrowLeft);
         add(arrowRight);
         
-        initialPlayer = player;
-        setPlayer(player, false);
-        locked = player != None;
+        initialPlayer = if (gamepad == null)
+        {
+            if (PlayerSettings.player1.controls.keyboardScheme != None)
+                P1;
+            else if (PlayerSettings.numPlayers > 1 && PlayerSettings.player2.controls.keyboardScheme != None)
+                P2;
+            else
+                None;
+        }
+        else
+        {
+            if (PlayerSettings.player1.controls.gamepadsAdded.contains(gamepad.id))
+                P1;
+            else if (PlayerSettings.numPlayers > 1 && PlayerSettings.player2.controls.gamepadsAdded.contains(gamepad.id))
+                P2;
+            else
+                None;
+        }
+        
+        setPlayer(initialPlayer, false);
+        locked = player != None && autoLock;
         if (locked)
             lock(false);
         else
@@ -394,6 +489,11 @@ private class Controller extends FlxSpriteGroup
         active = false;
         deviceSprite.scale.set(0,0);
         scaleDeviceToInTime(locked ? 1 : UNLOCK_SCALE, duration, ()->active = true);
+    }
+    
+    function showOutro(duration:Float)
+    {
+        scaleDeviceToInTime(0, duration);
     }
     
     override function update(elapsed:Float)

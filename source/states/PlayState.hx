@@ -259,7 +259,7 @@ class PlayState extends flixel.FlxState
 	{
 		super.update(elapsed);
 		
-		if (GamepadAlert.hasNewGamepads())
+		if (GamepadAlert.alertPending())
 		{
 			openSubState(new GamepadAlert());
 			return;

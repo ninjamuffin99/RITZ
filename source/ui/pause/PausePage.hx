@@ -13,7 +13,9 @@ class PausePage extends FlxGroup
         super(maxSize);
     }
     
-    public function allowUnpause() return true;
+    public function allowUnpause() return false;
+    
+    public function awaitingInput() return false;
     
     override function kill()
     {

@@ -9,9 +9,11 @@ import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.group.FlxGroup;
-import flixel.text.FlxText;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
+import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 
 enum PausePageType
 {
@@ -25,6 +27,7 @@ class PauseSubstate extends flixel.FlxSubState
 {
     var screen1:PauseScreen;
     var screen2:Null<PauseScreen>;
+    var gamepadAlert:GamepadAlert;
     
     public function new (settings1:PlayerSettings, ?settings2:PlayerSettings, ?startingPage:PausePageType)
     {
@@ -66,8 +69,31 @@ class PauseSubstate extends flixel.FlxSubState
     {
         super.update(elapsed);
         
+        final awaitingInput = screen1.awaitingInput() || (screen2 != null && screen2.awaitingInput());
+        if (!awaitingInput && GamepadAlert.alertPending())
+        {
+            if (gamepadAlert == null)
+                showGamepadAlert();
+            return;
+        }
+        
         if (!screen1.paused && (screen2 == null || !screen2.paused))
             close();
+    }
+    
+    function showGamepadAlert()
+    {
+        gamepadAlert = new GamepadAlert();
+        gamepadAlert.closeCallback = onGamepadAlertClose;
+        openSubState(gamepadAlert);
+    }
+    
+    function onGamepadAlertClose()
+    {
+        gamepadAlert = null;
+        screen1.redrawPage();
+        if (screen2 != null)
+            screen2.redrawPage();
     }
     
     override function close()
@@ -150,8 +176,13 @@ class PauseScreen extends FlxGroup
         if (!settings.controls.PAUSE)
             pauseReleased = true;
         
-        if (currentPage.allowUnpause() && settings.controls.PAUSE && pauseReleased)
+        if (!currentPage.allowUnpause() && settings.controls.PAUSE && pauseReleased)
             setPage(pageType == Ready ? Main : Ready);
+    }
+    
+    inline public function redrawPage()
+    {
+        currentPage.redraw();
     }
     
     override function destroy()
@@ -160,6 +191,11 @@ class PauseScreen extends FlxGroup
         
         pages.clear();
         PlayerSettings.onAvatarRemove.remove(onAvatarRemove);
+    }
+    
+    inline public function awaitingInput():Bool
+    {
+        return currentPage.awaitingInput();
     }
     
     inline function get_paused() return pageType != Ready;

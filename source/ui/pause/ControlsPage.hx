@@ -16,8 +16,6 @@ import flixel.input.keyboard.FlxKey;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 
-using flixel.util.FlxStringUtil;
-
 class ControlsPage extends PausePage
 {
     final settings:PlayerSettings;
@@ -27,6 +25,7 @@ class ControlsPage extends PausePage
     var deviceList:ButtonGroup;
     var devicePage:DevicePage;
     var device:Device = null;
+    var waitMsg:BitmapText = null;
     
     public function new(settings:PlayerSettings, navCallback:(PausePageType)->Void)
     {
@@ -39,17 +38,32 @@ class ControlsPage extends PausePage
         add(title);
     }
     
-    function firstDraw()
+    function updateDeviceList()
     {
-        final hasKeys = settings.controls.keyboardScheme != None;
-        final numDevices = settings.controls.gamepadsAdded.length + (hasKeys ? 1 : 0);
-        if (numDevices == 1)
+        if (deviceList != null)
         {
-            if (!hasKeys)
-                showDevice(Gamepad(settings.controls.gamepadsAdded[0]), false);
-            else
-                showDevice(Keys, false);
+            remove(deviceList);
+            deviceList.destroy();
+            deviceList = null;
         }
+        
+        if (devicePage != null)
+        {
+            devicePage.hide(false);
+            devicePage.active = false;
+        }
+        
+        createDeviceList();
+    }
+    
+    function createDeviceList()
+    {
+        var gamepadsTotal = PlayerSettings.player1.controls.gamepadsAdded.length;
+        if (PlayerSettings.numPlayers > 1)
+            gamepadsTotal += PlayerSettings.player2.controls.gamepadsAdded.length;
+        
+        if (gamepadsTotal == 0)
+            showDevice(Keys, false);
         else
         {
             add(deviceList = new ButtonGroup(settings.controls));
@@ -66,44 +80,15 @@ class ControlsPage extends PausePage
             
             for (id in settings.controls.gamepadsAdded)
             {
-                final name = getPadName(FlxG.gamepads.getByID(id).name).toUpperCase();
+                final name = InputFormatter.getPadName(FlxG.gamepads.getByID(id).name).toUpperCase();
                 final button = deviceList.addNewButton(nextX, 0, name, onDeviceSelect.bind(Gamepad(id)));
                 nextX += button.width * 1.25;
             }
             
+            deviceList.addNewButton(nextX, 0, "MANAGE", manageDevices);
+            
             deviceList.x = (settings.camera.width - deviceList.width) / 2;
         }
-    }
-    
-    function getPadName(name:String):String
-    {
-        name = name.toLowerCase().remove("-").remove("_");
-        return if (name.contains("ouya"))
-                "Ouya"; // "OUYA Game Controller"
-            else if (name.contains("wireless controller") || name.contains("ps4"))
-                "PS4"; // "Wireless Controller" or "PS4 controller"
-            else if (name.contains("logitech"))
-                "Logi";
-            else if (name.contains("xbox"))
-                "XBox"
-            else if (name.contains("xinput"))
-                "XInput";
-            else if (name.contains("nintendo rvlcnt01tr") || name.contains("nintendo rvlcnt01"))
-                "Wii"; // WiiRemote w/o  motion plus
-            else if (name.contains("mayflash wiimote pc adapter"))
-                "Wii"; // WiiRemote paired to MayFlash DolphinBar (with or w/o motion plus)
-            else if (name.contains("pro controller"))
-                "Pro_Con";
-            else if (name.contains("joycon l+r"))
-                "Joycons";
-            else if (name.contains("joycon (l)"))
-                "Joycon_L";
-            else if (name.contains("joycon (r)"))
-                "Joycon_R";
-            else if (name.contains("mfi"))
-                "MFI";
-            else
-                "Pad";
     }
     
     function onDeviceSelect(device:Device)
@@ -112,14 +97,22 @@ class ControlsPage extends PausePage
         showDevice(device, true);
     }
     
+    function manageDevices()
+    {
+        GamepadAlert.request(settings.id);
+        deviceList.active = false;
+        
+        waitMsg = new BitmapText("Waiting for player");
+        waitMsg.x = (settings.camera.width - waitMsg.width) / 2;
+        waitMsg.y = (settings.camera.height - waitMsg.height) / 2;
+        add(waitMsg);
+    }
+    
     override function redraw()
     {
         title.x = (settings.camera.width - title.width) / 2;
         
-        if (device == null && deviceList == null)
-            firstDraw();
-        else if (device != null)
-            showDevice(device, false);
+        updateDeviceList();
     }
     
     override function kill()
@@ -158,9 +151,19 @@ class ControlsPage extends PausePage
     {
         super.update(elapsed);
         
+        if (showingGamepadAlert() && !GamepadAlert.alertPending())
+        {
+            remove(waitMsg);
+            waitMsg.destroy();
+            waitMsg = null;
+            
+            // updateDeviceList();
+            return;
+        }
+        
         if (deviceList == null || deviceList.active)
         {
-            if (!getControlsBlocked() && settings.controls.BACK)
+            if (!awaitingInput() && settings.controls.BACK)
                 navCallback(Main);
         }
         else if (devicePage != null && devicePage.exists && devicePage.hideRequested)
@@ -174,9 +177,27 @@ class ControlsPage extends PausePage
         deviceList.active = true;
     }
     
-    override function allowUnpause() return !getControlsBlocked();
+    override function allowUnpause()
+    {
+        return devicePageBlockingControls() || showingGamepadAlert();
+    }
     
-    inline function getControlsBlocked() return devicePage != null && devicePage.alive && devicePage.blockingParentKeys;
+    override function awaitingInput()
+    {
+        return devicePageBlockingControls();
+    }
+    
+    inline function devicePageBlockingControls()
+    {
+        return devicePage != null
+            && devicePage.alive
+            && devicePage.blockingParentControls;
+    }
+    
+    inline function showingGamepadAlert()
+    {
+        return waitMsg != null;
+    }
 }
 
 private typedef ButtonData = { button:MouseButton, control:Control, ?id:Int};
@@ -195,8 +216,8 @@ private class DevicePage extends FlxSpriteGroup
     override function get_width() return fullWidth;
     
     public var hideRequested(default, null) = false;
-    public var blockingParentKeys(get, never):Bool;
-    inline function get_blockingParentKeys():Bool return !isValidSetup || blockingKeys;
+    public var blockingParentControls(get, never):Bool;
+    inline function get_blockingParentControls():Bool return !isValidSetup || blockingKeys;
     var blockingKeys(get, never):Bool;
     inline function get_blockingKeys():Bool return prompt.alive;
     

@@ -7,6 +7,8 @@ import flixel.input.gamepad.FlxGamepad;
 import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 
+using flixel.util.FlxStringUtil;
+
 class InputFormatter
 {
     static public function format(id:Int, device:Device):String
@@ -111,5 +113,36 @@ class InputFormatter
                 };
             case label: label.charAt(0).toUpperCase() + label.substr(1, 2).toLowerCase();
         }
+    }
+    
+    static public function getPadName(name:String):String
+    {
+        name = name.toLowerCase().remove("-").remove("_");
+        return if (name.contains("ouya"))
+                "Ouya"; // "OUYA Game Controller"
+            else if (name.contains("wireless controller") || name.contains("ps4"))
+                "PS4"; // "Wireless Controller" or "PS4 controller"
+            else if (name.contains("logitech"))
+                "Logi";
+            else if (name.contains("xbox"))
+                "XBox"
+            else if (name.contains("xinput"))
+                "XInput";
+            else if (name.contains("nintendo rvlcnt01tr") || name.contains("nintendo rvlcnt01"))
+                "Wii"; // WiiRemote w/o  motion plus
+            else if (name.contains("mayflash wiimote pc adapter"))
+                "Wii"; // WiiRemote paired to MayFlash DolphinBar (with or w/o motion plus)
+            else if (name.contains("pro controller"))
+                "Pro_Con";
+            else if (name.contains("joycon l+r"))
+                "Joycons";
+            else if (name.contains("joycon (l)"))
+                "Joycon_L";
+            else if (name.contains("joycon (r)"))
+                "Joycon_R";
+            else if (name.contains("mfi"))
+                "MFI";
+            else
+                "Pad";
     }
 }

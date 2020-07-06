@@ -319,7 +319,7 @@ class Controls extends FlxActionSet
         {
             var input = action.inputs[i];
             if (input.device == KEYBOARD && keys.indexOf(cast input.inputID) != -1)
-                action.remove(input, true);
+                action.remove(input);
         }
     }
     
@@ -380,7 +380,7 @@ class Controls extends FlxActionSet
             {
                 var input = action.inputs[0];
                 if (input.device == KEYBOARD)
-                    action.remove(input, true);
+                    action.remove(input);
             }
         }
     }
@@ -408,9 +408,11 @@ class Controls extends FlxActionSet
             {
                 var input = action.inputs[i];
                 if (input.device == GAMEPAD && (deviceID == FlxInputDeviceID.ALL || input.deviceID == deviceID))
-                    action.remove(input, true);
+                    action.remove(input);
             }
         }
+        
+        gamepadsAdded.remove(deviceID);
     }
     
     public function addDefaultGamepad(id):Void
@@ -462,7 +464,7 @@ class Controls extends FlxActionSet
         {
             var input = action.inputs[i];
             if (isGamepad(input, gamepadID) && buttons.indexOf(cast input.inputID) != -1)
-                action.remove(input, true);
+                action.remove(input);
         }
     }
     

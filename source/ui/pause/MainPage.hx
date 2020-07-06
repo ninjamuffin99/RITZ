@@ -92,8 +92,13 @@ class MainPage extends PausePage
             navCallback(Ready);
     }
     
+    override function awaitingInput():Bool
+    {
+        return !buttons.active;
+    }
+    
     override function allowUnpause():Bool
     {
-        return buttons.active;
+        return !buttons.active;
     }
 }
