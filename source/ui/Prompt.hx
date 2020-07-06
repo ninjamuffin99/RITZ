@@ -4,10 +4,7 @@ import ui.Controls;
 
 import flixel.FlxBasic;
 import flixel.FlxG;
-import flixel.FlxSprite;
 import flixel.text.FlxBitmapText;
-
-using flixel.util.FlxSpriteUtil;
 
 enum Options
 {
@@ -24,7 +21,7 @@ class Prompt extends flixel.group.FlxGroup {
 	
 	public var controls:Controls;
 	
-	var box:BgSprite;
+	var box:SliceBg;
 	var label:BitmapText;
 	var keyButtons:ButtonGroup;
 	var yesText:BitmapText;
@@ -34,7 +31,7 @@ class Prompt extends flixel.group.FlxGroup {
 		this.controls = controls;
 		super();
 		
-		add(box = new BgSprite());
+		add(box = SliceBg.prompt());
 		
 		add(label = new BitmapText());
 		label.alignment = CENTER;
@@ -140,30 +137,5 @@ class Prompt extends flixel.group.FlxGroup {
 				buttons.active = true;
 			}
 		);
-	}
-}
-
-@:forward
-abstract BgSprite(FlxSprite) to FlxSprite
-{
-	inline public function new(x = 0.0, y = 0.0)
-	{
-		this = new FlxSprite(x, y);
-	}
-	
-	inline public function setSize(width:Int, height:Int)
-	{
-		this.makeGraphic(width, height, 0, true, "prompt-bg");
-		var oldQuality = FlxG.stage.quality;
-		FlxG.stage.quality = LOW;
-		this.drawRoundRect(
-			1, 1,
-			width - 2, height - 2,
-			8, 8,
-			0xFF6d5ba8,
-			{ color:0xFF9089c7, thickness:2 },
-			{ smoothing: false }
-		);
-		FlxG.stage.quality = oldQuality;
 	}
 }

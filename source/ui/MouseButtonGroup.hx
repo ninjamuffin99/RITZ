@@ -16,8 +16,6 @@ import flixel.input.IFlxInput;
 import flixel.math.FlxPoint;
 import flixel.ui.FlxButton;
 
-import flixel.addons.display.FlxSliceSprite;
-
 using StringTools;
 
 @:noCompletion typedef SimpleMouseButton = TypedMouseButton<BitmapText>;

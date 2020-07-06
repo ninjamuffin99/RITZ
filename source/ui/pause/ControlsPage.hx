@@ -499,7 +499,7 @@ private class InputSelectionPrompt extends FlxSpriteGroup
     inline static var BUFFER = 12;
     
     // public final button = new MouseButton(;
-    final bg = new Prompt.BgSprite();
+    final bg = new SliceBg();
     final label = new BitmapText();
     final button:MouseButton;
     var inputCheck:()->Int = null;
