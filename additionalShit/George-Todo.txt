@@ -5,7 +5,8 @@
     - Check behavior with 4+ devices
     + Add instructions on device controls page
     - Fix large letters when binding new inputs
-    - Add new key for MAP since Joycon L doesn't have HOME
+    + Add new key for MAP since Joycon L doesn't have HOME
+    - check that unmappable gamepad buttons aren't ""
     - Need way to ignore/disconnect unresponsive devices
     - Better device selector in controls menu KEYS PRO_CON MANAGE = lame
     + Device controls doesn't move down when device list is added later

@@ -427,7 +427,7 @@ class Controls extends FlxActionSet
             , Control.JUMP   => [A]
             , Control.TALK   => [X]
             , Control.PAUSE  => [START]
-            , Control.MAP    => [GUIDE]
+            , Control.MAP    => [GUIDE, LEFT_SHOULDER, FlxGamepadInputID.BACK]// not all controllers have these
             , Control.RESET  => [Y]
             ]
         );
