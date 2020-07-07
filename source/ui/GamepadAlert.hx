@@ -90,13 +90,6 @@ class GamepadAlert extends FlxSubState
         controllers.add(keysSprite);
         rowY += keysSprite.height * 1.5;
         
-        for (i in 0...newGamepads.length)
-        {
-            var padSprite = new Controller(0, rowY, newGamepads[i]);
-            controllers.add(padSprite);
-            rowY += padSprite.height * 1.5;
-        }
-        
         final requestingPlayer = switch(GamepadAlert.requestingPlayer)
         {
             case -1: None;
@@ -114,6 +107,13 @@ class GamepadAlert extends FlxSubState
             var padSprite = new Controller(0, rowY, oldGamepads[i], false);
             if (padSprite.initialPlayer != requestingPlayer)
                 padSprite.lock(false);
+            controllers.add(padSprite);
+            rowY += padSprite.height * 1.5;
+        }
+        
+        for (i in 0...newGamepads.length)
+        {
+            var padSprite = new Controller(0, rowY, newGamepads[i]);
             controllers.add(padSprite);
             rowY += padSprite.height * 1.5;
         }
