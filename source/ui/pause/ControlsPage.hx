@@ -48,10 +48,7 @@ class ControlsPage extends PausePage
         }
         
         if (devicePage != null)
-        {
             devicePage.hide(false);
-            devicePage.active = false;
-        }
         
         createDeviceList();
     }
@@ -125,16 +122,15 @@ class ControlsPage extends PausePage
     function showDevice(device:Device, animateIn:Bool):Void
     {
         if (devicePage == null)
-        {
             add(devicePage = new DevicePage(settings));
-            // add to bottom
-            if (deviceList != null)
-                devicePage.y = deviceList.y + deviceList.height + 8;
-            else
-                devicePage.y = title.y + title.lineHeight + 2;
-        }
         else
             devicePage.revive();
+        
+        // move to bottom of
+        if (deviceList != null)
+            devicePage.y = deviceList.y + deviceList.height + 2;
+        else
+            devicePage.y = title.y + title.lineHeight + 2;
         
         this.device = device;
         devicePage.showDeviceControls(settings.controls, device, animateIn);
