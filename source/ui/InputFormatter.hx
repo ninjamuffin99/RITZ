@@ -79,24 +79,35 @@ class InputFormatter
             case NUMPADPLUS    : "#+";
             case NUMPADPERIOD  : "#.";
             case NUMPADMULTIPLY: "#*";
-            default: 
-                var input = FlxKey.toStringMap[id];
-                return input.charAt(0) + input.substr(1, 2).toLowerCase();
+            default: titleCaseTrim(FlxKey.toStringMap[id]);
         }
     }
     
     static var dirReg = ~/^(l|r).?-(left|right|down|up)$/;
-    static public function getButtonName(id:Int, gamepad:FlxGamepad):String
+    inline static public function getButtonName(id:Int, gamepad:FlxGamepad):String
     {
-        return switch (gamepad.getInputLabel(id))
+        return switch(gamepad.getInputLabel(id))
         {
-            case null: "";
+            // case null | "": shortenButtonName(FlxGamepadInputID.toStringMap[id]);
+            case label: shortenButtonName(label);
+        }
+    }
+    
+    static function shortenButtonName(name:String)
+    {
+        return switch (name == null ? "" : name.toLowerCase())
+        {
+            case "": "[?]";
             case "square"  : "[]";
             case "circle"  : "()";
             case "triangle": "/\\";
             case "plus"    : "+";
             case "minus"   : "-";
             case "home"    : "Hm";
+            case "guide"   : "Gd";
+            case "back"    : "Bk";
+            case "select"  : "Bk";
+            case "start"   : "St";
             case "left"    : "Lf";
             case "right"   : "Rt";
             case "down"    : "Dn";
@@ -111,8 +122,13 @@ class InputFormatter
                     case "up"   : "U";
                     default: throw "Unreachable exaustiveness case";
                 };
-            case label: label.charAt(0).toUpperCase() + label.substr(1, 2).toLowerCase();
+            case label: titleCaseTrim(label);
         }
+    }
+    
+    inline static function titleCaseTrim(str:String, length = 3)
+    {
+        return str.charAt(0).toUpperCase() + str.substr(1, length - 1).toLowerCase();
     }
     
     static public function getPadName(name:String):String
