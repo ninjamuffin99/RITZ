@@ -111,7 +111,7 @@ class Prompt extends flixel.group.FlxGroup {
 	{
 		super.update(elapsed);
 		
-		if (controls.BACK)
+		if (controls.BACK && keyButtons.active)
 			cancel();
 	}
 	
