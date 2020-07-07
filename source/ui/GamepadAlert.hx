@@ -1,7 +1,7 @@
 package ui;
 
-import states.PlayState;
 import data.PlayerSettings;
+import states.PlayState;
 import ui.Controls;
 import utils.SpriteEffects;
 
@@ -85,11 +85,6 @@ class GamepadAlert extends FlxSubState
         p2 = createPlayerSlot(1, "P2");
         none = createPlayerSlot(0, "NONE");
         
-        var rowY = p1.y + p1.height;
-        var keysSprite = new Controller(0, rowY, null);
-        controllers.add(keysSprite);
-        rowY += keysSprite.height * 1.5;
-        
         final requestingPlayer = switch(GamepadAlert.requestingPlayer)
         {
             case -1: None;
@@ -99,31 +94,41 @@ class GamepadAlert extends FlxSubState
                 throw "Unexpected requestingPlayer: " + unhandled;
         }
         
-        if (keysSprite.initialPlayer == requestingPlayer)
-            keysSprite.unlock(false);
+        var keysSprite = new Controller(0, p1.y + p1.height, null, requestingPlayer == None);
+        controllers.add(keysSprite);
+        if (keysSprite.initialPlayer != requestingPlayer && requestingPlayer != None)
+            keysSprite.lock(false);
         
         for (i in 0...oldGamepads.length)
         {
-            var padSprite = new Controller(0, rowY, oldGamepads[i], false);
-            if (padSprite.initialPlayer != requestingPlayer)
-                padSprite.lock(false);
-            controllers.add(padSprite);
-            rowY += padSprite.height * 1.5;
+            final sprite = addGamepad(oldGamepads[i], false);
+            if (sprite.initialPlayer != requestingPlayer)
+                sprite.lock(false);
         }
         
         for (i in 0...newGamepads.length)
-        {
-            var padSprite = new Controller(0, rowY, newGamepads[i]);
-            controllers.add(padSprite);
-            rowY += padSprite.height * 1.5;
-        }
+            addGamepad(newGamepads[i]);
+    }
+    
+    function addGamepad(gamepad:FlxGamepad, autoLock = true)
+    {
+        final bottom = controllers.members[controllers.length - 1];
+        var padSprite = new Controller(0, bottom.y + bottom.height * Controller.UNLOCK_SCALE, gamepad, autoLock);
+        controllers.add(padSprite);
+        return padSprite;
     }
     
     override function update(elapsed:Float)
     {
         var prevUnlocked:Array<Controller> = null;
         if (state == Selecting)
+        {
             prevUnlocked = controllers.members.filter((controller)->!controller.locked);
+            
+            checkActiveGamepads();
+            while (newGamepads.length > controllers.length - 1)// - keys
+                addGamepad(newGamepads[controllers.length - 1]);
+        }
         
         controllers.active = state == Selecting;
         super.update(elapsed);
@@ -278,7 +283,7 @@ class GamepadAlert extends FlxSubState
     
     function confirmDeviceSelections()
     {
-        if (PlayerSettings.numAvatars < 2)
+        if (PlayerSettings.numAvatars < 4)
         {
             var hasP2Devices = false;
             for (controller in controllers.members)
@@ -316,12 +321,22 @@ class GamepadAlert extends FlxSubState
                     case P1: PlayerSettings.player1.controls.copyFrom(controller.controls);
                     case P2: PlayerSettings.player2.controls.copyFrom(controller.controls);
                 }
+                
+            }
+            
+            if (controller.gamepad != null)
+            {
+                oldGamepads.remove(controller.gamepad);
+                
+                if (controller.player == None)
+                    connectedGamepads.push(controller.gamepad);
+                else
+                    oldGamepads.push(controller.gamepad);
             }
         }
         
         requestingPlayer = -1;
-        while (newGamepads.length > 0)
-            oldGamepads.push(newGamepads.shift());
+        newGamepads.resize(0);
         
         startOutro();
     }
@@ -354,12 +369,31 @@ class GamepadAlert extends FlxSubState
     
     /** The device Used to bring up the */
     static var requestingPlayer:Int = -1;
+    static var connectedGamepads:Array<FlxGamepad> = [];
     static var newGamepads:Array<FlxGamepad> = [];
     static var oldGamepads:Array<FlxGamepad> = [];
+    
     static public function alertPending():Bool
     {
+        checkActiveGamepads();
         return newGamepads.length > 0
             || requestingPlayer != -1;
+    }
+    
+    static function checkActiveGamepads()
+    {
+        var i = 0;
+        while (i < connectedGamepads.length && newGamepads.length + oldGamepads.length < 4)
+        {
+            final gamepad = connectedGamepads[i];
+            if (gamepad.pressed.ANY)
+            {
+                newGamepads.push(gamepad);
+                connectedGamepads.remove(gamepad);
+            }
+            else
+                i++;
+        }
     }
     
     static public function init():Void
@@ -375,8 +409,7 @@ class GamepadAlert extends FlxSubState
     
     static function onDeviceConnected(gamepad:FlxGamepad):Void
     {
-        if (oldGamepads.length < 4)
-            newGamepads.push(gamepad);
+        connectedGamepads.push(gamepad);
     }
     
     static function onDeviceDisconnected(gamepad:FlxGamepad):Void
@@ -386,6 +419,8 @@ class GamepadAlert extends FlxSubState
 
 private class Controller extends FlxSpriteGroup
 {
+    inline public static var UNLOCK_SCALE = 1.25;
+    
     inline static var BLINK_TIME_S = 1.0;
     inline static var BLINK_TIME = Std.int(BLINK_TIME_S * 1000);
     
@@ -393,7 +428,6 @@ private class Controller extends FlxSpriteGroup
     inline static var GAMEPAD_IMAGE = "assets/images/ui/gamepad.png";
     inline static var KEYBOARD_IMAGE = "assets/images/ui/keyboard.png";
     inline static var ARROW_IMAGE = "assets/images/ui/deviceArrow.png";
-    inline static var UNLOCK_SCALE = 1.5;
     
     public final gamepad:Null<FlxGamepad>;
     public final initialPlayer:SelectedPlayer;
@@ -415,7 +449,7 @@ private class Controller extends FlxSpriteGroup
         deviceSprite.animation.add("locked", [0]);
         deviceSprite.animation.add("unlocked", [1]);
         
-        final arrowDistance = deviceSprite.width / 2 * 1.5;
+        final arrowDistance = deviceSprite.width / 2 * UNLOCK_SCALE;
         arrowRight = new FlxSprite(arrowDistance, deviceSprite.height / 2, ARROW_IMAGE);
         arrowRight.offset.y = arrowRight.origin.y;
         arrowLeft = new FlxSprite(-arrowDistance, deviceSprite.height / 2, ARROW_IMAGE);
