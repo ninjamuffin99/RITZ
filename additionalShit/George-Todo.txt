@@ -1,0 +1,11 @@
+7-6
+- Device/Input Management
+    - Show Device/Player pairer when a player is added with the "ADD PLAYER" option and 2 devices are attached (not for remove)
+    - Show new devices below old ones
+    - Check behavior with 4+ devices
+    + Add instructions on device controls page
+    - Fix large letters when binding new inputs
+    - Add new key for MAP since Joycon L doesn't have HOME
+    - Need way to ignore/disconnect unresponsive devices
+    - Better device selector in controls menu KEYS PRO_CON MANAGE = lame
+    - Device controls doesn't move down when device list is added later

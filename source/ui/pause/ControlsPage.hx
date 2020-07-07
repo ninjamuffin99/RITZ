@@ -261,6 +261,11 @@ private class DevicePage extends FlxSpriteGroup
         }
         fullWidth = super.get_width();
         
+        var instructions = new Nokia8Text(0, 0, "SELECT to Change\nRESET to Clear\nMouse works too");
+        add(instructions);
+        instructions.x = inputs.x + inputs.width - instructions.width;
+        instructions.y = inputs.y + inputs.height + 8;
+        
         add(prompt).kill();
     }
     
