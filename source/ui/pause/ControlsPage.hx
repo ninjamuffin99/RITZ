@@ -1,15 +1,18 @@
 package ui.pause;
 
+import ui.InputFormatter;
 import data.PlayerSettings;
 import ui.BitmapText;
 import ui.Controls;
 import ui.MouseButtonGroup;
+import ui.ButtonGroup;
 import ui.Prompt;
 import ui.pause.PauseSubstate;
 import utils.SpriteEffects;
 
 import flixel.FlxG;
 import flixel.FlxCamera;
+import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.input.keyboard.FlxKey;
@@ -22,7 +25,7 @@ class ControlsPage extends PausePage
     final navCallback:(PausePageType)->Void;
     
     final title:BitmapText;
-    var deviceList:ButtonGroup;
+    var deviceList:TypedButtonGroup<FlxSprite>;
     var devicePage:DevicePage;
     var device:Device = null;
     var waitMsg:BitmapText = null;
@@ -63,26 +66,37 @@ class ControlsPage extends PausePage
             showDevice(Keys, false);
         else
         {
-            add(deviceList = new ButtonGroup(settings.controls));
+            add(deviceList = new TypedButtonGroup(settings.controls));
             deviceList.y = title.y + title.lineHeight + 8;
             deviceList.keysNext = RIGHT_P;
             deviceList.keysPrev = LEFT_P;
             
             var nextX = 0.0;
+            var listHeight = 0.0;
             if (settings.controls.keyboardScheme != None)
             {
-                final button = deviceList.addNewButton(0, 0, "KEYS", onDeviceSelect.bind(Keys));
+                final device = Keys;
+                final button = new DeviceSprite(nextX, 0, device);
+                if (listHeight < button.height)
+                    listHeight = button.height;
+                deviceList.addButton(button, onDeviceSelect.bind(device));
                 nextX += button.width * 1.25;
             }
             
             for (id in settings.controls.gamepadsAdded)
             {
-                final name = InputFormatter.getPadName(FlxG.gamepads.getByID(id).name).toUpperCase();
-                final button = deviceList.addNewButton(nextX, 0, name, onDeviceSelect.bind(Gamepad(id)));
+                final device = Gamepad(id);
+                final button = new DeviceSprite(nextX, 0, device);
+                if (listHeight < button.height)
+                    listHeight = button.height;
+                deviceList.addButton(button, onDeviceSelect.bind(device));
                 nextX += button.width * 1.25;
             }
             
-            deviceList.addNewButton(nextX, 0, "MANAGE", manageDevices);
+            deviceList.addButton(new BitmapText(nextX, 0, "MANAGE"), manageDevices);
+            
+            for (button in deviceList.members)
+                button.y += (listHeight - button.height) / 2;
             
             deviceList.x = (settings.camera.width - deviceList.width) / 2;
         }
@@ -587,5 +601,19 @@ private class InputSelectionPrompt extends FlxSpriteGroup
         callback = null;
         
         func(response);
+    }
+}
+
+@:forward
+private abstract DeviceSprite(FlxSprite) from FlxSprite to FlxSprite
+{
+    inline public function new (x = 0.0, y = 0.0, device:Device)
+    {
+        this = new FlxSprite(x, y, ControllerName.getAssetByDevice(device));
+        
+        this.loadGraphic(this.graphic, true, this.graphic.width >> 1);
+        this.animation.add("off", [0]);
+        this.animation.add("on", [1]);
+        this.animation.play("on");
     }
 }

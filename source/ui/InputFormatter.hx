@@ -131,34 +131,93 @@ class InputFormatter
         return str.charAt(0).toUpperCase() + str.substr(1, length - 1).toLowerCase();
     }
     
-    static public function getPadName(name:String):String
+    inline static public function parsePadName(name:String):ControllerName
+    {
+        return ControllerName.parseName(name);
+    }
+    
+    inline static public function getPadName(gamepad:FlxGamepad):ControllerName
+    {
+        return ControllerName.getName(gamepad);
+    }
+    
+    inline static public function getPadNameById(id:Int):ControllerName
+    {
+        return ControllerName.getNameById(id);
+    }
+}
+
+@:forward
+enum abstract ControllerName(String) from String to String
+{
+    var OUYA     = "Ouya"    ;
+    var PS4      = "PS4"     ;
+    var LOGI     = "Logi"    ;
+    var XBOX     = "XBox"    ;
+    var XINPUT   = "XInput"  ;
+    var WII      = "Wii"     ;
+    var PRO_CON  = "Pro_Con" ;
+    var JOYCONS  = "Joycons" ;
+    var JOYCON_L = "Joycon_L";
+    var JOYCON_R = "Joycon_R";
+    var MFI      = "MFI"     ;
+    var PAD      = "Pad"     ;
+    
+    static public function getAssetByDevice(device:Device):String
+    {
+        return switch (device)
+        {
+            case Keys: getAsset(null);
+            case Gamepad(id): getAsset(FlxG.gamepads.getByID(id));
+        }
+    }
+    
+    static public function getAsset(gamepad:FlxGamepad):String
+    {
+        if (gamepad == null)
+            return 'assets/images/ui/devices/Keys.png';
+        
+        final name = parseName(gamepad.name);
+        var path = 'assets/images/ui/devices/$name.png';
+        if (openfl.utils.Assets.exists(path))
+            return path;
+        
+        return 'assets/images/ui/devices/Pad.png';
+    }
+    
+    
+    
+    inline static public function getNameById(id:Int):ControllerName return getName(FlxG.gamepads.getByID(id));
+    inline static public function getName(gamepad:FlxGamepad):ControllerName return parseName(gamepad.name);
+    static public function parseName(name:String):ControllerName
     {
         name = name.toLowerCase().remove("-").remove("_");
-        return if (name.contains("ouya"))
-                "Ouya"; // "OUYA Game Controller"
+        return
+            if (name.contains("ouya"))
+                OUYA;
             else if (name.contains("wireless controller") || name.contains("ps4"))
-                "PS4"; // "Wireless Controller" or "PS4 controller"
+                PS4;
             else if (name.contains("logitech"))
-                "Logi";
+                LOGI;
             else if (name.contains("xbox"))
-                "XBox"
+                XBOX
             else if (name.contains("xinput"))
-                "XInput";
+                XINPUT;
             else if (name.contains("nintendo rvlcnt01tr") || name.contains("nintendo rvlcnt01"))
-                "Wii"; // WiiRemote w/o  motion plus
+                WII;
             else if (name.contains("mayflash wiimote pc adapter"))
-                "Wii"; // WiiRemote paired to MayFlash DolphinBar (with or w/o motion plus)
+                WII;
             else if (name.contains("pro controller"))
-                "Pro_Con";
+                PRO_CON;
             else if (name.contains("joycon l+r"))
-                "Joycons";
+                JOYCONS;
             else if (name.contains("joycon (l)"))
-                "Joycon_L";
+                JOYCON_L;
             else if (name.contains("joycon (r)"))
-                "Joycon_R";
+                JOYCON_R;
             else if (name.contains("mfi"))
-                "MFI";
+                MFI;
             else
-                "Pad";
+                PAD;
     }
 }

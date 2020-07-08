@@ -3,6 +3,7 @@ package ui;
 import data.PlayerSettings;
 import states.PlayState;
 import ui.Controls;
+import ui.InputFormatter;
 import utils.SpriteEffects;
 
 import flixel.FlxCamera;
@@ -104,8 +105,8 @@ class GamepadAlert extends FlxSubState
     
     function addGamepad(gamepad:FlxGamepad, autoLock = true)
     {
-        final bottom = controllers.members[controllers.length - 1];
-        var padSprite = new Controller(0, bottom.y + bottom.height * Controller.UNLOCK_SCALE, gamepad, autoLock);
+        final bottom = controllers.members[controllers.length - 1].y + controllers.members[0].height;
+        var padSprite = new Controller(0, bottom * Controller.UNLOCK_SCALE, gamepad, autoLock);
         controllers.add(padSprite);
         return padSprite;
     }
@@ -434,9 +435,9 @@ private class Controller extends FlxSpriteGroup
     
     public function new (x = 0.0, y = 0.0, ?gamepad:FlxGamepad, autoLock = true)
     {
-        final graphic = gamepad == null ? KEYBOARD_IMAGE : GAMEPAD_IMAGE;
+        final graphic = ControllerName.getAsset(gamepad);
         deviceSprite = new FlxSprite(0, 0, graphic);
-        deviceSprite.loadGraphic(graphic, true, Std.int(deviceSprite.width / 2), Std.int(deviceSprite.height));
+        deviceSprite.loadGraphic(graphic, true, deviceSprite.graphic.width >> 1);
         deviceSprite.offset.x = Std.int(deviceSprite.origin.x);
         deviceSprite.animation.add("locked", [0]);
         deviceSprite.animation.add("unlocked", [1]);
