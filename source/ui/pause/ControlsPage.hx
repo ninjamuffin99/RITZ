@@ -93,7 +93,9 @@ class ControlsPage extends PausePage
                 nextX += button.width * 1.25;
             }
             
-            deviceList.addButton(new BitmapText(nextX, 0, "MANAGE"), manageDevices);
+            final manageButton = new BitmapText(nextX, 0, "MANAGE");
+            deviceList.addButton(manageButton, manageDevices);
+            manageButton.y += manageButton.borderSize * 2;
             
             for (button in deviceList.members)
                 button.y += (listHeight - button.height) / 2;
