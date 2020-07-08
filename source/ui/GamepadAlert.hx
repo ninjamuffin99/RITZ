@@ -85,15 +85,7 @@ class GamepadAlert extends FlxSubState
         p2 = createPlayerSlot(1, "P2");
         none = createPlayerSlot(0, "NONE");
         
-        final requestingPlayer = switch(GamepadAlert.requestingPlayer)
-        {
-            case -1: None;
-            case 0: P1;
-            case 1: P2;
-            case unhandled:
-                throw "Unexpected requestingPlayer: " + unhandled;
-        }
-        
+        final requestingPlayer = GamepadAlert.requestingPlayer;
         var keysSprite = new Controller(0, p1.y + p1.height, null, requestingPlayer == None);
         controllers.add(keysSprite);
         if (keysSprite.initialPlayer != requestingPlayer && requestingPlayer != None)
@@ -627,11 +619,11 @@ private class Controller extends FlxSpriteGroup
     }
 }
 
-private enum SelectedPlayer
+private enum abstract SelectedPlayer(Int) from Int to Int
 {
-    P1;
-    P2;
-    None;
+    var P1 = 0;
+    var P2 = 1;
+    var None = 2;
 }
 
 private enum State

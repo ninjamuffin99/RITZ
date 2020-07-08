@@ -13,4 +13,4 @@
     + Device controls doesn't move down when device list is added later
     + Can accept and cancel a prompt at the same time
     + keyboard is always unlocked when managing devices
-    - make SelectedPlayer an abstract enum
+    + make SelectedPlayer an abstract enum
