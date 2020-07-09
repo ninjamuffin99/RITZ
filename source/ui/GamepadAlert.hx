@@ -414,6 +414,14 @@ class GamepadAlert extends FlxSubState
     {
         trace("Disconnected: " + gamepad.name);
     }
+    
+    static public function releaseGamepad(gamepad:FlxGamepad):Void
+    {
+        if(oldGamepads.remove(gamepad))
+            connectedGamepads.push(gamepad);
+        else
+            throw 'gamepad:${gamepad.id} is already released';
+    }
 }
 
 private class Controller extends FlxSpriteGroup

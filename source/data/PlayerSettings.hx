@@ -77,16 +77,26 @@ class PlayerSettings
     
     static public function removeAvatar(avatar:Player):Void
     {
+        var settings:PlayerSettings;
+        
         if (player1 != null && player1.avatar == avatar)
-            player1.avatar = null;
+            settings = player1;
         else if(player2 != null && player2.avatar == avatar)
         {
-            player2.avatar = null;
+            settings = player2;
             if (player1.controls.keyboardScheme.match(Duo(_)))
                 player1.setKeyboardScheme(Solo);
         }
         else
             throw "Cannot remove avatar that is not for a player";
+        
+        settings.avatar = null;
+        while (settings.controls.gamepadsAdded.length > 0)
+        {
+            final id = settings.controls.gamepadsAdded.shift();
+            settings.controls.removeGamepad(id);
+            GamepadAlert.releaseGamepad(FlxG.gamepads.getByID(id));
+        }
         
         --numAvatars;
         
