@@ -20,4 +20,4 @@
         + show Intructions
     + Rename GamepadAlert to DeviceManager
     + Auto add first gamepad to p1, avoid DeviceManager Alert
-    - Check Device Manager on MenuState
+    + Check Device Manager on MenuState

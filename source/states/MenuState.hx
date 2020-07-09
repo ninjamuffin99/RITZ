@@ -65,7 +65,7 @@ class MenuState extends flixel.FlxState
             {
                 FlxG.camera.fade(FlxColor.BLACK, 1, false, function()
                 {
-                    FlxG.switchState(new PlayState());
+                    FlxG.switchState(new AdventureState());
                 });
             }
         }
