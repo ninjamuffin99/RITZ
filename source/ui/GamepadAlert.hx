@@ -276,7 +276,7 @@ class GamepadAlert extends FlxSubState
     
     function confirmDeviceSelections()
     {
-        if (PlayerSettings.numAvatars < 4)
+        if (PlayerSettings.numAvatars < 2)
         {
             var hasP2Devices = false;
             for (controller in controllers.members)
@@ -366,6 +366,11 @@ class GamepadAlert extends FlxSubState
     static var newGamepads:Array<FlxGamepad> = [];
     static var oldGamepads:Array<FlxGamepad> = [];
     
+    static public function totalDevices()
+    {
+        return 1 + connectedGamepads.length + oldGamepads.length;
+    }
+    
     static public function alertPending():Bool
     {
         checkActiveGamepads();
@@ -395,7 +400,7 @@ class GamepadAlert extends FlxSubState
         FlxG.gamepads.deviceDisconnected.add(onDeviceDisconnected);
     }
     
-    static public function request(player:Int)
+    static public function request(player:SelectedPlayer)
     {
         requestingPlayer = player;
     }
@@ -407,6 +412,7 @@ class GamepadAlert extends FlxSubState
     
     static function onDeviceDisconnected(gamepad:FlxGamepad):Void
     {
+        trace("Disconnected: " + gamepad.name);
     }
 }
 

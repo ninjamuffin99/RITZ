@@ -43,10 +43,7 @@ class MainPage extends PausePage
                 {
                     buttons.disableButton(button);
                     buttons.selected = 0;
-                    // give p2 other half of the keyboard
-                    PlayerSettings.player1.setKeyboardScheme(Duo(true));
-                    cast (FlxG.state, PlayState).createSecondPlayer();
-                    navCallback(Controls);
+                    addPlayer();
                 }
             );
         }
@@ -69,6 +66,19 @@ class MainPage extends PausePage
         title.x = (settings.camera.width - title.width) / 2;
         for (button in buttons.members)
             button.x = (settings.camera.width - button.width) / 2;
+    }
+    
+    function addPlayer():Void
+    {
+        final totalDevices = GamepadAlert.totalDevices();
+        if (totalDevices == 1)
+            PlayerSettings.player1.setKeyboardScheme(Duo(true));
+        
+        cast (FlxG.state, PlayState).createSecondPlayer();
+        navCallback(Controls);
+        
+        if (totalDevices > 1)
+            GamepadAlert.request(P1);
     }
     
     function onSelectRestart():Void

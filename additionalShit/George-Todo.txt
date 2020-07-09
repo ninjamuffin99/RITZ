@@ -1,6 +1,7 @@
 7/6-7/10
 - Device/Input Management
-    - Show Device/Player pairer when a player is added with the "ADD PLAYER" option and 2 devices are attached (not for remove)
+    + Show Device/Player pairer when a player is added with the "ADD PLAYER" option and 2 devices are attached (not for remove)
+    - remove devices from oldGamepads when a player is removed
     + Show new devices below old ones
     - Check behavior with 4+ devices
     + Add instructions on device controls page
