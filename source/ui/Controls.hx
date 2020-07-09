@@ -376,9 +376,10 @@ class Controls extends FlxActionSet
     {
         for (action in this.digitalActions)
         {
-            while (action.inputs.length > 0)
+            var i = action.inputs.length;
+            while (i-- > 0)
             {
-                var input = action.inputs[0];
+                var input = action.inputs[i];
                 if (input.device == KEYBOARD)
                     action.remove(input);
             }

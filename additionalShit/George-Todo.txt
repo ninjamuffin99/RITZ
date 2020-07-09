@@ -19,4 +19,5 @@
         + check for PAUSE at right time
         + show Intructions
     + Rename GamepadAlert to DeviceManager
-    - auto add first gamepad to p1, avoid DeviceManager Alert
+    + Auto add first gamepad to p1, avoid DeviceManager Alert
+    - Check Device Manager on MenuState
