@@ -5,7 +5,7 @@
     + Show new devices below old ones
     - Check behavior with 4+ devices
     + Add instructions on device controls page
-    - Fix large letters when binding new inputs
+    + Fix large letters when binding new inputs
     + Add new key for MAP since Joycon L doesn't have HOME
     + check that unmappable gamepad buttons aren't ""
     + Need way to ignore/disconnect unresponsive devices. [Alert only lists gamepads interacted with]

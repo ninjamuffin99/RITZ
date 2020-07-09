@@ -119,7 +119,7 @@ class TypedMouseButton<T:FlxSprite> extends FlxTypedButton<T>
         if (label != null)
             this.label = label;
         
-        scale = new FlxCallbackPoint(setLabelScaleX, setLabelScaleY);
+        scale = new FlxCallbackPoint(setLabelScaleX, setLabelScaleY, setLabelScaleXY);
         scale.set(1, 1);
     }
     
@@ -153,9 +153,12 @@ class TypedMouseButton<T:FlxSprite> extends FlxTypedButton<T>
                 // check if destroyed
                 if (animation != null)
                 {
-                    scale.x = (toScale - fromScale) * FlxEase.backOut  (factor) + fromScale;
-                    scale.y = (toScale - fromScale) * FlxEase.cubeInOut(factor) + fromScale;
-                    angle   = (toAngle - fromAngle) * FlxEase.cubeOut  (factor) + fromAngle;
+                    scale.set
+                    (
+                        (toScale - fromScale) * FlxEase.backOut  (factor) + fromScale,
+                        (toScale - fromScale) * FlxEase.cubeInOut(factor) + fromScale
+                    );
+                    angle = (toAngle - fromAngle) * FlxEase.cubeOut  (factor) + fromAngle;
                 }
             }
         );
@@ -182,6 +185,7 @@ class TypedMouseButton<T:FlxSprite> extends FlxTypedButton<T>
     
     function setLabelScaleX(point:FlxPoint) if (label != null) label.scale.x = point.x;
     function setLabelScaleY(point:FlxPoint) if (label != null) label.scale.y = point.y;
+    function setLabelScaleXY(point:FlxPoint) if (label != null) label.scale.set(point.x, point.y);
 }
 
 class TypedMouseButtonGroup<T:TypedMouseButton<Dynamic>> extends TypedButtonGroup<T>
