@@ -2,6 +2,7 @@ package ui;
 
 import data.PlayerSettings;
 import states.PlayState;
+import ui.BitmapText;
 import ui.Controls;
 import ui.InputFormatter;
 import utils.SpriteEffects;
@@ -24,6 +25,7 @@ class DeviceManager extends FlxSubState
     static public inline var DISTANCE = 100;
     
     var title:BitmapText;
+    var confirmMsg:BitmapText;
     var bg:SliceBg;
     var p1:BitmapText;
     var p2:BitmapText;
@@ -52,6 +54,10 @@ class DeviceManager extends FlxSubState
         title = new BitmapText(0, bg.y + 8, newGamepads.length > 0 ? "GAMEPAD CONNECTED" : "DEVICES");
         title.screenCenter(X);
         add(title);
+        
+        add(confirmMsg = new Nokia8Text("(P1) PAUSE to confirm"));
+        confirmMsg.y = bg.y + bg.height - confirmMsg.height - 8;
+        confirmMsg.x = bg.x + (bg.width - confirmMsg.width) / 2;
         
         controllers.kill();
         final tweenTime = 0.5;
@@ -83,7 +89,7 @@ class DeviceManager extends FlxSubState
         }
         
         p1 = createPlayerSlot(-1, "P1");
-        p2 = createPlayerSlot(1, "P2");
+        p2 = createPlayerSlot(1, "P2" + (PlayerSettings.numAvatars == 1 ? "(Join?)" : ""));
         none = createPlayerSlot(0, "NONE");
         
         final requestingPlayer = DeviceManager.requestingPlayer;
@@ -134,36 +140,38 @@ class DeviceManager extends FlxSubState
                     lastLocked = controller;
         }
         
+        confirmMsg.visible = false;
         if (state.match(Selecting | Animating))
         {
             // get controller states;
-            var allLocked = true;
+            var p1Confirming = false;
             var noneAnimating = true;
             for (controller in controllers.members)
             {
-                if (!controller.locked)
-                    allLocked = false;
+                if (!p1Confirming && controller.player == P1 && controller.confirming)
+                    p1Confirming = true;
                 
                 if (controller.animating)
                     noneAnimating = false;
             }
             
-            p1.borderColor = BitmapText.DEFAULT_BORDER_COLOR;
-            p2.textColor = BitmapText.DEFAULT_BORDER_COLOR;
-            if (allLocked && !noneAnimating)
+            if (p1Confirming && !noneAnimating)
                 state = Animating;// wait for animation to finish
-            else if (allLocked && noneAnimating)
+            else if (p1Confirming && noneAnimating)
             {
                 // check valid selection
                 var p1Devices = new Array<Controller>();
                 var p2Devices = new Array<Controller>();
                 for (controller in controllers.members)
                 {
-                    switch (controller.player)
+                    if (controller.locked)
                     {
-                        case P1: p1Devices.push(controller);
-                        case P2: p2Devices.push(controller);
-                        case None:
+                        switch (controller.player)
+                        {
+                            case P1: p1Devices.push(controller);
+                            case P2: p2Devices.push(controller);
+                            case None:
+                        }
                     }
                 }
                 
@@ -184,54 +192,51 @@ class DeviceManager extends FlxSubState
                 }
                 
                 if (isValid)
-                {
-                    if (PlayerSettings.numAvatars == 1 && p2Devices.length > 0)
-                    {
-                        showConfirmationPrompt
-                        (
-                            p2Devices,
-                            "Join in? (P2)",
-                            confirmDeviceSelections,
-                            ()->
-                            {
-                                if (lastLocked != null)
-                                    lastLocked.unlock();
-                                else
-                                    throw "expecting non-null lastLocked";
-                            }
-                        );
-                    }
-                    else
-                    {
-                        showConfirmationPrompt
-                        (
-                            p1Devices,
-                            "Confirm selection? (P1)",
-                            confirmDeviceSelections,
-                            ()->
-                            {
-                                if (lastLocked != null)
-                                    lastLocked.unlock();
-                                else
-                                    throw "expecting non-null lastLocked";
-                            }
-                        );
-                    }
-                }
+                    confirmDeviceSelections();
                 else
                 {
                     state = Invalid;
                     
-                    if (lastLocked != null)
-                        lastLocked.unlock();
-                    else
-                        throw "expecting non-null lastLocked";
+                    unlockLast();
                     
-                    new FlxTimer().start(wiggleTime, (_)-> state = Selecting);
+                    new FlxTimer().start(wiggleTime,
+                        (_)->
+                        {
+                            state = Selecting;
+                            p1.borderColor = BitmapText.DEFAULT_BORDER_COLOR;
+                            p2.borderColor = BitmapText.DEFAULT_BORDER_COLOR;
+                        }
+                    );
                 }
+            }
+            else
+            {
+                var hasP1Devices = false;
+                var hasP2Devices = false;
+                for (controller in controllers.members)
+                {
+                    if (controller.locked)
+                    {
+                        switch (controller.player)
+                        {
+                            case P1: hasP1Devices = true;
+                            case P2: hasP2Devices = true;
+                            case None:
+                        }
+                    }
+                }
+                
+                if (hasP1Devices && (hasP2Devices || PlayerSettings.numAvatars == 1))
+                    confirmMsg.visible = SpriteEffects.blinkTicks(Controller.BLINK_TIME);
             }
         }
     }
+    
+    function unlockLast()
+    {
+        if (lastLocked != null)
+            lastLocked.unlock();
+    };
     
     function showConfirmationPrompt(controlsList:Array<Controller>, msg, onYes, ?onNo, ?onChoose)
     {
@@ -429,7 +434,7 @@ private class Controller extends FlxSpriteGroup
     inline public static var UNLOCK_SCALE = 1.25;
     
     inline static var BLINK_TIME_S = 1.0;
-    inline static var BLINK_TIME = Std.int(BLINK_TIME_S * 1000);
+    inline public static var BLINK_TIME = Std.int(BLINK_TIME_S * 1000);
     
     inline static var DISTANCE = DeviceManager.DISTANCE;
     inline static var GAMEPAD_IMAGE = "assets/images/ui/gamepad.png";
@@ -442,6 +447,7 @@ private class Controller extends FlxSpriteGroup
     public var player(default, null):SelectedPlayer;
     public var locked(default, null) = false;
     public var animating(default, null) = false;
+    public var confirming(default, null) = false;
     
     final deviceSprite:FlxSprite;
     final arrowRight:FlxSprite;
@@ -541,11 +547,14 @@ private class Controller extends FlxSpriteGroup
     {
         super.update(elapsed);
         
+        confirming = false;
+        
         if (!active)
             return;
         
         if (locked)
         {
+            confirming = controls.PAUSE;
             if (controls.BACK)
                 unlock();
         }
@@ -563,7 +572,7 @@ private class Controller extends FlxSpriteGroup
     
     override function draw()
     {
-        final blinkOn = active && (FlxG.game.ticks % BLINK_TIME) * 2 > BLINK_TIME;
+        final blinkOn = active && SpriteEffects.blinkTicks(BLINK_TIME);
         arrowLeft.visible = blinkOn && !locked && player != P1;
         arrowRight.visible = blinkOn && !locked && player != P2;
         

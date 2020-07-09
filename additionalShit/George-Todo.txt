@@ -15,5 +15,8 @@
     + Can accept and cancel a prompt at the same time
     + Keyboard is always unlocked when managing devices
     + Make SelectedPlayer an abstract enum
-    - PAUSE to ingore free devices
+    + PAUSE to ingore free devices
+        + check for PAUSE at right time
+        + show Intructions
     + Rename GamepadAlert to DeviceManager
+    - auto add first gamepad to p1, avoid DeviceManager Alert

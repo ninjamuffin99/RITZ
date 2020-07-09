@@ -1,5 +1,6 @@
 package utils;
 
+import flixel.FlxG;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.FlxSprite;
@@ -57,5 +58,15 @@ class SpriteEffects
                     target.y = start + distance * tSin * strength;
             }
         );
+    }
+    
+    inline static public function blink(period:Float, offset = 0.0):Bool
+    {
+        return (((FlxG.game.ticks / 1000) - offset) % period) * 2 > period;
+    }
+    
+    inline static public function blinkTicks(period:Int, offset = 0):Bool
+    {
+        return ((FlxG.game.ticks - offset) % period) * 2 > period;
     }
 }
