@@ -70,7 +70,7 @@ class MainPage extends PausePage
     
     function addPlayer():Void
     {
-        final totalDevices = GamepadAlert.totalDevices();
+        final totalDevices = DeviceManager.totalDevices();
         if (totalDevices == 1)
             PlayerSettings.player1.setKeyboardScheme(Duo(true));
         
@@ -78,7 +78,7 @@ class MainPage extends PausePage
         navCallback(Controls);
         
         if (totalDevices > 1)
-            GamepadAlert.request(P1);
+            DeviceManager.requestAlert(P1);
     }
     
     function onSelectRestart():Void

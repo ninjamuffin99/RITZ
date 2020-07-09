@@ -18,9 +18,9 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 
-class GamepadAlert extends FlxSubState
+class DeviceManager extends FlxSubState
 {
-    // @:allow(ui.GamepadAlert.Controller)
+    // @:allow(ui.DeviceManager.Controller)
     static public inline var DISTANCE = 100;
     
     var title:BitmapText;
@@ -86,7 +86,7 @@ class GamepadAlert extends FlxSubState
         p2 = createPlayerSlot(1, "P2");
         none = createPlayerSlot(0, "NONE");
         
-        final requestingPlayer = GamepadAlert.requestingPlayer;
+        final requestingPlayer = DeviceManager.requestingPlayer;
         var keysSprite = new Controller(0, p1.y + p1.height, null, requestingPlayer == None);
         controllers.add(keysSprite);
         if (keysSprite.initialPlayer != requestingPlayer && requestingPlayer != None)
@@ -400,7 +400,7 @@ class GamepadAlert extends FlxSubState
         FlxG.gamepads.deviceDisconnected.add(onDeviceDisconnected);
     }
     
-    static public function request(player:SelectedPlayer)
+    static public function requestAlert(player:SelectedPlayer)
     {
         requestingPlayer = player;
     }
@@ -431,7 +431,7 @@ private class Controller extends FlxSpriteGroup
     inline static var BLINK_TIME_S = 1.0;
     inline static var BLINK_TIME = Std.int(BLINK_TIME_S * 1000);
     
-    inline static var DISTANCE = GamepadAlert.DISTANCE;
+    inline static var DISTANCE = DeviceManager.DISTANCE;
     inline static var GAMEPAD_IMAGE = "assets/images/ui/gamepad.png";
     inline static var KEYBOARD_IMAGE = "assets/images/ui/keyboard.png";
     inline static var ARROW_IMAGE = "assets/images/ui/deviceArrow.png";

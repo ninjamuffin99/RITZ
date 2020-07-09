@@ -27,7 +27,7 @@ class PauseSubstate extends flixel.FlxSubState
 {
     var screen1:PauseScreen;
     var screen2:Null<PauseScreen>;
-    var gamepadAlert:GamepadAlert;
+    var gamepadAlert:DeviceManager;
     
     public function new (settings1:PlayerSettings, ?settings2:PlayerSettings, ?startingPage:PausePageType)
     {
@@ -70,10 +70,10 @@ class PauseSubstate extends flixel.FlxSubState
         super.update(elapsed);
         
         final awaitingInput = screen1.awaitingInput() || (screen2 != null && screen2.awaitingInput());
-        if (!awaitingInput && GamepadAlert.alertPending())
+        if (!awaitingInput && DeviceManager.alertPending())
         {
             if (gamepadAlert == null)
-                showGamepadAlert();
+                showDeviceManager();
             return;
         }
         
@@ -81,14 +81,14 @@ class PauseSubstate extends flixel.FlxSubState
             close();
     }
     
-    function showGamepadAlert()
+    function showDeviceManager()
     {
-        gamepadAlert = new GamepadAlert();
-        gamepadAlert.closeCallback = onGamepadAlertClose;
+        gamepadAlert = new DeviceManager();
+        gamepadAlert.closeCallback = onDeviceManagerClose;
         openSubState(gamepadAlert);
     }
     
-    function onGamepadAlertClose()
+    function onDeviceManagerClose()
     {
         gamepadAlert = null;
         screen1.redrawPage();

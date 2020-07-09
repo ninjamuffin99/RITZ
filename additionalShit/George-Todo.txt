@@ -16,4 +16,4 @@
     + Keyboard is always unlocked when managing devices
     + Make SelectedPlayer an abstract enum
     - PAUSE to ingore free devices
-    - Rename GamepadAlert to DeviceManager
+    + Rename GamepadAlert to DeviceManager

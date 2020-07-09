@@ -112,7 +112,7 @@ class ControlsPage extends PausePage
     
     function manageDevices()
     {
-        GamepadAlert.request(settings.id);
+        DeviceManager.requestAlert(settings.id);
         deviceList.active = false;
         
         waitMsg = new BitmapText("Waiting for player");
@@ -163,7 +163,7 @@ class ControlsPage extends PausePage
     {
         super.update(elapsed);
         
-        if (showingGamepadAlert() && !GamepadAlert.alertPending())
+        if (showingDeviceManager() && !DeviceManager.alertPending())
         {
             remove(waitMsg);
             waitMsg.destroy();
@@ -191,7 +191,7 @@ class ControlsPage extends PausePage
     
     override function allowUnpause()
     {
-        return devicePageBlockingControls() || showingGamepadAlert();
+        return devicePageBlockingControls() || showingDeviceManager();
     }
     
     override function awaitingInput()
@@ -206,7 +206,7 @@ class ControlsPage extends PausePage
             && devicePage.blockingParentControls;
     }
     
-    inline function showingGamepadAlert()
+    inline function showingDeviceManager()
     {
         return waitMsg != null;
     }

@@ -2,7 +2,7 @@ package data;
 
 import props.Player;
 import ui.Controls;
-import ui.GamepadAlert;
+import ui.DeviceManager;
 
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -95,7 +95,7 @@ class PlayerSettings
         {
             final id = settings.controls.gamepadsAdded.shift();
             settings.controls.removeGamepad(id);
-            GamepadAlert.releaseGamepad(FlxG.gamepads.getByID(id));
+            DeviceManager.releaseGamepad(FlxG.gamepads.getByID(id));
         }
         
         --numAvatars;
@@ -158,7 +158,7 @@ class PlayerSettings
             player2.controls.addDefaultGamepad(1);
         }
         
-        GamepadAlert.init();
+        DeviceManager.init();
     }
     
     static public function reset()
