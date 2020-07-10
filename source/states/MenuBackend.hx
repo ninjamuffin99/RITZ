@@ -1,16 +1,18 @@
 package states;
 
-import flixel.FlxState;
+import data.PlayerSettings;
+import ui.Controls;
 import ui.BitmapText;
-import flixel.util.FlxColor;
-import flixel.FlxG;
-import flixel.effects.FlxFlicker;
 import ui.MenuItem;
-import flixel.FlxSprite;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.FlxSubState;
 
-class MenuBackend extends FlxSubState
+import flixel.FlxG;
+import flixel.FlxState;
+import flixel.FlxSprite;
+import flixel.effects.FlxFlicker;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.util.FlxColor;
+
+class MenuBackend extends flixel.FlxSubState
 {
     var textMenuItems:Array<String> = ['Master Volume', 'Sound Volume', 'Music Volume', 'DX OST'];
     var optionValues:Array<Dynamic> = [
@@ -27,8 +29,10 @@ class MenuBackend extends FlxSubState
 
     public var curSelected:Int = 0;
     var selected:Bool = false;
-
-
+    
+    var controls(get, never):Controls;
+    inline function get_controls() return PlayerSettings.player1.controls;
+    
     public function new(menuItems:Array<String>, ?optionItems:Array<Dynamic>)
     {
         super();
@@ -56,7 +60,7 @@ class MenuBackend extends FlxSubState
 
     public function addMenuItem(text:String, bullshit:Int, itemType:Int = 0):MenuItem
     {
-        var menuItem:MenuItem = new MenuItem(0, 0, text, itemType, optionValues[0][Std.int(bullshit * -1)]);
+        var menuItem:MenuItem = new MenuItem(0, 0, controls, text, itemType, optionValues[0][Std.int(bullshit * -1)]);
         menuItem.daAngle = bullshit;
         menuItem.targetAngle = bullshit;
         grpMenuItems.add(menuItem);
@@ -77,14 +81,14 @@ class MenuBackend extends FlxSubState
                 grpMenuItems.members[i].isSelected = false;
         }
 
-        if (FlxG.keys.anyJustPressed(['DOWN', 'UP']))
+        if (controls.UP_P || controls.DOWN_P)
         {
             var randomSound:Int = 0;
     
             if (FlxG.random.bool())
                 randomSound = 2;
     
-            if (FlxG.keys.justPressed.UP)
+            if (controls.UP_P)
             {
                 curSelected -= 1;
                 FlxG.sound.play('assets/sounds/Munchsound' + Std.string(2 + randomSound) + BootState.soundEXT);
@@ -113,7 +117,7 @@ class MenuBackend extends FlxSubState
     
             // 281 58
     
-        if (FlxG.keys.justPressed.SPACE && !selected && grpMenuItems.members[curSelected].itemType == MenuItem.SELECTION)
+        if (controls.ACCEPT && !selected && grpMenuItems.members[curSelected].itemType == MenuItem.SELECTION)
         {
             FlxG.sound.play('assets/sounds/startbleep' + BootState.soundEXT);
             FlxFlicker.flicker(grpMenuItems.members[curSelected], 0.5, 0.04, false, true, function(flic:FlxFlicker)

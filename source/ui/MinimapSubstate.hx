@@ -1,5 +1,6 @@
 package ui;
 
+import data.PlayerSettings;
 import props.Player;
 import ui.Minimap;
 import ui.Prompt;
@@ -22,19 +23,20 @@ class MinimapSubstate extends flixel.FlxSubState
     final mapCamera:FlxCamera;
     final cursor:MapCursor;
     final travelCallback:(x:Float, y:Float)->Void;
-    
+    final controls:Controls;
     
     public function new (map:Minimap, player:Player, travelCallback)
     {
         this.map = map;
         this.travelCallback = travelCallback;
+        controls = player.controls;
         super();
         
         var bg = new FlxSprite().makeGraphic(FlxG.camera.width, FlxG.camera.height, 0xFFaad6e6);
         bg.scrollFactor.set();
         add(bg);
         add(map);
-        add(cursor = new MapCursor(player.x, player.y, map));
+        add(cursor = new MapCursor(player.x, player.y, map, controls));
         
         mapCamera = new FlxCamera(0, 0, FlxG.camera.width, FlxG.camera.height, FlxG.camera.zoom);
         mapCamera.bgColor = 0xFFaad6e6;
@@ -43,6 +45,7 @@ class MinimapSubstate extends flixel.FlxSubState
         mapCamera.maxScrollY = map.height;
         mapCamera.follow(cursor, TOPDOWN);
         FlxG.cameras.add(mapCamera);
+        cameras = [mapCamera];
         
         var help = new InputHelp();
         help.scrollFactor.set();
@@ -54,18 +57,18 @@ class MinimapSubstate extends flixel.FlxSubState
         super.update(elapsed);
         
         if (!mapButtonReleased)
-            mapButtonReleased = Inputs.justReleased.MAP;
+            mapButtonReleased = !controls.MAP;
         
         switch (state)
         {
             case SelectingTile:
-                if (Inputs.justPressed.BACK || (mapButtonReleased && Inputs.justPressed.MAP))
+                if (controls.BACK || (mapButtonReleased && controls.MAP))
                     close();
-                else if (Inputs.justPressed.ACCEPT && map.getMapTile(cursor.tileX, cursor.tileY) == EntityTile.RAT)
+                else if (controls.ACCEPT && map.getMapTile(cursor.tileX, cursor.tileY) == EntityTile.RAT)
                 {
                     state = ConfirmingCheckpoint;
                     cursor.active = false;
-                    var prompt = new Prompt();
+                    var prompt = new Prompt(PlayerSettings.player1.controls);//Todo:
                     add(prompt);
                     prompt.setup
                         ( "Warp to this checkpoint?\n(Lose all trailing cheese)"
@@ -119,10 +122,12 @@ class MapCursor extends flixel.FlxSprite
     var timer = 0.0;
     
     final map:Minimap;
+    final controls:Controls;
     
-    public function new (x = 0.0, y = 0.0, map:Minimap)
+    public function new (x = 0.0, y = 0.0, map:Minimap, controls:Controls)
     {
         this.map = map;
+        this.controls = controls;
         super("assets/images/mapCursor.png");
         tileX = Math.floor(x / Minimap.OLD_TILE_SIZE);
         tileY = Math.floor(y / Minimap.OLD_TILE_SIZE);
@@ -141,18 +146,18 @@ class MapCursor extends flixel.FlxSprite
         
         var moveX = 0;
         var moveY = 0;
-        final pressedX = (Inputs.pressed.RIGHT ? 1 : 0) - (Inputs.pressed.LEFT ? 1 : 0);
-        final pressedY = (Inputs.pressed.DOWN ? 1 : 0) - (Inputs.pressed.UP ? 1 : 0);
+        final pressedX = (controls.RIGHT ? 1 : 0) - (controls.LEFT ? 1 : 0);
+        final pressedY = (controls.DOWN  ? 1 : 0) - (controls.UP   ? 1 : 0);
         
         // Always Move if just pressed
-        if (pressedX != 0 && Inputs.justPressed.LEFT || Inputs.justPressed.RIGHT)
+        if (pressedX != 0 && controls.LEFT_P || controls.RIGHT_P)
         {
             timer = FIRST_MOVE_RATE;
             moveX = pressedX;
         }
         
         // Always Move if just pressed
-        if (pressedY != 0 && Inputs.justPressed.UP || Inputs.justPressed.DOWN)
+        if (pressedY != 0 && controls.UP_P || controls.DOWN_P)
         {
             timer = FIRST_MOVE_RATE;
             moveY = pressedY;
@@ -199,7 +204,6 @@ class InputHelp extends FlxSprite
         y = movement.y;
         this.movement = movement;
         
-        Inputs.onInputChange.add(onInputChange);
         showIntro();
     }
     
@@ -211,7 +215,8 @@ class InputHelp extends FlxSprite
     
     inline function autoLoadGraphic()
     {
-        loadGraphic("assets/images/ui/" + (Inputs.lastUsedKeyboard ? "keys" : "pad") + "_menu.png");
+        // loadGraphic("assets/images/ui/" + (lastUsedKeyboard ? "keys" : "pad") + "_menu.png");
+        loadGraphic("assets/images/ui/keys_menu.png");
     }
     
     inline function showIntro():Void
@@ -250,8 +255,6 @@ class InputHelp extends FlxSprite
     override function destroy()
     {
         super.destroy();
-        
-        Inputs.onInputChange.remove(onInputChange);
     }
 }
 

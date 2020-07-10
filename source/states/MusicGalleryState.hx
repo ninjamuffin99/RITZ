@@ -1,16 +1,18 @@
 package states;
 
+import ui.Controls;
+import ui.BitmapText;
+
+import flixel.FlxG;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.text.FlxText;
 import flixel.system.FlxSound;
+
 import lime.utils.Assets;
 import haxe.Json;
-import flixel.FlxG;
-import ui.BitmapText;
-import flixel.FlxSubState;
 
-class MusicGalleryState extends FlxSubState
+class MusicGalleryState extends flixel.FlxSubState
 {
     private var selectedSong:String = '';
     private var curSong:String = '';
@@ -24,9 +26,11 @@ class MusicGalleryState extends FlxSubState
     var data:Array<Dynamic>;
     var songLengths:Array<String> = [];
     var isPlaying:Bool = false;
+    final controls:Controls;
 
-    public function new()
+    public function new(controls)
     {
+        this.controls = controls;
         super();
         
 
@@ -66,11 +70,11 @@ class MusicGalleryState extends FlxSubState
 
     override function update(elapsed:Float) {
         
-        if (FlxG.keys.anyJustPressed(["LEFT", "RIGHT"]))
+        if (controls.LEFT_P || controls.RIGHT_P)
         {
-            if (FlxG.keys.justPressed.LEFT)
+            if (controls.LEFT_P)
                 curSelected -= 1;
-            if (FlxG.keys.justPressed.RIGHT)
+            if (controls.RIGHT_P)
                 curSelected += 1;
     
             if (curSelected < 0)
@@ -82,7 +86,7 @@ class MusicGalleryState extends FlxSubState
 
         }
 
-        if (FlxG.keys.justPressed.ESCAPE)
+        if (controls.BACK)
         {
             close();
             FlxG.state.openSubState(new GalleryMenuState());
@@ -94,7 +98,7 @@ class MusicGalleryState extends FlxSubState
         txtDescription.text = data[curSelected].description;
         txtSelectedSong.text = Std.string(curSelected + 1) + ". " + data[curSelected].title + " - " + songLengths[curSelected];
 
-        if (FlxG.keys.justPressed.SPACE)
+        if (controls.ACCEPT)
         {
             FlxG.sound.playMusic(data[curSelected].path + BootState.soundEXT);
             
