@@ -412,7 +412,7 @@ class DeviceManager extends FlxSubState
     
     static function onDeviceConnected(gamepad:FlxGamepad):Void
     {
-        if (PlayerSettings.numAvatars == 1 && connectedGamepads.length + newGamepads.length + oldGamepads.length == 0)
+        if (PlayerSettings.numAvatars < 2 && connectedGamepads.length + newGamepads.length + oldGamepads.length == 0)
         {
             // First gamepad goes to P1 if there is no P2
             PlayerSettings.player1.controls.addDefaultGamepad(gamepad.id);
