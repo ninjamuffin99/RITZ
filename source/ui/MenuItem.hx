@@ -28,8 +28,12 @@ class MenuItem extends FlxSpriteGroup
     public var txtOff:BitmapText;
     public var txtOn:BitmapText;
     public var isSelected:Bool = false;
-    public function new(x:Float, y:Float, title:String, itemType:Int = 0, ?initValue:Dynamic)
+    
+    final controls:Controls;
+    
+    public function new(x:Float, y:Float, controls:Controls, title:String, itemType:Int = 0, ?initValue:Dynamic)
     {
+        this.controls = controls;
         super(x, y);
         var textBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuBar.png');
 
@@ -76,9 +80,9 @@ class MenuItem extends FlxSpriteGroup
         {
             if (itemType == PERCENTAGE)
             {
-                if (FlxG.keys.justPressed.LEFT)
+                if (controls.LEFT_P)
                     percentage -= 5;
-                if (FlxG.keys.justPressed.RIGHT)
+                if (controls.RIGHT_P)
                     percentage += 5;
                 
                 percentage = FlxMath.bound(percentage, 0, 100);
@@ -88,7 +92,7 @@ class MenuItem extends FlxSpriteGroup
 
             if (itemType == TOGGLE)
             {
-                if (FlxG.keys.justPressed.SPACE)
+                if (controls.ACCEPT)
                 {
                     isOn = !isOn;
                 }
