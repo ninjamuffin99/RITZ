@@ -6,7 +6,11 @@ class RaceState extends PlayState
 {
     override function create()
     {
+        
+
         super.create();
+
+        FlxG.sound.playMusic("assets/music/race" + BootState.soundEXT, OptionsSubState.musicVol * OptionsSubState.masterVol);
     }
     
     override function createInitialLevel()
