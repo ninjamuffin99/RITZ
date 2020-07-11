@@ -54,7 +54,7 @@ class TitleState extends flixel.FlxState
                     FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
                     {
                         FlxG.switchState(new MainMenuState());
-                    });
+                    }, true);
                 });
                 
                 FlxG.sound.play('assets/sounds/startbleep' + BootState.soundEXT);

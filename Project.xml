@@ -47,7 +47,7 @@
 	<haxelib name="zerolib-flixel" />
 	
 	<!-- Uncomment/comment to toggle -->
-	<haxedef name="SKIP_TO_PLAYSTATE" if="debug" />
+	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
 	<!-- <haxedef name="NG_LOGIN" /> -->
 	
 	<!--In case you want to use nape with flixel-->
