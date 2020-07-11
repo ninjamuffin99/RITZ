@@ -12,15 +12,12 @@ class Main extends openfl.display.Sprite
 			new beat.BeatGame(
 				Std.int(stage.stageWidth / SCALE),
 				Std.int(stage.stageHeight / SCALE),
-				
-				#if SKIP_TO_PLAYSTATE states.MainMenuState,
-				#else states.BootState,
-				#end
+				states.BootState,
 				1, 60, 60, true
 			)
 		);
 		
 		FlxG.mouse.useSystemCursor = true;
-        FlxG.plugins.add(new ui.Inputs());
+		FlxG.plugins.add(new ui.Inputs());
 	}
 }

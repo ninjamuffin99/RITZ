@@ -1,6 +1,7 @@
 package states;
 
 import ui.MenuItem;
+
 import flixel.FlxG;
 import flixel.effects.FlxFlicker;
 import flixel.FlxSubState;
@@ -15,7 +16,7 @@ class GalleryMenuState extends MenuBackend
     override function update(elapsed:Float) {
         super.update(elapsed);
 
-        if (FlxG.keys.justPressed.SPACE && !selected && grpMenuItems.members[curSelected].itemType == MenuItem.SELECTION)
+        if (controls.ACCEPT && !selected && grpMenuItems.members[curSelected].itemType == MenuItem.SELECTION)
         {
             FlxG.sound.play('assets/sounds/startbleep' + BootState.soundEXT);
             FlxFlicker.flicker(grpMenuItems.members[curSelected], 0.5, 0.04, false, true, function(flic:FlxFlicker)
@@ -30,7 +31,7 @@ class GalleryMenuState extends MenuBackend
 					case 'Art Gallery':
 						FlxG.state.openSubState(new GalleryState());
 					case 'Music Gallery':
-						FlxG.state.openSubState(new MusicGalleryState());
+						FlxG.state.openSubState(new MusicGalleryState(controls));
 
                 }
                 if (daText == 'Back')

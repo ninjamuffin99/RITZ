@@ -1,21 +1,20 @@
 package states;
 
+import data.PlayerSettings;
 import ui.BitmapText;
-import flixel.text.FlxBitmapText;
-import flixel.addons.effects.FlxTrailArea;
-import flixel.addons.effects.FlxTrail;
-import flixel.graphics.frames.FlxAtlasFrames;
+
+import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import flixel.FlxG;
-import flixel.system.FlxSoundGroup;
-import flixel.text.FlxText;
-import flixel.FlxState;
 
-class BootState extends FlxState
+import flixel.addons.effects.FlxTrailArea;
+import flixel.addons.effects.FlxTrail;
+
+class BootState extends flixel.FlxState
 {
     inline public static var soundEXT = #if desktop ".ogg" #else ".mp3" #end;
     var daText:BitmapText;
@@ -24,8 +23,24 @@ class BootState extends FlxState
 
     override function create() 
     {
+        PlayerSettings.init();
         FlxG.autoPause = false;
         FlxG.camera.bgColor = FlxColor.WHITE;
+        
+        #if SKIP_TO_PLAYSTATE
+        FlxG.switchState(new AdventureState());
+        #else
+        startIntro();
+        #end
+        
+        super.create();
+    }
+    
+    @:keep// So menustate code is always checked for errors
+    public function startIntro():Void
+    {
+        
+        daText = new BitmapText(0, 0, "ninjamuffin99\nMKMaffo\nKawaisprite\nDigimin\nand Geokureli\npresent...", 0xFF000000, 2);
 
         var blackBG:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
         add(blackBG);
@@ -45,8 +60,6 @@ class BootState extends FlxState
         //add(_trail);
         add(titleJump);
 
-        daText = new BitmapText(0, 0, "ninjamuffin99\nMKMaffo\nKawaisprite\nDigimin\nand Geokureli\npresent...", 0xFF000000, 2);
-        // daText = new FlxBitmapText(0, 0, 0, "ninjamuffin99\nMKMaffo\nKawaisprite\nDigimin\nand Geokureli\npresent...",16);
         daText.alignment = CENTER;
         daText.screenCenter();
         daText.y -= 8;

@@ -1,10 +1,10 @@
 package states;
 
 import OgmoPath;
-import ui.Controls;
 import beat.BeatGame;
-import data.OgmoTilemap;
 import data.Level;
+import data.OgmoTilemap;
+import data.PlayerSettings;
 import props.Checkpoint;
 import props.Cheese;
 import props.Lock;
@@ -16,8 +16,10 @@ import props.MovingPlatform;
 import props.SecretTrigger;
 import props.MusicTrigger;
 import ui.BitmapText;
+import ui.Controls;
 import ui.DialogueSubstate;
-import ui.PauseSubstate;
+import ui.DeviceManager;
+import ui.pause.PauseSubstate;
 
 import io.newgrounds.NG;
 
@@ -43,7 +45,6 @@ class PlayState extends flixel.FlxState
 	inline static var FIRST_CHEESE_MSG = "Thanks for the cheese, buddy! ";
 	
 	var levels:Map<String, Level> = [];
-	var playerCameras:Map<Player, PlayCamera> = [];
 	
 	var bg:FlxBackdrop;
 	var foreground = new FlxGroup();
@@ -170,60 +171,34 @@ class PlayState extends flixel.FlxState
 		return level;
 	}
 	
-	function createPlayer(x:Float, y:Float, controlsType:ControlsType):Player
+	function createPlayer(x:Float, y:Float):Player
 	{
-		var player = new Player(x, y, controlsType);
-		player.onRespawn.add(onPlayerRespawn);
-		grpPlayers.add(player);
-		if (curCheckpoint == null)
-			curCheckpoint = new Checkpoint(x, y, "");
+		var avatar = new Player(x, y);
+		var settings = PlayerSettings.addAvatar(avatar);
+		avatar.onRespawn.add(onPlayerRespawn);
+		grpPlayers.add(avatar);
 		
-		var camera = new PlayCamera().init(player);
-		camera.minScrollX = FlxG.worldBounds.left;
-		// camera.maxScrollX = FlxG.worldBounds.right;
-		camera.minScrollY = FlxG.worldBounds.top;
-		camera.maxScrollY = FlxG.worldBounds.bottom;
-		
-		playerCameras[player] = camera;
-		FlxG.cameras.add(camera);
-		FlxCamera.defaultCameras.push(camera);
-		if (FlxG.camera == null)
-			FlxG.camera = camera;
-		
-		splitCameras();
-		
-		return player;
+		return avatar;
 	}
 	
+	@:allow(ui.pause.MainPage)
+	@:allow(ui.DeviceManager)
 	function createSecondPlayer()
 	{
-		if (grpPlayers.length > 1)
+		if (PlayerSettings.player1 == null || PlayerSettings.player1.avatar == null)
+			throw "Creating second player before first";
+		if (PlayerSettings.player2 != null && PlayerSettings.player2.avatar != null)
 			throw "Only 2 players allowed right now";
 		
-		var firstPlayer = grpPlayers.members[0];
-		firstPlayer.initActions(Duo(true));
-		createPlayer(firstPlayer.x, firstPlayer.y, Duo(false));
+		final firstPlayer = PlayerSettings.player1.avatar;
+		createPlayer(firstPlayer.x, firstPlayer.y);
 	}
 	
-	function splitCameras()
+	@:allow(ui.pause.MainPage)
+	function removeSecondPlayer(avatar:Player)
 	{
-		switch(grpPlayers.length)
-		{
-			case 1:
-				var cam:PlayCamera = cast FlxG.camera;
-				cam.width = FlxG.width;
-				cam.resetDeadZones();
-			case 2:
-				var cam:PlayCamera;
-				cam = cast playerCameras[grpPlayers.members[0]];
-				cam.width = Std.int(FlxG.width / 2);
-				cam.resetDeadZones();
-				cam = cast playerCameras[grpPlayers.members[1]];
-				cam.width = Std.int(FlxG.width / 2);
-				cam.x = cam.width;
-				cam.resetDeadZones();
-			case num: throw 'Invalid number of players: $num';
-		}
+		grpPlayers.remove(avatar);
+		avatar.destroy();
 	}
 	
 	function entity_loader(e:EntityData, layer:FlxGroup, level:Level)
@@ -235,8 +210,13 @@ class PlayState extends flixel.FlxState
 		switch(e.name)
 		{
 			case "player": 
-				level.player = createPlayer(e.x, e.y, Solo);
-				level.add(level.player);
+				if (curCheckpoint == null)
+					curCheckpoint = new Checkpoint(e.x, e.y, "");
+			
+				var player = createPlayer(e.x, e.y);
+				FlxG.camera = player.playCamera;
+				level.player = player;
+				level.add(player);
 				// entity = level.player;
 				//layer not used
 			case "spider":
@@ -286,21 +266,33 @@ class PlayState extends flixel.FlxState
 	{
 		super.update(elapsed);
 		
+		if (DeviceManager.alertPending())
+		{
+			openSubState(new DeviceManager());
+			return;
+		}
+		
 		updateCollision();
 		
-		var pressedPause = false;
+		var pauseSubstate:PauseSubstate = null;
 		grpPlayers.forEach
 		(
 			player->
 			{
 				checkPlayerState(player);
 				
-				pressedPause = pressedPause || player.controls.PAUSE;
+				if (pauseSubstate == null && player.controls.PAUSE)
+				{
+					if (PlayerSettings.numPlayers == 1)
+						pauseSubstate = new PauseSubstate(PlayerSettings.player1);
+					else
+						pauseSubstate = new PauseSubstate(PlayerSettings.player1, PlayerSettings.player2);
+				}
 			}
 		);
 		
-		if (pressedPause)
-			openSubState(new PauseSubstate());
+		if (pauseSubstate != null)
+			openSubState(pauseSubstate);
 		
 		cheeseCountText.text = cheeseCount + (cheeseNeeded > 0 ? "/" + cheeseNeeded : "");
 		
@@ -419,7 +411,7 @@ class PlayState extends flixel.FlxState
 			FlxG.overlap(grpCameraTiles, player, 
 				(cameraTiles:CameraTilemap, _)->
 				{
-					playerCameras[player].leading = cameraTiles.getTileTypeAt(player.x, player.y);
+					player.playCamera.leading = cameraTiles.getTileTypeAt(player.x, player.y);
 				}
 			);
 		}
@@ -460,8 +452,7 @@ class PlayState extends flixel.FlxState
 			add(new ZoomDialogueSubstate
 				( dialogue
 				, focalPoint
-				, player.controls
-				, playerCameras[player]
+				, player.settings
 				, ()->player.state = Alive
 				)
 			);
@@ -508,16 +499,12 @@ class PlayState extends flixel.FlxState
 		
 		if (FlxG.keys.justPressed.T)
 			cheeseCount++;
-		
-		if (FlxG.keys.justPressed.SIX)
-		{
-			createSecondPlayer();
-		}
 
-		if (FlxG.keys.justPressed.SEVEN)
-		{
-			grpPlayers.members[0].rebindKeys();
-		}
+		// if (FlxG.keys.justPressed.SEVEN)
+		// 	PlayerSettings.player1.rebindKeys();
+
+		// if (FlxG.keys.justPressed.EIGHT)
+		// 	PlayerSettings.player2.rebindKeys();
 	}
 	
 	function onPlayerRespawn():Void
@@ -543,5 +530,10 @@ class PlayState extends flixel.FlxState
 				BeatGame.beatsPerMinute = 60;//not needed
 		}
 		musicName = name;
+	}
+	
+	function getOtherPlayer(player:Player):Player
+	{
+		return grpPlayers.members[player == grpPlayers.members[0] ? 1 : 0];
 	}
 }

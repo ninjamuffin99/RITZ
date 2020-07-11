@@ -1,11 +1,13 @@
 package props;
 
 import beat.BeatGame;
+import data.PlayerSettings;
 import props.Dust;
 import props.MovingPlatform;
 import states.BootState;
 import ui.Controls;
 
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -86,19 +88,16 @@ class Player extends FlxSprite
     
     public var cheese = new List<Cheese>();
     
-    public var left (default, null):Bool;
-    public var right(default, null):Bool;
-    public var jump (default, null):Bool;
-    public var down (default, null):Bool;
+    public var settings:PlayerSettings;
+    public var playCamera(default, null):PlayCamera;
+    public var controls(get, never):Controls;
+    inline function get_controls():Controls return settings.controls;
     
-    public var controlsType(default, null):ControlsType = Solo;
-    public var controls(default, null):Controls;
-    
-    public function new(x:Float, y:Float, controlsType:ControlsType = Solo):Void
+    public function new(x:Float, y:Float):Void
     {
         super(x, y);
         
-        initActions(controlsType);
+        initCamera();
         
         inline function addBeatAnim(name:String, frames:Array<Int>, loopsPerBeat:Float)
         {
@@ -131,21 +130,18 @@ class Player extends FlxSprite
         maxVelocity.y = FALL_SPEED;
     }
     
-    public function rebindKeys():Void
+    function initCamera():Void
     {
-        //TODO:
-    }
-
-    public function initActions(controlsType:ControlsType):Void
-    {
-        this.controlsType = controlsType;
-        controls = switch(controlsType)
-        {
-            case Solo: Controls.solo;
-            case Duo(true): Controls.duo1;
-            case Duo(false): Controls.duo2;
-            case Custom: null;//TODO
-        }
+        playCamera = new PlayCamera();
+        playCamera.init(this);
+        
+        playCamera.minScrollX = FlxG.worldBounds.left;
+        playCamera.maxScrollX = FlxG.worldBounds.right;
+        playCamera.minScrollY = FlxG.worldBounds.top;
+        playCamera.maxScrollY = FlxG.worldBounds.bottom;
+        
+        FlxG.cameras.add(playCamera);
+        FlxCamera.defaultCameras.push(playCamera);
     }
     
     public function hurtAndRespawn(x, y):Void
@@ -534,6 +530,18 @@ class Player extends FlxSprite
             newDust.drag.x = Math.abs(newDust.velocity.x) * 2;
         }
         return newDust;
+    }
+    
+    override function destroy()
+    {
+        super.destroy();
+        FlxG.cameras.remove(playCamera);
+        FlxCamera.defaultCameras.remove(playCamera);
+        if (settings != null)
+        {
+            PlayerSettings.removeAvatar(this);
+            settings = null;
+        }
     }
 }
 
