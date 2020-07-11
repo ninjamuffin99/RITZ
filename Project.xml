@@ -2,7 +2,7 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Ritz" file="Ritz" main="Main" version="1.0.0" company="HaxeFlixel" />
+	<app title="Ritz" file="Ritz" main="Main" version="1.1.0" company="HaxeFlixel" />
 
 	<!--The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
 		or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal"-->
@@ -47,7 +47,7 @@
 	<haxelib name="zerolib-flixel" />
 	
 	<!-- Uncomment/comment to toggle -->
-	<!-- <haxedef name="SKIP_TO_PLAYSTATE" if="debug" /> -->
+	<haxedef name="SKIP_TO_PLAYSTATE" if="debug" />
 	<!-- <haxedef name="NG_LOGIN" /> -->
 	
 	<!--In case you want to use nape with flixel-->
@@ -56,7 +56,7 @@
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
 	<!--Enable the Flixel core recording system-->
-	<!--<haxedef name="FLX_RECORD" />-->
+	<haxedef name="FLX_RECORD" />
 
 	<!--Disable the right and middle mouse buttons-->
 	<!--<haxedef name="FLX_NO_MOUSE_ADVANCED" />-->

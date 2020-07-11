@@ -1,5 +1,6 @@
 package props;
 
+import states.PlayState;
 import beat.BeatGame;
 import data.PlayerSettings;
 import props.Dust;
@@ -535,13 +536,17 @@ class Player extends FlxSprite
     override function destroy()
     {
         super.destroy();
+
+        trace('TRYING TO REMOVE CAMERA1');
         FlxG.cameras.remove(playCamera);
+        trace('TRYING TO REMOVE CAMERA2');
         FlxCamera.defaultCameras.remove(playCamera);
         if (settings != null)
         {
             PlayerSettings.removeAvatar(this);
             settings = null;
         }
+        
     }
 }
 

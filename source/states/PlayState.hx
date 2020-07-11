@@ -1,5 +1,9 @@
 package states;
 
+import haxe.io.Bytes;
+import openfl.utils.ByteArray;
+import openfl.net.FileReference;
+import flixel.FlxGame;
 import OgmoPath;
 import beat.BeatGame;
 import data.Level;
@@ -72,6 +76,9 @@ class PlayState extends flixel.FlxState
 	var totalCheese = 0;
 	var curCheckpoint:Checkpoint;
 	var cheeseNeededText:LockAmountText;
+
+	public static var recording = false;
+	public static var replaying = false;
 	
 	override public function create():Void
 	{
@@ -100,8 +107,11 @@ class PlayState extends flixel.FlxState
 		FlxG.cameras.remove(FlxG.camera);
 		FlxG.camera = null;
 		FlxCamera.defaultCameras = [];// Added to in createPlayer
+		
 		createInitialLevel();
 		createUI();
+
+		super.create();
 	}
 	
 	function createInitialLevel()
@@ -265,6 +275,19 @@ class PlayState extends flixel.FlxState
 	override function update(elapsed)
 	{
 		super.update(elapsed);
+
+		if (FlxG.keys.justPressed.I)
+			FlxG.resetState();
+
+		if (!recording && !replaying)
+		{
+			startRecording();
+		}
+
+		if (FlxG.keys.justPressed.H && recording)
+		{
+			loadReplay();
+		}
 		
 		if (DeviceManager.alertPending())
 		{
@@ -297,6 +320,42 @@ class PlayState extends flixel.FlxState
 		cheeseCountText.text = cheeseCount + (cheeseNeeded > 0 ? "/" + cheeseNeeded : "");
 		
 		#if debug updateDebugFeatures(); #end
+	}
+
+	function startRecording():Void
+	{
+		recording = true;
+		replaying = false;
+
+		/**
+		 * Note FlxG.recordReplay will restart the game or state
+		 * This function will trigger a flag in FlxGame
+		 * and let the internal FlxReplay to record input on every frame
+		 */
+		FlxG.vcr.startRecording(false);
+	}
+
+	function loadReplay():Void
+	{
+		replaying = true;
+		recording = false;
+
+		/**
+		 * Here we get a string from stopRecoding()
+		 * which records all the input during recording
+		 * Then we load the save
+		 */
+		var save:String = FlxG.vcr.stopRecording(true);
+		trace(save);
+
+		var metadata = lime.app.Application.current.meta;
+
+		var fileRef:FileReference = new FileReference();
+		fileRef.save(ByteArray.fromBytes(Bytes.ofString(save)), "RitzDX-Replay-" + metadata.get('version') + "-" + DateTools.format(Date.now(), "%F") +".txt");
+		var coolState = FlxG.state;
+
+		FlxG.resetState();
+		FlxG.vcr.loadReplay(save, coolState, ["ANY", "MOUSE"], 0, startRecording);
 	}
 	
 	function warpTo(x:Float, y:Float):Void
