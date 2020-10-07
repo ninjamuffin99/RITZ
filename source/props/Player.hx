@@ -1,5 +1,7 @@
 package props;
 
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import beat.BeatGame;
 import data.PlayerSettings;
 import props.Dust;
@@ -27,8 +29,10 @@ import flixel.util.FlxTimer;
 class Player extends FlxSprite
 {
     static inline var USE_NEW_SETTINGS = true;
+    static inline var TAIL_X = 16;
+    static inline var TAIL_Y = 25;
     
-    static inline var TILE_SIZE = 32;
+    public static inline var TILE_SIZE = 32;
     public static inline var MAX_APEX_TIME = USE_NEW_SETTINGS ? 0.40 : 0.35;
     public static inline var MIN_JUMP  = TILE_SIZE * (USE_NEW_SETTINGS ? 1.5 : 2.5);
     public static inline var MAX_JUMP  = TILE_SIZE * (USE_NEW_SETTINGS ? 3.75 : 4.5);
@@ -55,6 +59,8 @@ class Player extends FlxSprite
     inline static var GROUND_DRAG = MAXSPEED / GROUND_SLOW_DOWN_TIME;
     inline static var AIR_DRAG = MAXSPEED / AIR_SLOW_DOWN_TIME;
     
+    inline static var WHIPPING_MAXSPEED = 1 * TILE_SIZE;
+    
     #if debug
     inline static var SHOW_JUMP_HEIGHT = false;
     public var jumpSprite(default, never) = SHOW_JUMP_HEIGHT ? new JumpSprite(MAX_JUMP + AIR_JUMP) : null;
@@ -67,6 +73,10 @@ class Player extends FlxSprite
     private var jumpBoost:Int = 0;
     
     public var state:PlayerState = Alive;
+    public var action:PlayerAction = Platforming;
+    public var isFalling(get, never):Bool;
+    inline function get_isFalling() return velocity.y > 0;
+    
     public var onRespawn = new FlxSignal();
     
     /** Input buffering, allow normal jump slightly after walking off a ledge */
@@ -83,8 +93,15 @@ class Player extends FlxSprite
     public var wasOnGround   (default, null):Bool = false;
     public var onCoyoteGround(default, null):Bool = false;
     
+    public var tail = new Tail();
+    public var tailOffsetX(get, never):Float;
+    inline function get_tailOffsetX() return TAIL_X - offset.x;
+    public var tailOffsetY(get, never):Float;
+    inline function get_tailOffsetY() return TAIL_Y - offset.y;
+    
     var dust:FlxTypedGroup<Dust> = new FlxTypedGroup();
     public var platform:MovingPlatform = null;
+    public var hook:Hook = null;
     
     public var cheese = new List<Cheese>();
     
@@ -113,6 +130,10 @@ class Player extends FlxSprite
         animation.add('skid', [6]);
         animation.add('falling', [7]);
         animation.add('fucking died lmao', [8, 9, 10, 11, 12], 12);
+        animation.add('whipStart', [16, 17], 12, false);
+        animation.add('whip', [17]);
+        animation.add('hang_intro', [17], 0, true, true, true);
+        animation.add('hang_loop', [17], 0, true, true, true);
 
         animation.play("idle");
 
@@ -144,13 +165,14 @@ class Player extends FlxSprite
         FlxCamera.defaultCameras.push(playCamera);
     }
     
-    public function hurtAndRespawn(x, y):Void
+    public function dieAndRespawn(x, y):Void
     {
         for (c in cheese)
             c.resetToSpawn();
         cheese.clear();
         
         state = Respawning;
+        tail.setState(Idle);
         animation.play('fucking died lmao');
         FlxG.sound.play('assets/sounds/damageTaken' + BootState.soundEXT, 0.6);
 
@@ -168,10 +190,11 @@ class Player extends FlxSprite
 
     override public function update(elapsed:Float):Void
     {
+        tail.holdTail = false;
         switch (state)
         {
             case Won:
-            case Hurt:
+            case Dying:
             case Talking:
             case Respawning:
                 velocity.set();
@@ -180,55 +203,9 @@ class Player extends FlxSprite
                 
                 super.update(elapsed);
             case Alive if (controls.RESET):
-                state = Hurt;
+                state = Dying;
             case Alive:
-                movement(elapsed);
-                
-                // prevent drag from reducing speed granted from moving platforms unless they accelerate
-                var oldDragX = drag.x;
-                var oldAccelX = acceleration.x;
-                var boosting = xAirBoost != 0;
-                if (boosting)
-                {
-                    // boosted but still able to make noticable adjustments in either direction
-                    var slowBoosted = Math.abs(velocity.x) < MAXSPEED;
-                    
-                    // apply acceleration to xBoost and adjust velocity/maxspeed from that
-                    velocity.x -= xAirBoost;
-                    
-                    // accelerating opposite to boost reduces boost
-                    if (acceleration.x != 0)
-                    {
-                        if (!FlxMath.sameSign(acceleration.x, xAirBoost))
-                        {
-                            xAirBoost = FlxVelocity.computeVelocity(xAirBoost, acceleration.x, 0, 0, elapsed);
-                            acceleration.x = 0;
-                        }
-                        else if (slowBoosted)
-                        {
-                            // If the player is making air adjustments convert boost to normal speed, since the player
-                            // expects to stop when letting go of left right keys
-                            var delta = FlxVelocity.computeVelocity(xAirBoost, -acceleration.x, 0, 0, elapsed) - xAirBoost;
-                            xAirBoost += delta;
-                            velocity.x = FlxVelocity.computeVelocity(velocity.x, -delta, 0, MAXSPEED, elapsed);
-                        }
-                        // maxVelocity.x = MAXSPEED + Math.abs(xAirBoost);
-                    }
-                    // accelerating forward works like normal
-                    if (oldAccelX == 0 || acceleration.x != 0)
-                        velocity.x = FlxVelocity.computeVelocity(velocity.x, acceleration.x, drag.x, MAXSPEED, elapsed);
-                    // apply normal drag here
-                    velocity.x += xAirBoost;
-                    
-                    drag.x = 0;
-                    acceleration.x = 0;
-                }
-                super.update(elapsed);
-                if (boosting)
-                {
-                    drag.x = oldDragX;
-                    acceleration.x = oldAccelX;
-                }
+                updateAlive(elapsed);
         }
         
         dust.update(elapsed);
@@ -239,11 +216,129 @@ class Player extends FlxSprite
         #end
     }
     
+    function updateAlive(elapsed:Float):Void
+    {
+        switch (action)
+        {
+            case Platforming:
+                updatePlatforming(elapsed);
+            case Hung | Hanging(_) | Hooked:
+                wasOnGround = onGround;
+                onGround = true;
+        }
+        
+        if (controls.JUMP_P)
+        {
+            function hangJump(?tween:FlxTween)
+            {
+                if (tween != null)
+                    tween.cancel();
+                
+                setPlatforming();
+                startJump();
+            }
+            
+            switch (action)
+            {
+                case Hung:
+                    hangJump();
+                case Hanging(tween):
+                    hangJump(tween);
+                case Platforming | Hooked:
+            }
+        }
+        
+        switch (action)
+        {
+            case Platforming:
+            case Hung | Hanging(_) | Hooked:
+                super.update(elapsed);
+        }
+        
+        
+        if (tail.active)
+        {
+            tail.holdTail = controls.TAIL && !onCoyoteGround;
+            tail.update(elapsed);
+            updateTailPosition();
+        }
+    }
+    
+    function updatePlatforming(elapsed):Void
+    {
+        movement(elapsed);
+        
+        // prevent drag from reducing speed granted from moving platforms unless they accelerate
+        var oldDragX = drag.x;
+        var oldAccelX = acceleration.x;
+        var boosting = xAirBoost != 0;
+        if (boosting)
+        {
+            // boosted but still able to make noticable adjustments in either direction
+            var slowBoosted = Math.abs(velocity.x) < MAXSPEED;
+            
+            // apply acceleration to xBoost and adjust velocity/maxspeed from that
+            velocity.x -= xAirBoost;
+            
+            // accelerating opposite to boost reduces boost
+            if (acceleration.x != 0)
+            {
+                if (!FlxMath.sameSign(acceleration.x, xAirBoost))
+                {
+                    xAirBoost = FlxVelocity.computeVelocity(xAirBoost, acceleration.x, 0, 0, elapsed);
+                    acceleration.x = 0;
+                }
+                else if (slowBoosted)
+                {
+                    // If the player is making air adjustments convert boost to normal speed, since the player
+                    // expects to stop when letting go of left right keys
+                    var delta = FlxVelocity.computeVelocity(xAirBoost, -acceleration.x, 0, 0, elapsed) - xAirBoost;
+                    xAirBoost += delta;
+                    velocity.x = FlxVelocity.computeVelocity(velocity.x, -delta, 0, MAXSPEED, elapsed);
+                }
+                // maxVelocity.x = MAXSPEED + Math.abs(xAirBoost);
+            }
+            // accelerating forward works like normal
+            if (oldAccelX == 0 || acceleration.x != 0)
+                velocity.x = FlxVelocity.computeVelocity(velocity.x, acceleration.x, drag.x, MAXSPEED, elapsed);
+            // apply normal drag here
+            velocity.x += xAirBoost;
+            
+            drag.x = 0;
+            acceleration.x = 0;
+        }
+        
+        super.update(elapsed);
+        
+        if (boosting)
+        {
+            drag.x = oldDragX;
+            acceleration.x = oldAccelX;
+        }
+    }
+    
+    public function updateTailPosition():Void
+    {
+        switch(tail.state)
+        {
+            case Idle:
+            case Hooking(_, _):
+                tail.x = x + TAIL_X - offset.x;
+                tail.y = y + TAIL_Y - offset.y;
+            default:
+                tail.x = x + TAIL_X - offset.x + (tail.whipRight ? 0 : -tail.length);
+                tail.y = y + TAIL_Y - offset.y;
+        }
+    }
+    
     override function draw()
     {
-        super.draw();
-        
         dust.draw();
+        
+        if (tail.visible)
+            tail.draw();
+        
+        super.draw();
         
         #if debug
         if (jumpSprite != null)
@@ -262,15 +357,64 @@ class Player extends FlxSprite
         || (isTouchingAll(FlxObject.DOWN | FlxObject.UP) && (platform == null || !platform.oneWayPlatform)))
         {
             // crushed
-            state = Hurt;
+            state = Dying;
             return;
         }
         
-        if (velocity.y > 0)
+        // if (tail.isHooked())
+        // {
+        //     if (controls.JUMP_P)
+        //     {
+        //         tail.setState(Idle);
+        //         acceleration.y = GRAVITY;
+        //         maxVelocity.x = MAXSPEED;
+        //         startJump();
+        //         animation.play("jumping");
+        //     }
+        //     return;
+        // }
+        
+        if (isFalling)
             maxVelocity.y = FALL_SPEED;
         
+        var anim:String = animation.curAnim.name;
+        var whipping = tail.isWhipping();
         wasOnGround = onGround;
         onGround = isTouching(FlxObject.FLOOR);
+        
+        if (!whipping)
+        {
+            if (anim == "whipStart")
+            {
+                whipping = true;
+                if (animation.curAnim.finished)
+                {
+                    anim = "whip";
+                    tail.whip(controls.LEFT != controls.RIGHT ? controls.RIGHT : flipX);
+                    updateTailPosition();
+                }
+            }
+            else if (controls.TAIL_P)
+            {
+                if (!onGround)
+                {
+                    velocity.y = 0;
+                    acceleration.y = 0;
+                    apexReached = true;
+                }
+                maxVelocity.x = WHIPPING_MAXSPEED;
+                anim = 'whipStart';
+                whipping = true;
+            }
+        }
+        else
+        {
+            if (tail.state == Extended)
+            {
+                acceleration.y = GRAVITY;
+                maxVelocity.x = MAXSPEED;
+            }
+        }
         
         if (onGround)
         {
@@ -313,14 +457,16 @@ class Player extends FlxSprite
         
         if (controls.LEFT != controls.RIGHT)
         {
-            var accel:Float = GROUND_ACCEL;
+            var accel = 0.0;
             if (!onCoyoteGround)
             {
-                if (airHopped && velocity.y > 0)
+                if (airHopped && isFalling)
                     accel = AIRHOP_ACCEL;
                 else
                     accel = AIR_ACCEL;
             }
+            else if (!whipping)
+                accel = GROUND_ACCEL;
 
             // if (hovering)
             //     hoverMulti = 0.6;
@@ -330,38 +476,43 @@ class Player extends FlxSprite
         else
             acceleration.x = 0;
         
-        if (velocity.x != 0)
+        if (!whipping)
         {
-            facing = velocity.x > 0 ? FlxObject.RIGHT : FlxObject.LEFT;
-            if (acceleration.x == 0 || FlxMath.sameSign(velocity.x, acceleration.x))
-                animation.play('walk');
-            else
+            if (velocity.x != 0)
             {
-                if (onCoyoteGround && animation.curAnim.name == "walk")
-                    makeDust(Skid);
-                animation.play('skid');
+                facing = velocity.x > 0 ? FlxObject.RIGHT : FlxObject.LEFT;
+                if (acceleration.x == 0 || FlxMath.sameSign(velocity.x, acceleration.x))
+                    anim = 'walk';
+                else
+                {
+                    if (onCoyoteGround && anim == "walk")
+                        makeDust(Skid);
+                    anim = 'skid';
+                }
             }
+            else if (acceleration.x == 0)
+                anim = 'idle';
         }
-        else if (acceleration.x == 0)
-            animation.play('idle');
-
-        //wallJumping();      
+        
+        //wallJumping();
         
         if (onCoyoteGround)
         {
-            if (controls.JUMP_P)
+            if (!whipping && controls.JUMP_P)
                 startJump();
         }
-        else
+        else if (!whipping)
         {
             if (jumped)
             {
-                animation.play(velocity.y < 0 ? 'jumping' : "falling");
+                anim = (velocity.y < 0 ? 'jumping' : "falling");
+                
                 #if debug
                 if (jumpSprite != null)
                     jumpSprite.updateHeight(jumpSprite.y - y - height);
                 #end
             }
+            
             if (USE_NEW_SETTINGS)
                 variableJump_new(elapsed);
             else
@@ -404,6 +555,69 @@ class Player extends FlxSprite
             airHopped = false;
             hovering = false;
         }
+        
+        animation.play(anim);
+    }
+    
+    function setPlatforming()
+    {
+        action = Platforming;
+        acceleration.y = GRAVITY;
+        maxVelocity.x = MAXSPEED;
+        maxVelocity.y = FALL_SPEED;
+        jumped = false;
+        apexReached = false;
+        jumpBoost = 0;
+        jumpTimer = 0;
+        xAirBoost = 0;
+        airHopped = false;
+    }
+    
+    function stopMovement()
+    {
+        acceleration.set(0, 0);
+        velocity.set(0, 0);
+        maxVelocity.set(0, 0);
+    }
+    
+    public function onTouchHook(hook:Hook):Void
+    {
+        this.hook = hook;
+        
+        tail.setState(Idle);
+        animation.play("hang_intro");
+        
+        stopMovement();
+        var tween = FlxTween.tween(this, { x:hook.centerX - tailOffsetX, y: hook.centerY + Hook.DROOP - tailOffsetY }, 0.15,
+            { ease: FlxEase.quintOut, onComplete:
+                (_)->
+                {
+                    action = Hung;
+                    animation.play("hang_loop");
+                }
+            }
+        );
+        action = Hanging(tween);
+    }
+    
+    public function onWhipHook(hook:Hook):Void
+    {
+        final hookX = hook.centerX;
+        // final hookY = hook.centerY;
+        final hookY = tail.y;
+        tail.setState(Hooking(hookX, hookY));
+        FlxTween.tween(this, { x:hookX - tailOffsetX, y: hookY - tailOffsetY }, 0.15,
+            { ease: FlxEase.quintOut, onComplete:(_)->onWhipHookComplete(hook), startDelay: 0.15 }
+        );
+        
+        action = Hooked;
+        stopMovement();
+    }
+    
+    public function onWhipHookComplete(hook:Hook)
+    {
+        onTouchHook(hook);
+        color = 0xFFffffff;
     }
     
     /**
@@ -621,7 +835,15 @@ enum PlayerState
 {
     Alive;
     Talking;
-    Hurt;
+    Dying;
     Respawning;
     Won;
+}
+
+enum PlayerAction
+{
+    Platforming;
+    Hanging(tween:FlxTween);
+    Hung;
+    Hooked;
 }

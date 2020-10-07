@@ -1,5 +1,6 @@
 package;
 
+import states.PlayState;
 import data.OgmoTilemap;
 import props.Player;
 
@@ -196,6 +197,7 @@ class PlayCamera extends FlxCamera
 		#if debug
 		if (FlxG.keys.justPressed.C)
 		{
+			(cast FlxG.state:PlayState).disableAllDebugDraw();//TODO: Debug.hx
 			if (debugDeadZone == null)
 			{
 				FlxG.debugger.drawDebug = true;
