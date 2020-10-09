@@ -123,12 +123,6 @@ class Tail extends FlxSprite
         angle = line.degrees;
     }
     
-    override function setGraphicSize(Width:Int = 0, Height:Int = 0)
-    {
-        super.setGraphicSize(Width, Height);
-        trace('w:$Width h:$Height');
-    }
-    
     function setState(toState:State)
     {
         final fromState = this.state;
