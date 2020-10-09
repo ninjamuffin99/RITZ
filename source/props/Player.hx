@@ -221,40 +221,33 @@ class Player extends FlxSprite
         switch (action)
         {
             case Platforming:
-                updatePlatforming(elapsed);
-            case Hung | Hanging(_) | Hooked:
-                wasOnGround = onGround;
-                onGround = true;
-        }
-        
-        if (controls.JUMP_P)
-        {
-            function hangJump(?tween:FlxTween)
-            {
-                if (tween != null)
-                    tween.cancel();
                 
-                setPlatforming();
-                startJump();
-            }
-            
-            switch (action)
-            {
-                case Hung:
-                    hangJump();
-                case Hanging(tween):
-                    hangJump(tween);
-                case Platforming | Hooked:
-            }
-        }
-        
-        switch (action)
-        {
-            case Platforming:
+                updatePlatforming(elapsed);
+                
             case Hung | Hanging(_) | Hooked:
+                
+                if (controls.JUMP_P)
+                {
+                    inline function hangJump(?tween:FlxTween)
+                    {
+                        if (tween != null)
+                            tween.cancel();
+                        
+                        setPlatforming();
+                        startJump();
+                    }
+                    
+                    switch (action)
+                    {
+                        case Hung:
+                            hangJump();
+                        case Hanging(tween):
+                            hangJump(tween);
+                        case Hooked | Platforming:
+                    }
+                }
                 super.update(elapsed);
         }
-        
         
         if (tail.active)
         {
@@ -607,7 +600,7 @@ class Player extends FlxSprite
         final hookY = tail.y;
         tail.setState(Hooking(hookX, hookY));
         FlxTween.tween(this, { x:hookX - tailOffsetX, y: hookY - tailOffsetY }, 0.15,
-            { ease: FlxEase.quintOut, onComplete:(_)->onWhipHookComplete(hook), startDelay: 0.15 }
+            { ease: FlxEase.quintOut, onComplete:(_)->onWhipHookComplete(hook), startDelay: 0.25 }
         );
         
         action = Hooked;
@@ -693,6 +686,7 @@ class Player extends FlxSprite
     {
         if (controls.JUMP && !apexReached)
         {
+            
             if (!jumped)
             {
                 velocity.y = 0;
