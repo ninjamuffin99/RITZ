@@ -1,7 +1,5 @@
 package props;
 
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
 import beat.BeatGame;
 import data.PlayerSettings;
 import props.Dust;
@@ -23,6 +21,8 @@ import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 import flixel.math.FlxMath;
 import flixel.math.FlxVelocity;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxSignal;
 import flixel.util.FlxTimer;
 
@@ -101,7 +101,7 @@ class Player extends FlxSprite
     
     var dust:FlxTypedGroup<Dust> = new FlxTypedGroup();
     public var platform:MovingPlatform = null;
-    public var hook:Hook = null;
+    // public var hook:Hook = null;
     
     public var cheese = new List<Cheese>();
     
@@ -575,7 +575,7 @@ class Player extends FlxSprite
     
     public function onTouchHook(hook:Hook):Void
     {
-        this.hook = hook;
+        // this.hook = hook;
         
         tail.setState(Idle);
         animation.play("hang_intro");
@@ -600,7 +600,7 @@ class Player extends FlxSprite
         final hookY = tail.y;
         tail.setState(Hooking(hookX, hookY));
         FlxTween.tween(this, { x:hookX - tailOffsetX, y: hookY - tailOffsetY }, 0.15,
-            { ease: FlxEase.quintOut, onComplete:(_)->onWhipHookComplete(hook), startDelay: 0.25 }
+            { ease: FlxEase.quintOut, onComplete:(_)->onWhipHookComplete(hook), startDelay: 0.15 }
         );
         
         action = Hooked;
