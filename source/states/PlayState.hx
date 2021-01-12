@@ -311,7 +311,22 @@ class PlayState extends flixel.FlxState
 		grpOneWayPlatforms.forEach((platform)->platform.cloudSolid = !player.controls.DOWN);
 		grpTilemaps.forEach((level)->level.setTilesCollisions(40, 4, player.controls.DOWN ? FlxObject.NONE : FlxObject.UP));
 		FlxG.collide(grpTilemaps, player);
-		FlxG.collide(grpPlatforms, player);
+		
+		var oldPlatform = player.platform;
+		player.platform = null;
+		FlxG.collide(grpPlatforms, player,
+			function(platform:TriggerPlatform, _)
+			{
+				var movingPlatform = Std.downcast(platform, MovingPlatform);
+				if (movingPlatform != null && (player.platform == null || (platform.velocity.y < player.platform.velocity.y)))
+					player.platform = movingPlatform;
+			}
+		);
+		
+		if (player.platform == null && oldPlatform != null)
+			player.onSeparatePlatform(oldPlatform);
+		else if (player.platform != null && oldPlatform == null)
+			player.onLandPlatform(player.platform);
 	}
 	
 	inline function checkDoors()
