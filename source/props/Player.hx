@@ -130,10 +130,10 @@ class Player extends FlxSprite
         animation.add('skid', [6]);
         animation.add('falling', [7]);
         animation.add('fucking died lmao', [8, 9, 10, 11, 12], 12);
-        animation.add('whipStart', [16, 17], 12, false);
-        animation.add('whip', [17]);
-        animation.add('hang_intro', [17], 0, true, true, true);
-        animation.add('hang_loop', [17], 0, true, true, true);
+        animation.add('whipStart', [13, 14, 15, 16], 18, false);
+        animation.add('whip', [16]);
+        animation.add('hang_intro', [17]);
+        animation.add('hang_loop', [17]);
 
         animation.play("idle");
 
