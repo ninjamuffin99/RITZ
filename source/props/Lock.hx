@@ -15,7 +15,7 @@ class Lock extends flixel.FlxSprite
     
     public function new (tall = false, x = 0.0, y = 0.0, width = 64, height = 32, amountNeeded = 32)
     {
-        super(x, y, tall ? AssetPaths.door_tall__png : AssetPaths.door__png);
+        super(x, y, "assets/images/door" + (tall ? "_tall" : "") + ".png");
         setGraphicSize(width, height);
         updateHitbox();
         immovable = true;

@@ -18,7 +18,7 @@ class BootState extends flixel.FlxState
 {
     inline public static var soundEXT = #if desktop ".ogg" #else ".mp3" #end;
     var daText:BitmapText;
-    var titleJump:FlxSprite;
+    var intro:FlxSprite;
     
 
     override function create() 
@@ -30,7 +30,7 @@ class BootState extends flixel.FlxState
         #if SKIP_TO_PLAYSTATE
         FlxG.switchState(new AdventureState());
         #else
-        startIntro();
+        // startIntro();
         #end
         
         super.create();
@@ -39,26 +39,23 @@ class BootState extends flixel.FlxState
     @:keep// So menustate code is always checked for errors
     public function startIntro():Void
     {
-        
         daText = new BitmapText(0, 0, "ninjamuffin99\nMKMaffo\nKawaisprite\nDigimin\nand Geokureli\npresent...", 0xFF000000, 2);
 
         var blackBG:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
         add(blackBG);
-
-        var titleFrames = FlxAtlasFrames.fromSpriteSheetPacker(AssetPaths.titleJump__png, AssetPaths.titleJump__txt);
-        titleJump = new FlxSprite();
-        titleJump.frames = titleFrames;
-        titleJump.animation.add('standby', [0], 0, false);
-        titleJump.animation.addByPrefix('start', 'frame', 12, false);
-        titleJump.animation.play('standby');
-        titleJump.visible = false;
         
-
+        intro = new FlxSprite();
+        intro.loadGraphic("assets/images/title_screen_ritz.png", true, 480, 288);
+        intro.animation.add('standby', [0], 0, false);
+        intro.animation.add('start', [for (i in 0...intro.animation.frames) i], 12, false);
+        intro.animation.play('standby');
+        intro.visible = false;
+        
         var _trail:FlxTrailArea = new FlxTrailArea(0, 0, FlxG.width, FlxG.height, 0.4, 2, true);
         _trail.visible = false;
-        _trail.add(titleJump);
+        _trail.add(intro);
         //add(_trail);
-        add(titleJump);
+        add(intro);
 
         daText.alignment = CENTER;
         daText.screenCenter();
@@ -72,33 +69,41 @@ class BootState extends flixel.FlxState
         
         FlxG.sound.playMusic('assets/sounds/boot' + soundEXT, 0.6, false);
         
-        new FlxTimer().start(4.74, function(tmr:FlxTimer)
+        new FlxTimer().start(4.74, function(_)
         {
             FlxTween.tween(blackBG, {alpha: 0}, 0.9);
             FlxG.sound.play('assets/sounds/drumRoll' + BootState.soundEXT, 0.6);
         });
 
-        new FlxTimer().start(5, function(tmr:FlxTimer)
+        new FlxTimer().start(5, function(_)
         {
             // FlxG.sound.play('assets/sounds/drumRoll' + BootState.soundEXT, 0.6);
-            titleJump.animation.play('start');
-            titleJump.visible = true;
+            intro.animation.play('start');
+            intro.animation.finishCallback = function(_) onIntroComplete();
+            intro.visible = true;
             _trail.visible = true;
         });
         
         super.create();
     }
-
-
-    override function update(elapsed:Float) {
-        
-        if (titleJump.animation.curAnim.name == 'start' && titleJump.animation.curAnim.curFrame == 7)
+    
+    function onIntroComplete()
+    {
+        FlxG.switchState(new TitleState());
+    }
+    
+    override function update(elapsed:Float)
+    {
+        if (FlxG.sound.music == null)
         {
-            FlxG.switchState(new TitleState());  
+            if (FlxG.mouse.pressed)
+                startIntro();
         }
-
-
-        if (FlxG.sound.music.time >= 3470)
+        else if (FlxG.sound.music.time >= 4270)
+        {
+            daText.text = "";
+        }
+        else if (FlxG.sound.music.time >= 3470)
         {
             daText.text = "In association \nwith Newgrounds...";
             daText.alignment = CENTER;

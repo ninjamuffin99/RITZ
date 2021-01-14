@@ -77,7 +77,7 @@ class PlayState extends flixel.FlxState
 	{
 		playMusic("pillow");
 		
-		bg = new FlxBackdrop(AssetPaths.dumbbg__png);
+		bg = new FlxBackdrop("assets/images/bg_loop.png");
 		bg.scrollFactor.set(0.75, 0.75);
 		bg.alpha = 0.75;
 		#if debug bg.ignoreDrawDebug = true; #end
@@ -90,7 +90,7 @@ class PlayState extends flixel.FlxState
 		add(foreground);
 		add(grpPlayers);
 		
-		dialogueBubble = new FlxSprite().loadGraphic(AssetPaths.dialogue__png, true, 32, 32);
+		dialogueBubble = new FlxSprite().loadGraphic("assets/images/dialogue.png", true, 32, 32);
 		dialogueBubble.animation.add('play', [0, 1, 2, 3], 6);
 		dialogueBubble.animation.play('play');
 		add(dialogueBubble);
@@ -127,7 +127,7 @@ class PlayState extends flixel.FlxState
 	function createLevel(levelPath:String, x = 0.0, y = 0.0):FlxGroup
 	{
 		var level = new Level();
-		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, levelPath);
+		var ogmo = FlxOgmoUtils.get_ogmo_package("assets/data/levelProject.ogmo", levelPath);
 		var map = new OgmoTilemap(ogmo, 'tiles', 0, 3);
 		#if debug map.ignoreDrawDebug = true; #end
 		map.setTilesCollisions(40, 4, FlxObject.UP);

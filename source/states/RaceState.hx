@@ -9,6 +9,6 @@ class RaceState extends PlayState
     
     override function createInitialLevel()
     {
-        createLevel(AssetPaths.raceStart0__json);
+        createLevel("assets/data/raceStart0.json");
     }
 }
