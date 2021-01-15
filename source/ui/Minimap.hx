@@ -40,7 +40,7 @@ class Minimap extends flixel.group.FlxGroup
         fog.loadMapFromArray
             ( [for (i in 0...map.totalTiles) 1]
             , map.widthInTiles, map.heightInTiles
-            , "assets/data/minimapFog.png"
+            , "assets/images/minimap_fog.png"
             , TILE_SIZE, TILE_SIZE
             , FlxTilemapAutoTiling.AUTO
             , 0//startIndex
@@ -117,13 +117,13 @@ abstract MiniTilemap(OgmoTilemap) to OgmoTilemap
     
     inline public function new(levelPath:String, cheese:PositionMap, checkpoints:PositionMap):MiniTilemap
     {
-        var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, levelPath);
+        var ogmo = FlxOgmoUtils.get_ogmo_package("assets/data/ogmo/levelProject.ogmo", levelPath);
         // -- replace map tiles with minimap
         ogmo = Reflect.copy(ogmo);
         for (tileset in ogmo.project.tilesets)
-            if (tileset.label == "digitiles")
+            if (tileset.label == "Tiles")
             {
-                tileset.path = "minimap.png";
+                tileset.path = "../../images/minimap.png";
                 if (tileset.tileWidth != OLD_TILE_SIZE || tileset.tileHeight != OLD_TILE_SIZE)
                     throw 'Unexpected tile size in ogmo file.'
                         + ' expected:($OLD_TILE_SIZE x $OLD_TILE_SIZE)'
@@ -166,13 +166,13 @@ abstract MiniTilemap(OgmoTilemap) to OgmoTilemap
                 var p = new FlxPoint(Math.floor(entity.x / OLD_TILE_SIZE), Math.floor(entity.y / OLD_TILE_SIZE));
                 checkpoints[entity.id] = p;
                 stampMap(this, Std.int(p.x), Std.int(p.y), RAT_X, fg);
-            case "movingPlatform"|"blinkingPlatform":
+            case "moving_platform"|"blinking_platform":
                 if (entity.values.graphic != "none")
                     stampAllMapOf(this, entity, entity.values.oneWayPlatform ? CLOUD : PLATFORM, fg);
-            case "solidMovingPlatform"|"solidBlinkingPlatform":
+            case "solid_moving_platform"|"solid_blinking_platform":
                 if (entity.values.graphic != "none")
                     stampAllMapOf(this, entity, PLATFORM, fg);
-            case "cloudMovingPlatform"|"cloudBlinkingPlatform":
+            case "cloud_moving_platform"|"cloud_blinking_platform":
                 if (entity.values.graphic != "none")
                     stampAllMapOf(this, entity, CLOUD, fg);
             case 'locked' | 'locked_tall':

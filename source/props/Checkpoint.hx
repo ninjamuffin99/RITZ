@@ -27,7 +27,7 @@ class Checkpoint extends FlxSprite
             anim.frameRate = BeatGame.beatsPerSecond * anim.numFrames * loopsPerBeat;
         }
         
-        loadGraphic(AssetPaths.checkpoint_rat__png, true, 32, 32);
+        loadGraphic("assets/images/checkpoint.png", true, 32, 32);
         addBeatAnim('idle', [0, 1, 2, 3]);
         addBeatAnim('play', [4, 5, 6, 7]);
         animation.play('idle');

@@ -106,7 +106,7 @@ class Player extends FlxSprite
             anim.frameRate = BeatGame.beatsPerSecond * anim.numFrames * loopsPerBeat;
         }
         
-        loadGraphic(AssetPaths.ritz_spritesheet__png, true, 32, 32);
+        loadGraphic("assets/images/ritz.png", true, 32, 32);
         addBeatAnim('idle', [0, 1, 2, 3], 1);
         addBeatAnim('walk', [4, 5, 5, 1], 1.5);
         animation.add('jumping', [5]);

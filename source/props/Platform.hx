@@ -93,13 +93,13 @@ class Platform extends flixel.FlxSprite
     
     static function getImage(width:Int, height:Int, type:String)
     {
-        final key = '${type}Platform${width}x${height}';
+        final key = '${type}_platform${width}x${height}';
         
         if (FlxG.bitmap.checkCache(key))
             return FlxG.bitmap.get(key);
         
         if (!FlxG.bitmap.checkCache('source_$key'))
-            FlxG.bitmap.add('assets/images/${type}Platform.png', 'source_$key');
+            FlxG.bitmap.add('assets/images/${type}_platform.png', 'source_$key');
         
         final source = FlxG.bitmap.get('source_$key');
         final graphic = FlxG.bitmap.create(width, height, 0, false, key);

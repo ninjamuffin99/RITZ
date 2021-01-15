@@ -54,7 +54,7 @@ class MenuBackend extends flixel.FlxSubState
 
         add(grpMenuItems);
 
-        var overlay:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuOverlay.png');
+        var overlay:FlxSprite = new FlxSprite().loadGraphic('assets/images/ui/main_menu/overlay.png');
         add(overlay);
     }
 
