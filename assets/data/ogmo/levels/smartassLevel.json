@@ -1,5 +1,5 @@
 {
-  "ogmoVersion": "3.3.0",
+  "ogmoVersion": "3.4.0",
   "width": 3200,
   "height": 4096,
   "offsetX": 0,
@@ -30,17 +30,17 @@
       "gridCellsX": 200,
       "gridCellsY": 256,
       "decals": [
-        {"x": 2704, "y": 4016, "scaleX": 1, "scaleY": 1, "rotation": 0, "texture": "arrow.png"},
-        {"x": 3024, "y": 3920, "scaleX": 1, "scaleY": 1, "rotation": 3.141592653589793, "texture": "arrow.png"},
-        {"x": 1952, "y": 3920, "scaleX": 1, "scaleY": 1, "rotation": 1.5707963267948966, "texture": "arrow.png"},
-        {"x": 1232, "y": 3600, "scaleX": 1, "scaleY": 1, "rotation": -1.5707963267948966, "texture": "arrow.png"},
-        {"x": 1296, "y": 2928, "scaleX": 1, "scaleY": 1, "rotation": 3.141592653589793, "texture": "arrow.png"},
-        {"x": 1456, "y": 2928, "scaleX": 1, "scaleY": 1, "rotation": 3.141592653589793, "texture": "arrow.png"},
-        {"x": 1456, "y": 2800, "scaleX": 1, "scaleY": 1, "rotation": 3.141592653589793, "texture": "arrow.png"},
-        {"x": 848, "y": 3888, "scaleX": 1, "scaleY": 1, "rotation": 3.141592653589793, "texture": "arrow.png"},
-        {"x": 3024, "y": 2928, "scaleX": 1, "scaleY": 1, "rotation": 3.141592653589793, "texture": "arrow.png"}
+        {"x": 2704, "y": 4016, "scaleX": 1, "scaleY": 1, "rotation": 0, "texture": "arrow.png", "originX": 0.5, "originY": 0.5},
+        {"x": 3024, "y": 3920, "scaleX": 1, "scaleY": 1, "rotation": 1806, "texture": "arrow.png", "originX": 0.5, "originY": 0.5},
+        {"x": 1952, "y": 3920, "scaleX": 1, "scaleY": 1, "rotation": 1.5707963267948968, "texture": "arrow.png", "originX": 0.5, "originY": 0.5},
+        {"x": 1232, "y": 3600, "scaleX": 1, "scaleY": 1, "rotation": -1.5707963267948968, "texture": "arrow.png", "originX": 0.5, "originY": 0.5},
+        {"x": 1296, "y": 2928, "scaleX": 1, "scaleY": 1, "rotation": 1806, "texture": "arrow.png", "originX": 0.5, "originY": 0.5},
+        {"x": 1456, "y": 2928, "scaleX": 1, "scaleY": 1, "rotation": 1806, "texture": "arrow.png", "originX": 0.5, "originY": 0.5},
+        {"x": 1456, "y": 2800, "scaleX": 1, "scaleY": 1, "rotation": 1806, "texture": "arrow.png", "originX": 0.5, "originY": 0.5},
+        {"x": 848, "y": 3888, "scaleX": 1, "scaleY": 1, "rotation": 1806, "texture": "arrow.png", "originX": 0.5, "originY": 0.5},
+        {"x": 3024, "y": 2928, "scaleX": 1, "scaleY": 1, "rotation": 1806, "texture": "arrow.png", "originX": 0.5, "originY": 0.5}
       ],
-      "folder": "../images/decals"
+      "folder": "../../images/decals"
     },
     {
       "name": "FG entities",
@@ -202,7 +202,7 @@
         {"name": "spike", "id": 683, "_eid": "62782057", "x": 1248, "y": 3328, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 685, "_eid": "62782057", "x": 1984, "y": 3232, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 686, "_eid": "62782057", "x": 2080, "y": 3232, "originX": 0, "originY": 0, "rotation": 0},
-        {"name": "spike", "id": 687, "_eid": "62782057", "x": 2368, "y": 3296, "originX": 0, "originY": 0, "rotation": 180},
+        {"name": "spike", "id": 687, "_eid": "62782057", "x": 2368, "y": 3296, "originX": 0, "originY": 0, "rotation": -180},
         {"name": "coins", "id": 688, "_eid": "46479631", "x": 1472, "y": 3232, "originX": 0, "originY": 0},
         {"name": "coins", "id": 720, "_eid": "46479631", "x": 2112, "y": 2800, "originX": 0, "originY": 0},
         {"name": "coins", "id": 750, "_eid": "46479631", "x": 2624, "y": 2336, "originX": 0, "originY": 0},

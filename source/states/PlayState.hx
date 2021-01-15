@@ -127,7 +127,7 @@ class PlayState extends flixel.FlxState
 	function createLevel(levelPath:String, x = 0.0, y = 0.0):FlxGroup
 	{
 		var level = new Level();
-		var ogmo = FlxOgmoUtils.get_ogmo_package("assets/data/levelProject.ogmo", levelPath);
+		var ogmo = FlxOgmoUtils.get_ogmo_package("assets/data/ogmo/levelProject.ogmo", levelPath);
 		var map = new OgmoTilemap(ogmo, 'tiles', 0, 3);
 		#if debug map.ignoreDrawDebug = true; #end
 		map.setTilesCollisions(40, 4, FlxObject.UP);

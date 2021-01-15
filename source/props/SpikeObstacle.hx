@@ -40,7 +40,7 @@ class SpikeObstacle extends Obstacle
                 // width -= 4;
                 // offset.y = 6;
                 // height -= (offset.y * 2) + 1;
-            case 180:
+            case 180|-180:
                 this.x -= SIZE;
                 this.y -= SIZE;
                 // offset.x = 6;

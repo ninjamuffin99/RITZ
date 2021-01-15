@@ -17,7 +17,7 @@
   "compactExport": false,
   "externalScript": "",
   "playCommand": "",
-  "entityTags": ["platform", "FG", "trigger", "blinking", "moving", "cloud", "solid"],
+  "entityTags": ["FG", "platform", "trigger", "blinking", "moving", "cloud", "solid"],
   "layers": [
     {
       "definition": "tile",
@@ -33,7 +33,7 @@
       "name": "decals",
       "gridSize": {"x": 16, "y": 16},
       "exportID": "74736684",
-      "folder": "../images/decals",
+      "folder": "../../images/decals",
       "includeImageSequence": true,
       "scaleable": true,
       "rotatable": true,
@@ -779,6 +779,44 @@
       ],
       "texture": "../images/door.png",
       "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAACXBIWXMAAFxGAABcRgEUlENBAAAAG3RFWHRTb2Z0d2FyZQBDZWxzeXMgU3R1ZGlvIFRvb2zBp+F8AAAB8klEQVRo3u2ZMW7CQBBFPw1dfITILqMgS3RIaaBJxQVCtXIOkAtQ+gI5AMgVXMAVDW5SR4oSpcTKEUiXhhTRbIa1McbsYmwz1cpe2Z7nmdnZvy3b7W3QYGvZbm+zCmwsg7dGOT4QLhwR/wGY9tcYCLcxEMhXL7L+AfAbTXAeQBLAy+IL489v4PWhnt535/BvrnB3f50BYDaUhAbCrYXf3B9/FB4OwBFxJR1fBXYxANwcEYPuV828yJIQyA4C4IgYjz/vW1FRpWLnj0JM2p0tCIUAAEhEBs+vsmpF1rv9UQgAegHwF9KY51eZY/W7jABIMyqQ0/4aXmSdfKzmuNEIuADIALAK7NLGFwAXABUBQPmbVdUpt2sJgHeUuwBwCLUEwNdtPof3FZUEkHf5IsdVMNS3cwC17AMIQNqcswdwTCvsRVYiAvgcfo3PPftWOO9miP46z/20/TsB2PVnS9kMjWdD+cCiNml3sE985dFC4IsaffNRANQo0AEgr5Ch652FBJE0TVCHLEYRsC+seTNUiiRmQhTlNSBNrFQB5KkBZkRRQ7K4CkBd7tTrOgHklsX58qHbeBHMA0BHDdhVHFMPRkyfCsm1/flDRlgiBbpzLJ9u5VwTxtNcAjjV4ShvcLIKoGkZniDIw9FTqbi8hT1mjk77BacGJv0fTvKbAAAAAElFTkSuQmCC"
+    },
+    {
+      "exportID": "96601285",
+      "name": "hook",
+      "limit": -1,
+      "size": {"x": 7, "y": 7},
+      "origin": {"x": -4, "y": -4},
+      "originAnchored": false,
+      "shape": {
+        "label": "Rectangle",
+        "points": [
+          {"x": -1, "y": -1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": 1}
+        ]
+      },
+      "color": "#ff0000ff",
+      "tileX": false,
+      "tileY": false,
+      "tileSize": {"x": 7, "y": 7},
+      "resizeableX": false,
+      "resizeableY": false,
+      "rotatable": false,
+      "rotationDegrees": 360,
+      "canFlipX": false,
+      "canFlipY": false,
+      "canSetColor": false,
+      "hasNodes": false,
+      "nodeLimit": 0,
+      "nodeDisplay": 0,
+      "nodeGhost": true,
+      "tags": ["FG"],
+      "values": [],
+      "texture": "../images/hook.png",
+      "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAAXNSR0IArs4c6QAAAFNJREFUCJljZICCZg2e/zB27Y0vjAwMDAwsMAlrNzkGuEKGR/9rb3xhZEGWcEzQQ1HABOMgS8DYcEmcoFmD5/++PK3/89F/P9/LuI/zHGM+FwLANP5IkH3BPw9AAAAAElFTkSuQmCC"
     }
   ],
   "tilesets": [

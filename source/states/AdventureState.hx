@@ -9,9 +9,9 @@ import props.Player;
 class AdventureState extends PlayState
 {
     inline static var LEVEL_PATH = 
-        // "assets/data/dumbassLevel.json";
-        // "assets/data/normassLevel.json";
-        "assets/data/smartassLevel.json";
+        // "assets/data/ogmo/levels/dumbassLevel.json";
+        // "assets/data/ogmo/levels/normassLevel.json";
+        "assets/data/ogmo/levels/smartassLevel.json";
     
 	var minimap:Minimap;
     

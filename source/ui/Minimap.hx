@@ -40,7 +40,7 @@ class Minimap extends flixel.group.FlxGroup
         fog.loadMapFromArray
             ( [for (i in 0...map.totalTiles) 1]
             , map.widthInTiles, map.heightInTiles
-            , "assets/data/minimap_fog.png"
+            , "assets/images/minimap_fog.png"
             , TILE_SIZE, TILE_SIZE
             , FlxTilemapAutoTiling.AUTO
             , 0//startIndex
@@ -117,7 +117,7 @@ abstract MiniTilemap(OgmoTilemap) to OgmoTilemap
     
     inline public function new(levelPath:String, cheese:PositionMap, checkpoints:PositionMap):MiniTilemap
     {
-        var ogmo = FlxOgmoUtils.get_ogmo_package("assets/data/levelProject.ogmo", levelPath);
+        var ogmo = FlxOgmoUtils.get_ogmo_package("assets/data/ogmo/levelProject.ogmo", levelPath);
         // -- replace map tiles with minimap
         ogmo = Reflect.copy(ogmo);
         for (tileset in ogmo.project.tilesets)

@@ -17,7 +17,7 @@ abstract OgmoTilemap(FlxTilemap) to FlxTilemap
 	inline public function new
 		( ogmo     :OgmoPackage
 		, layerName:String
-		, path         = 'assets/data/'
+		, path         = 'assets/data/ogmo/'
 		, drawIndex    = 0
 		, collideIndex = 1
 		, indexOffset  = 0
@@ -114,7 +114,7 @@ abstract CameraTilemap(OgmoTilemap) to FlxTilemap
 {
 	public function new(ogmo:OgmoPackage)
 	{
-		this = new OgmoTilemap(ogmo, 'CameraView', "assets/data/", 0, 1, 1);
+		this = new OgmoTilemap(ogmo, 'CameraView', "assets/data/ogmo/", 0, 1, 1);
 	}
 	
 	public function getTileTypeAt(x:Float, y:Float):CameraTileType
