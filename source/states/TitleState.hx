@@ -20,16 +20,16 @@ class TitleState extends flixel.FlxState
         FlxG.camera.fade(FlxColor.WHITE, 2, true);
         FlxG.sound.play('assets/sounds/titleCrash' + BootState.soundEXT, 0.4);
         
-        var titleBg = new FlxSprite("assets/images/title_screen_cheese.png");
+        var titleBg = new FlxSprite("assets/images/ui/intro/bg.png");
         add(titleBg);
         
         var ritz = new FlxSprite();
-        ritz.loadGraphic("assets/images/title_screen_ritz.png", true, titleBg.graphic.width, titleBg.graphic.height);
+        ritz.loadGraphic("assets/images/ui/intro/ritz.png", true, titleBg.graphic.width, titleBg.graphic.height);
         ritz.animation.add('idle', [ritz.animation.frames - 1]);
         ritz.animation.play('idle');
         add(ritz);
 
-        pressStart = new FlxSprite().loadGraphic("assets/images/intro_cheese_text.png");
+        pressStart = new FlxSprite().loadGraphic("assets/images/ui/intro/instructions.png");
         add(pressStart);
 
         FlxFlicker.flicker(pressStart, 0, 0.5);
