@@ -14,7 +14,7 @@ using zero.flixel.utilities.FlxOgmoUtils;
 @:forward
 abstract OgmoTilemap(FlxTilemap) to FlxTilemap
 {
-	inline public function new
+	public function new
 		( ogmo     :OgmoPackage
 		, layerName:String
 		, path         = 'assets/data/ogmo/'
@@ -101,11 +101,16 @@ abstract OgmoTilemap(FlxTilemap) to FlxTilemap
 	inline function getPaddedTileset(tileset:ProjectTilesetData, path, padding = 2)
 	{
 		return FlxTileFrames.fromBitmapAddSpacesAndBorders
-			( tileset.get_tileset_path(path)
+			( getTilesetPath(tileset, path)
 			, FlxPoint.get(tileset.tileWidth, tileset.tileHeight)
 			, FlxPoint.get(tileset.tileSeparationX, tileset.tileSeparationY)
 			, FlxPoint.get(padding, padding)
 			);
+	}
+	
+	public static function getTilesetPath(data:ProjectTilesetData, path:String):String
+	{
+		return haxe.io.Path.normalize(path + data.path);
 	}
 }
 

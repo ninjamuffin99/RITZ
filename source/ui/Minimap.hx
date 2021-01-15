@@ -121,7 +121,7 @@ abstract MiniTilemap(OgmoTilemap) to OgmoTilemap
         // -- replace map tiles with minimap
         ogmo = Reflect.copy(ogmo);
         for (tileset in ogmo.project.tilesets)
-            if (tileset.label == "digitiles")
+            if (tileset.label == "Tiles")
             {
                 tileset.path = "minimap.png";
                 if (tileset.tileWidth != OLD_TILE_SIZE || tileset.tileHeight != OLD_TILE_SIZE)
