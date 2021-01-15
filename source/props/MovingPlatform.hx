@@ -109,7 +109,7 @@ abstract Bolt(FlxSprite) to FlxSprite
     public function new()
     {
         this = new FlxSprite();
-        this.loadGraphic("assets/images/pathBolt.png", true, 7, 7);
+        this.loadGraphic("assets/images/path_bolt.png", true, 7, 7);
         this.animation.add("stopped", [0]); 
         this.animation.add("moving", [0, 1, 2, 3], 8); 
         this.offset.set(Math.floor(this.width / 2), Math.floor(this.height / 2));

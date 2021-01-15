@@ -21,13 +21,13 @@ class Dust extends FlxSprite
         this.flipX = flipX;
         
         var width = WIDTH;
-        var graphic = AssetPaths.dust__png;
+        var graphic = "dust";
         if (type == Skid)
         {
-            graphic = FlxG.random.bool() ? AssetPaths.dust1__png : AssetPaths.dust2__png;
+            graphic = "dust" + FlxG.random.int(1, 2);
             width = Std.int(WIDTH / 2);
         }
-        loadGraphic(graphic, true, width, HEIGHT);
+        loadGraphic('assets/images/$graphic.png', true, width, HEIGHT);
         animation.add("play", [0, 1, 2, 2, 2, 3], FlxG.random.int(19,24), false);
         animation.play('play');
         offset.x = width / 2;

@@ -35,7 +35,7 @@ class MenuItem extends FlxSpriteGroup
     {
         this.controls = controls;
         super(x, y);
-        var textBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/menuBar.png');
+        var textBG:FlxSprite = new FlxSprite().loadGraphic('assets/images/ui/main_menu/bar.png');
 
         this.itemType = itemType;
 

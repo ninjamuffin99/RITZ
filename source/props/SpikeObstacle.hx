@@ -21,7 +21,7 @@ class SpikeObstacle extends Obstacle
         immovable = true;
         moves = false;
         
-        loadGraphic(AssetPaths.spike__png, true, SIZE, SIZE);
+        loadGraphic("assets/images/spike.png", true, SIZE, SIZE);
         animation.add('idle', [1, 2, 3, 0, 0, 0], 0);
         var anim = animation.getByName('idle');
         anim.frameRate = BeatGame.beatsPerSecond * anim.numFrames;
@@ -40,7 +40,7 @@ class SpikeObstacle extends Obstacle
                 // width -= 4;
                 // offset.y = 6;
                 // height -= (offset.y * 2) + 1;
-            case 180:
+            case 180|-180:
                 this.x -= SIZE;
                 this.y -= SIZE;
                 // offset.x = 6;

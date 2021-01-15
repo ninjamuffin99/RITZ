@@ -23,7 +23,7 @@ class MainMenuState extends flixel.FlxState
         var cheeseBG:FlxSprite = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFFf2a348);
         add(cheeseBG);
 
-        cheese = new FlxTiledSprite(AssetPaths.cheeseSpaced__png, FlxG.width, FlxG.height);
+        cheese = new FlxTiledSprite("assets/images/ui/main_menu/cheese.png", FlxG.width, FlxG.height);
         cheese.scrollX = 10;
         cheese.scrollY = 10;
         add(cheese);

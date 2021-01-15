@@ -10,7 +10,7 @@ class Enemy extends FlxSprite
     public function new(x:Float, y:Float, p:FlxPath, speed:Float) {
         super(x, y);
 
-        loadGraphic(AssetPaths.spider_enemy__png, true, 32, 32);
+        loadGraphic("assets/images/spider.png", true, 32, 32);
         animation.add('idle', [0, 1, 2, 3], 12);
         animation.add('walk', [4, 5, 6, 7], 12);
 

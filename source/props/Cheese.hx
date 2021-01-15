@@ -27,7 +27,7 @@ class Cheese extends FlxSprite
         startPos.set(x, y);
         ID = id;
 
-        loadGraphic(AssetPaths.cheese_idle__png, true, 32, 32);
+        loadGraphic("assets/images/cheese.png", true, 32, 32);
         animation.add('idle', [0]);
         animation.add('follow', [0, 1, 2, 2, 2, 3, 4, 5, 6], 7);
         var anim = animation.getByName('follow');
@@ -231,7 +231,7 @@ abstract DisplayCheese(FlxSprite) to FlxSprite
     inline public function new(x:Float, y:Float)
     {
         this = new FlxSprite(x, y);
-        this.loadGraphic(AssetPaths.cheese_idle__png, true, 32, 32);
+        this.loadGraphic("assets/images/cheese.png", true, 32, 32);
         this.animation.add('idle', [0, 1, 2, 2, 3, 3, 4, 5, 6], 0);
         var anim = this.animation.getByName('idle');
         anim.frameRate = BeatGame.beatsPerSecond * anim.numFrames / 2;
