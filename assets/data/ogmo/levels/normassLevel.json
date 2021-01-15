@@ -145,7 +145,7 @@
           "values": {"dialogue": "How did all this cheese get here in the first place? Who's been leaving good cheese out here??", "autoTalk": false, "cameraOffsetX": 0}
         },
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 52,
           "_eid": "47158608",
           "x": 800,
@@ -165,7 +165,7 @@
         {"name": "spike", "id": 63, "_eid": "62782057", "x": 1152, "y": 1920, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 67, "_eid": "62782057", "x": 864, "y": 2368, "originX": 0, "originY": 0, "rotation": 0},
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 70,
           "_eid": "47158608",
           "x": 288,
@@ -180,7 +180,7 @@
           "values": {"speed": 120, "startDelay": 0, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "auto", "oneWayPlatform": false, "trigger": "Load"}
         },
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 71,
           "_eid": "47158608",
           "x": 416,
@@ -196,7 +196,7 @@
         },
         {"name": "coins", "id": 72, "_eid": "46479631", "x": 288, "y": 864, "originX": 0, "originY": 0},
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 73,
           "_eid": "47158608",
           "x": 272,
@@ -215,7 +215,7 @@
         {"name": "spike", "id": 74, "_eid": "62782057", "x": 416, "y": 384, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 75, "_eid": "62782057", "x": 672, "y": 416, "originX": 0, "originY": 0, "rotation": -90},
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 78,
           "_eid": "47158608",
           "x": 896,
@@ -235,7 +235,7 @@
         {"name": "spike", "id": 83, "_eid": "62782057", "x": 736, "y": 224, "originX": 0, "originY": 0, "rotation": 180},
         {"name": "spike", "id": 84, "_eid": "62782057", "x": 832, "y": 224, "originX": 0, "originY": 0, "rotation": -90},
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 85,
           "_eid": "47158608",
           "x": 608,
@@ -275,7 +275,7 @@
         {"name": "spike", "id": 103, "_eid": "62782057", "x": 1504, "y": 2400, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 104, "_eid": "62782057", "x": 1536, "y": 2560, "originX": 0, "originY": 0, "rotation": 180},
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 105,
           "_eid": "47158608",
           "x": 1568,
@@ -322,7 +322,7 @@
         {"name": "spike", "id": 124, "_eid": "62782057", "x": 1216, "y": 288, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 126, "_eid": "62782057", "x": 832, "y": 288, "originX": 0, "originY": 0, "rotation": 0},
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 130,
           "_eid": "47158608",
           "x": 1568,
@@ -423,7 +423,7 @@
           "values": {"dialogue": "Be careful Ritz! The spikes' hitboxes can also hurt you from the side!", "autoTalk": false, "cameraOffsetX": 0}
         },
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 184,
           "_eid": "47158608",
           "x": 2016,
@@ -438,7 +438,7 @@
           "values": {"speed": 120, "startDelay": 0, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "auto", "oneWayPlatform": false, "trigger": "Load"}
         },
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 185,
           "_eid": "47158608",
           "x": 1824,
@@ -453,7 +453,7 @@
           "values": {"speed": 70, "startDelay": 0, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "auto", "oneWayPlatform": true, "trigger": "Load"}
         },
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 186,
           "_eid": "47158608",
           "x": 1760,
@@ -468,7 +468,7 @@
           "values": {"speed": 70, "startDelay": 0, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "auto", "oneWayPlatform": true, "trigger": "Load"}
         },
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 187,
           "_eid": "47158608",
           "x": 1680,

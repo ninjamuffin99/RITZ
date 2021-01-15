@@ -140,7 +140,7 @@ class PlayState extends flixel.FlxState
 		if (map.x + map.width  > worldBounds.right) worldBounds.right = map.x + map.width;
 		if (map.y + map.height > worldBounds.bottom) worldBounds.bottom = map.y + map.height;
 		
-		var crack = new OgmoTilemap(ogmo, 'Crack', "assets/images/");
+		var crack = new OgmoTilemap(ogmo, 'Crack');
 		#if debug crack.ignoreDrawDebug = true; #end
 		grpCracks.add(crack);
 		
@@ -217,13 +217,13 @@ class PlayState extends flixel.FlxState
 			case "coins" | "cheese":
 				totalCheese++;
 				entity = grpCheese.add(new Cheese(e.x, e.y, e.id, true));
-			case "blinkingPlatform"|"solidBlinkingPlatform"|"cloudBlinkingPlatform":
+			case "blinking_platform"|"solid_blinking_platform"|"cloud_blinking_platform":
 				var platform = BlinkingPlatform.fromOgmo(e);
 				grpPlatforms.add(platform);
 				if (platform.oneWayPlatform)
 					grpOneWayPlatforms.add(platform);
 				entity = platform;
-			case "movingPlatform"|"solidMovingPlatform"|"cloudMovingPlatform":
+			case "moving_platform"|"solid_moving_platform"|"cloud_moving_platform":
 				var platform = MovingPlatform.fromOgmo(e);
 				grpPlatforms.add(platform);
 				if (platform.oneWayPlatform)

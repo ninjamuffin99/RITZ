@@ -231,7 +231,7 @@
         {"name": "spike", "id": 786, "_eid": "62782057", "x": 1088, "y": 2560, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 787, "_eid": "62782057", "x": 1056, "y": 2560, "originX": 0, "originY": 0, "rotation": 0},
         {
-          "name": "solidMovingPlatform",
+          "name": "solid_moving_platform",
           "id": 798,
           "_eid": "97715593",
           "x": 2304,
@@ -248,7 +248,7 @@
           "values": {"speed": 120, "startDelay": 0, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "trigger": "Load"}
         },
         {
-          "name": "solidMovingPlatform",
+          "name": "solid_moving_platform",
           "id": 799,
           "_eid": "97715593",
           "x": 1920,
@@ -265,7 +265,7 @@
           "values": {"speed": 120, "startDelay": 0, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "trigger": "Load"}
         },
         {
-          "name": "solidMovingPlatform",
+          "name": "solid_moving_platform",
           "id": 800,
           "_eid": "97715593",
           "x": 2208,
@@ -282,7 +282,7 @@
           "values": {"speed": 120, "startDelay": 0, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "trigger": "Load"}
         },
         {
-          "name": "cloudMovingPlatform",
+          "name": "cloud_moving_platform",
           "id": 801,
           "_eid": "97687877",
           "x": 1728,
@@ -301,7 +301,7 @@
           "values": {"speed": 150, "startDelay": 0, "holdPerNode": 0.5, "holdPerLoop": 0, "type": "YOYO", "trigger": "Ground"}
         },
         {
-          "name": "cloudMovingPlatform",
+          "name": "cloud_moving_platform",
           "id": 802,
           "_eid": "97687877",
           "x": 2592,
@@ -318,7 +318,7 @@
           "values": {"speed": 120, "startDelay": 0, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "trigger": "Load"}
         },
         {
-          "name": "solidMovingPlatform",
+          "name": "solid_moving_platform",
           "id": 803,
           "_eid": "97715593",
           "x": 1408,
@@ -333,7 +333,7 @@
           "values": {"speed": 300, "startDelay": 0, "holdPerNode": 0, "holdPerLoop": 0.5, "type": "LOOP_FORWARD", "trigger": "Ground"}
         },
         {
-          "name": "solidMovingPlatform",
+          "name": "solid_moving_platform",
           "id": 805,
           "_eid": "97715593",
           "x": 1216,
@@ -352,7 +352,7 @@
         {"name": "spike", "id": 808, "_eid": "62782057", "x": 1152, "y": 2944, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 809, "_eid": "62782057", "x": 1184, "y": 2944, "originX": 0, "originY": 0, "rotation": 0},
         {
-          "name": "cloudMovingPlatform",
+          "name": "cloud_moving_platform",
           "id": 810,
           "_eid": "97687877",
           "x": 960,
@@ -367,7 +367,7 @@
           "values": {"speed": 120, "startDelay": 0, "holdPerNode": 0.5, "holdPerLoop": 0, "type": "LOOP_FORWARD", "trigger": "Ground"}
         },
         {
-          "name": "solidMovingPlatform",
+          "name": "solid_moving_platform",
           "id": 811,
           "_eid": "97715593",
           "x": 480,
@@ -382,7 +382,7 @@
           "values": {"speed": 120, "startDelay": 0, "holdPerNode": 0.5, "holdPerLoop": 0, "type": "LOOP_FORWARD", "trigger": "Ground"}
         },
         {
-          "name": "cloudMovingPlatform",
+          "name": "cloud_moving_platform",
           "id": 812,
           "_eid": "97687877",
           "x": 64,
@@ -397,7 +397,7 @@
           "values": {"speed": 120, "startDelay": 0, "holdPerNode": 1, "holdPerLoop": 0, "type": "LOOP_FORWARD", "trigger": "Load"}
         },
         {
-          "name": "cloudMovingPlatform",
+          "name": "cloud_moving_platform",
           "id": 813,
           "_eid": "97687877",
           "x": 768,
@@ -412,7 +412,7 @@
           "values": {"speed": 120, "startDelay": 0, "holdPerNode": 1, "holdPerLoop": 0, "type": "LOOP_FORWARD", "trigger": "Load"}
         },
         {
-          "name": "cloudMovingPlatform",
+          "name": "cloud_moving_platform",
           "id": 814,
           "_eid": "97687877",
           "x": 576,
@@ -549,7 +549,7 @@
         {"name": "spike", "id": 959, "_eid": "62782057", "x": 864, "y": 1408, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 960, "_eid": "62782057", "x": 896, "y": 1408, "originX": 0, "originY": 0, "rotation": 0},
         {
-          "name": "solidMovingPlatform",
+          "name": "solid_moving_platform",
           "id": 963,
           "_eid": "97715593",
           "x": 896,
@@ -564,7 +564,7 @@
           "values": {"speed": 704, "startDelay": 0, "holdPerNode": 0.5, "holdPerLoop": 0, "type": "YOYO", "trigger": "Load"}
         },
         {
-          "name": "solidMovingPlatform",
+          "name": "solid_moving_platform",
           "id": 966,
           "_eid": "97715593",
           "x": 896,
@@ -579,7 +579,7 @@
           "values": {"speed": 704, "startDelay": 0.125, "holdPerNode": 0.5, "holdPerLoop": 0, "type": "YOYO", "trigger": "Load"}
         },
         {
-          "name": "solidMovingPlatform",
+          "name": "solid_moving_platform",
           "id": 967,
           "_eid": "97715593",
           "x": 896,
@@ -594,7 +594,7 @@
           "values": {"speed": 704, "startDelay": 0.25, "holdPerNode": 0.5, "holdPerLoop": 0, "type": "YOYO", "trigger": "Load"}
         },
         {
-          "name": "solidMovingPlatform",
+          "name": "solid_moving_platform",
           "id": 968,
           "_eid": "97715593",
           "x": 896,
@@ -609,7 +609,7 @@
           "values": {"speed": 704, "startDelay": 0.375, "holdPerNode": 0.5, "holdPerLoop": 0, "type": "YOYO", "trigger": "Load"}
         },
         {
-          "name": "solidMovingPlatform",
+          "name": "solid_moving_platform",
           "id": 969,
           "_eid": "97715593",
           "x": 896,
@@ -624,7 +624,7 @@
           "values": {"speed": 704, "startDelay": 0.5, "holdPerNode": 0.5, "holdPerLoop": 0, "type": "YOYO", "trigger": "Load"}
         },
         {
-          "name": "solidMovingPlatform",
+          "name": "solid_moving_platform",
           "id": 970,
           "_eid": "97715593",
           "x": 896,
@@ -639,7 +639,7 @@
           "values": {"speed": 704, "startDelay": 0.625, "holdPerNode": 0.5, "holdPerLoop": 0, "type": "YOYO", "trigger": "Load"}
         },
         {
-          "name": "solidMovingPlatform",
+          "name": "solid_moving_platform",
           "id": 971,
           "_eid": "97715593",
           "x": 896,
@@ -654,7 +654,7 @@
           "values": {"speed": 704, "startDelay": 0.75, "holdPerNode": 0.5, "holdPerLoop": 0, "type": "YOYO", "trigger": "Load"}
         },
         {
-          "name": "solidMovingPlatform",
+          "name": "solid_moving_platform",
           "id": 972,
           "_eid": "97715593",
           "x": 896,
@@ -706,7 +706,7 @@
         },
         {"name": "spike", "id": 996, "_eid": "62782057", "x": 416, "y": 1856, "originX": 0, "originY": 0, "rotation": 180},
         {
-          "name": "solidMovingPlatform",
+          "name": "solid_moving_platform",
           "id": 999,
           "_eid": "97715593",
           "x": 2656,
@@ -767,7 +767,7 @@
         {"name": "spike", "id": 1046, "_eid": "62782057", "x": 2080, "y": 2016, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 1047, "_eid": "62782057", "x": 2048, "y": 2016, "originX": 0, "originY": 0, "rotation": 0},
         {
-          "name": "solidMovingPlatform",
+          "name": "solid_moving_platform",
           "id": 1048,
           "_eid": "97715593",
           "x": 2144,
@@ -837,7 +837,7 @@
         {"name": "spike", "id": 1136, "_eid": "62782057", "x": 2304, "y": 1120, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 1137, "_eid": "62782057", "x": 2336, "y": 1120, "originX": 0, "originY": 0, "rotation": 0},
         {
-          "name": "solidBlinkingPlatform",
+          "name": "solid_blinking_platform",
           "id": 1138,
           "_eid": "98401502",
           "x": 832,
@@ -849,7 +849,7 @@
           "values": {"unit": "HalfBeats", "startDelay": 1, "showTime": 1, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
-          "name": "solidBlinkingPlatform",
+          "name": "solid_blinking_platform",
           "id": 1140,
           "_eid": "98401502",
           "x": 1184,
@@ -861,7 +861,7 @@
           "values": {"unit": "Seconds", "startDelay": 1, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
-          "name": "cloudBlinkingPlatform",
+          "name": "cloud_blinking_platform",
           "id": 1146,
           "_eid": "98477857",
           "x": 1280,
@@ -873,7 +873,7 @@
           "values": {"unit": "Seconds", "startDelay": 1, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
-          "name": "solidBlinkingPlatform",
+          "name": "solid_blinking_platform",
           "id": 1150,
           "_eid": "98401502",
           "x": 1280,
@@ -885,7 +885,7 @@
           "values": {"unit": "Seconds", "startDelay": 2, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
-          "name": "cloudBlinkingPlatform",
+          "name": "cloud_blinking_platform",
           "id": 1154,
           "_eid": "98477857",
           "x": 1376,
@@ -897,7 +897,7 @@
           "values": {"unit": "Seconds", "startDelay": 2, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
-          "name": "solidBlinkingPlatform",
+          "name": "solid_blinking_platform",
           "id": 1178,
           "_eid": "98401502",
           "x": 1376,
@@ -909,7 +909,7 @@
           "values": {"unit": "Seconds", "startDelay": 0, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
-          "name": "cloudBlinkingPlatform",
+          "name": "cloud_blinking_platform",
           "id": 1180,
           "_eid": "98477857",
           "x": 1472,
@@ -921,7 +921,7 @@
           "values": {"unit": "Seconds", "startDelay": 0, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
-          "name": "cloudBlinkingPlatform",
+          "name": "cloud_blinking_platform",
           "id": 1181,
           "_eid": "98477857",
           "x": 1568,
@@ -933,7 +933,7 @@
           "values": {"unit": "Seconds", "startDelay": 1, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
-          "name": "cloudBlinkingPlatform",
+          "name": "cloud_blinking_platform",
           "id": 1190,
           "_eid": "98477857",
           "x": 704,
@@ -945,7 +945,7 @@
           "values": {"unit": "HalfBeats", "startDelay": 0, "showTime": 1, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
-          "name": "cloudBlinkingPlatform",
+          "name": "cloud_blinking_platform",
           "id": 1191,
           "_eid": "98477857",
           "x": 832,
@@ -958,7 +958,7 @@
         },
         {"name": "coins", "id": 1192, "_eid": "46479631", "x": 736, "y": 704, "originX": 0, "originY": 0},
         {
-          "name": "solidBlinkingPlatform",
+          "name": "solid_blinking_platform",
           "id": 1193,
           "_eid": "98401502",
           "x": 1088,
@@ -970,7 +970,7 @@
           "values": {"unit": "Seconds", "startDelay": 0, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
-          "name": "solidBlinkingPlatform",
+          "name": "solid_blinking_platform",
           "id": 1194,
           "_eid": "98401502",
           "x": 1824,
@@ -982,7 +982,7 @@
           "values": {"unit": "Seconds", "startDelay": 0, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
-          "name": "solidBlinkingPlatform",
+          "name": "solid_blinking_platform",
           "id": 1195,
           "_eid": "98401502",
           "x": 1888,
@@ -995,7 +995,7 @@
         },
         {"name": "coins", "id": 1196, "_eid": "46479631", "x": 1440, "y": 832, "originX": 0, "originY": 0},
         {
-          "name": "solidBlinkingPlatform",
+          "name": "solid_blinking_platform",
           "id": 1197,
           "_eid": "98401502",
           "x": 1984,
@@ -1007,7 +1007,7 @@
           "values": {"unit": "Seconds", "startDelay": 2, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
-          "name": "solidBlinkingPlatform",
+          "name": "solid_blinking_platform",
           "id": 1198,
           "_eid": "98401502",
           "x": 2080,
@@ -1019,7 +1019,7 @@
           "values": {"unit": "Seconds", "startDelay": 0, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
-          "name": "solidBlinkingPlatform",
+          "name": "solid_blinking_platform",
           "id": 1199,
           "_eid": "98401502",
           "x": 2080,
@@ -1031,7 +1031,7 @@
           "values": {"unit": "Seconds", "startDelay": 1, "showTime": 2, "warnTime": 0.5, "hideTime": 1, "trigger": "Load"}
         },
         {
-          "name": "solidBlinkingPlatform",
+          "name": "solid_blinking_platform",
           "id": 1200,
           "_eid": "98401502",
           "x": 2240,
@@ -1044,7 +1044,7 @@
         },
         {"name": "coins", "id": 1201, "_eid": "46479631", "x": 2096, "y": 800, "originX": 0, "originY": 0},
         {
-          "name": "solidBlinkingPlatform",
+          "name": "solid_blinking_platform",
           "id": 1202,
           "_eid": "98401502",
           "x": 2144,
@@ -1056,7 +1056,7 @@
           "values": {"unit": "Seconds", "startDelay": 0, "showTime": 0.5, "warnTime": 0.5, "hideTime": 3, "trigger": "Collide"}
         },
         {
-          "name": "solidBlinkingPlatform",
+          "name": "solid_blinking_platform",
           "id": 1205,
           "_eid": "98401502",
           "x": 2176,
@@ -1068,7 +1068,7 @@
           "values": {"unit": "Seconds", "startDelay": 0, "showTime": 0.5, "warnTime": 0.5, "hideTime": 3, "trigger": "Collide"}
         },
         {
-          "name": "solidBlinkingPlatform",
+          "name": "solid_blinking_platform",
           "id": 1206,
           "_eid": "98401502",
           "x": 2208,
@@ -1080,7 +1080,7 @@
           "values": {"unit": "Seconds", "startDelay": 0, "showTime": 0.5, "warnTime": 0.5, "hideTime": 3, "trigger": "Collide"}
         },
         {
-          "name": "solidBlinkingPlatform",
+          "name": "solid_blinking_platform",
           "id": 1207,
           "_eid": "98401502",
           "x": 2240,
@@ -1092,7 +1092,7 @@
           "values": {"unit": "Seconds", "startDelay": 0, "showTime": 0.5, "warnTime": 0.5, "hideTime": 3, "trigger": "Collide"}
         },
         {
-          "name": "solidBlinkingPlatform",
+          "name": "solid_blinking_platform",
           "id": 1208,
           "_eid": "98401502",
           "x": 2272,
@@ -1105,7 +1105,7 @@
         },
         {"name": "coins", "id": 1212, "_eid": "46479631", "x": 2208, "y": 1760, "originX": 0, "originY": 0},
         {
-          "name": "solidBlinkingPlatform",
+          "name": "solid_blinking_platform",
           "id": 1213,
           "_eid": "98401502",
           "x": 2080,
@@ -1129,7 +1129,7 @@
           "values": {"amountNeeded": 24}
         },
         {
-          "name": "cloudBlinkingPlatform",
+          "name": "cloud_blinking_platform",
           "id": 1224,
           "_eid": "98477857",
           "x": 1248,
@@ -1141,7 +1141,7 @@
           "values": {"unit": "HalfBeats", "startDelay": 0, "showTime": 1, "warnTime": 0.5, "hideTime": 0, "trigger": "Load"}
         },
         {
-          "name": "cloudBlinkingPlatform",
+          "name": "cloud_blinking_platform",
           "id": 1225,
           "_eid": "98477857",
           "x": 1312,
@@ -1153,7 +1153,7 @@
           "values": {"unit": "HalfBeats", "startDelay": 0.5, "showTime": 1, "warnTime": 0.5, "hideTime": 0, "trigger": "Load"}
         },
         {
-          "name": "cloudBlinkingPlatform",
+          "name": "cloud_blinking_platform",
           "id": 1226,
           "_eid": "98477857",
           "x": 1376,
@@ -1165,7 +1165,7 @@
           "values": {"unit": "HalfBeats", "startDelay": 1, "showTime": 1, "warnTime": 0.5, "hideTime": 0, "trigger": "Load"}
         },
         {
-          "name": "cloudBlinkingPlatform",
+          "name": "cloud_blinking_platform",
           "id": 1227,
           "_eid": "98477857",
           "x": 1440,
@@ -1259,7 +1259,7 @@
         {"name": "spike", "id": 58, "_eid": "62782057", "x": 2208, "y": 2910, "originX": 0, "originY": 0, "rotation": 180},
         {"name": "spike", "id": 59, "_eid": "62782057", "x": 2080, "y": 2910, "originX": 0, "originY": 0, "rotation": 180},
         {
-          "name": "solidMovingPlatform",
+          "name": "solid_moving_platform",
           "id": 60,
           "_eid": "97715593",
           "x": 1120,
@@ -1274,7 +1274,7 @@
           "values": {"speed": 400, "startDelay": 0, "holdPerNode": 0.75, "holdPerLoop": 0, "type": "LOOP_FORWARD", "trigger": "Load"}
         },
         {
-          "name": "solidMovingPlatform",
+          "name": "solid_moving_platform",
           "id": 61,
           "_eid": "97715593",
           "x": 1408,
@@ -1289,7 +1289,7 @@
           "values": {"speed": 400, "startDelay": 0, "holdPerNode": 0.75, "holdPerLoop": 0, "type": "LOOP_FORWARD", "trigger": "Load"}
         },
         {
-          "name": "cloudMovingPlatform",
+          "name": "cloud_moving_platform",
           "id": 62,
           "_eid": "97687877",
           "x": 32,

@@ -52,7 +52,7 @@ class BlinkingPlatform extends TriggerPlatform
         
         super.setOgmoProperties(data);
         onGraphic = graphic;
-        offGraphic = Platform.getImageFromOgmo(data.values.graphic, data.width, data.height, oneWayPlatform ? "cloudOff" : "solidOff");
+        offGraphic = Platform.getImageFromOgmo(data.values.graphic, data.width, data.height, oneWayPlatform ? "cloud_off" : "solid_off");
         
         var startDelay = (values.startDelay * unit) % (showTime + hideTime);
         if (trigger != Load && startDelay != 0)

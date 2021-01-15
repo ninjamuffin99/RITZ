@@ -162,7 +162,7 @@
           "values": {"song": "pillow", "fadetime": 4}
         },
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 52,
           "_eid": "47158608",
           "x": 800,
@@ -185,7 +185,7 @@
         {"name": "spike", "id": 67, "_eid": "62782057", "x": 1088, "y": 2688, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "secretTrigger", "id": 68, "_eid": "75912039", "x": 760, "y": 3072, "width": 16, "height": 160, "originX": 0, "originY": 0},
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 70,
           "_eid": "47158608",
           "x": 328,
@@ -200,7 +200,7 @@
           "values": {"speed": 120, "startDelay": 0, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "movingLong", "oneWayPlatform": false, "trigger": "Load"}
         },
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 71,
           "_eid": "47158608",
           "x": 488,
@@ -216,7 +216,7 @@
         },
         {"name": "coins", "id": 72, "_eid": "46479631", "x": 328, "y": 1520, "originX": 0, "originY": 0},
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 73,
           "_eid": "47158608",
           "x": 272,
@@ -235,7 +235,7 @@
         {"name": "spike", "id": 74, "_eid": "62782057", "x": 416, "y": 1024, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 75, "_eid": "62782057", "x": 672, "y": 1056, "originX": 0, "originY": 0, "rotation": -90},
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 78,
           "_eid": "47158608",
           "x": 928,
@@ -255,7 +255,7 @@
         {"name": "spike", "id": 83, "_eid": "62782057", "x": 736, "y": 832, "originX": 0, "originY": 0, "rotation": 180},
         {"name": "spike", "id": 84, "_eid": "62782057", "x": 864, "y": 864, "originX": 0, "originY": 0, "rotation": -90},
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 85,
           "_eid": "47158608",
           "x": 720,
@@ -297,7 +297,7 @@
         {"name": "spike", "id": 103, "_eid": "62782057", "x": 1344, "y": 3040, "originX": 0, "originY": 0, "rotation": 0},
         {"name": "spike", "id": 104, "_eid": "62782057", "x": 1376, "y": 3200, "originX": 0, "originY": 0, "rotation": 180},
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 105,
           "_eid": "47158608",
           "x": 1408,
@@ -351,7 +351,7 @@
         {"name": "secretTrigger", "id": 127, "_eid": "75912039", "x": 344, "y": 736, "width": 104, "height": 80, "originX": 0, "originY": 0},
         {"name": "secretTrigger", "id": 129, "_eid": "75912039", "x": 992, "y": 2232, "width": 80, "height": 104, "originX": 0, "originY": 0},
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 130,
           "_eid": "47158608",
           "x": 1408,
@@ -455,7 +455,7 @@
           "values": {"dialogue": "Be careful Ritz! The spikes' hitboxes can also hurt you from the side!", "autoTalk": false, "cameraOffsetX": 0}
         },
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 184,
           "_eid": "47158608",
           "x": 2008,
@@ -470,7 +470,7 @@
           "values": {"speed": 120, "startDelay": 0, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "movingLonger", "oneWayPlatform": false, "trigger": "Load"}
         },
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 185,
           "_eid": "47158608",
           "x": 1824,
@@ -485,7 +485,7 @@
           "values": {"speed": 70, "startDelay": 0, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "movingSingle", "oneWayPlatform": true, "trigger": "Load"}
         },
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 186,
           "_eid": "47158608",
           "x": 1760,
@@ -500,7 +500,7 @@
           "values": {"speed": 70, "startDelay": 0, "holdPerNode": 0, "holdPerLoop": 0, "type": "LOOP_FORWARD", "graphic": "movingShort", "oneWayPlatform": true, "trigger": "Load"}
         },
         {
-          "name": "movingPlatform",
+          "name": "moving_platform",
           "id": 187,
           "_eid": "47158608",
           "x": 1680,
