@@ -16,10 +16,10 @@ class Hook extends flixel.FlxSprite
     public function new(x:Float, y:Float)
     {
         super(x, y, "assets/images/hook.png");
-        setGraphicSize(RADIUS * 2, RADIUS * 2);
-        updateHitbox();
-        x -= Math.floor(width / 2);
-        y -= Math.floor(height / 2);
+        width = RADIUS * 2;
+        height = RADIUS * 2;
+        offset.x -= Math.floor(width / 4);
+        offset.y -= Math.floor(height / 4);
     }
     
     public function getCenter(?p:FlxPoint):FlxPoint
