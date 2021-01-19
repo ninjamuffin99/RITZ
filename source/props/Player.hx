@@ -109,6 +109,7 @@ class Player extends FlxSprite
     public var playCamera(default, null):PlayCamera;
     public var controls(get, never):Controls;
     inline function get_controls():Controls return settings.controls;
+    public var canTailWhip = false;
     
     public function new(x:Float, y:Float):Void
     {
@@ -387,7 +388,7 @@ class Player extends FlxSprite
                     updateTailPosition();
                 }
             }
-            else if (controls.TAIL_P)
+            else if (controls.TAIL_P && canTailWhip)
             {
                 if (!onGround)
                 {
