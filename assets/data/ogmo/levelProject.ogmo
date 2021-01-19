@@ -816,7 +816,7 @@
       "tags": ["FG"],
       "values": [],
       "texture": "../images/hook.png",
-      "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAAXNSR0IArs4c6QAAAFNJREFUCJljZICCZg2e/zB27Y0vjAwMDAwsMAlrNzkGuEKGR/9rb3xhZEGWcEzQQ1HABOMgS8DYcEmcoFmD5/++PK3/89F/P9/LuI/zHGM+FwLANP5IkH3BPw9AAAAAElFTkSuQmCC"
+      "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAYAAADEUlfTAAAAAXNSR0IArs4c6QAAAFNJREFUCJljZICCZg2e/zB27Y0vjAwMDAwsMAlrNzkGuEKGR/9rb3xhZEGWcEzQQ1HABOMgS8DYcEmcoFmD5/++PK3//89F/P9/LuI/zHGM+FwLANP5IkH3BPw9AAAAAElFTkSuQmCC"
     }
   ],
   "tilesets": [

@@ -177,7 +177,7 @@ abstract MiniTilemap(OgmoTilemap) to OgmoTilemap
                     stampAllMapOf(this, entity, CLOUD, fg);
             case 'locked' | 'locked_tall':
                 stampAllMapOf(this, entity, DOOR, fg);
-            case "player" | "spider" | "musicTrigger" | "secretTrigger"://unusued
+            case "player" | "spider" | "musicTrigger" | "secretTrigger" | "hook"://unusued
             case type: throw 'Unhandled entity type: $type';
         }
     }

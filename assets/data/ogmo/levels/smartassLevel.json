@@ -1176,7 +1176,11 @@
           "originY": 0,
           "values": {"unit": "HalfBeats", "startDelay": 1.5, "showTime": 1, "warnTime": 0.5, "hideTime": 0, "trigger": "Load"}
         },
-        {"name": "player", "id": 1229, "_eid": "29962948", "x": 176, "y": 4032, "originX": 0, "originY": 0}
+        {"name": "player", "id": 1229, "_eid": "29962948", "x": 176, "y": 4032, "originX": 0, "originY": 0},
+        {"name": "hook", "id": 1230, "_eid": "96601285", "x": 496, "y": 3968},
+        {"name": "hook", "id": 1231, "_eid": "96601285", "x": 528, "y": 3904},
+        {"name": "hook", "id": 1232, "_eid": "96601285", "x": 496, "y": 3840},
+        {"name": "hook", "id": 1233, "_eid": "96601285", "x": 544, "y": 3776}
       ]
     },
     {

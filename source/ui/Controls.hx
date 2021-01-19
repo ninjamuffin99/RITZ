@@ -25,6 +25,8 @@ enum abstract Action(String) to String from String
     var JUMP_P  = "jump-press";
     var JUMP_R  = "jump-release";
     var TALK    = "talk";
+    var TAIL    = "tail";
+    var TAIL_P  = "tail-press";
     var ACCEPT  = "accept";
     var BACK    = "back";
     var MAP     = "map";
@@ -51,6 +53,7 @@ enum Control
     DOWN;
     JUMP;
     TALK;
+    TAIL;
     RESET;
     ACCEPT;
     BACK;
@@ -84,6 +87,8 @@ class Controls extends FlxActionSet
     var _jumpP  = new FlxActionDigital(Action.JUMP_P );
     var _jumpR  = new FlxActionDigital(Action.JUMP_R );
     var _talk   = new FlxActionDigital(Action.TALK   );
+    var _tail   = new FlxActionDigital(Action.TAIL   );
+    var _tailP  = new FlxActionDigital(Action.TAIL_P );
     var _accept = new FlxActionDigital(Action.ACCEPT );
     var _back   = new FlxActionDigital(Action.BACK   );
     var _map    = new FlxActionDigital(Action.MAP    );
@@ -106,6 +111,8 @@ class Controls extends FlxActionSet
     public var JUMP_P (get, never):Bool; inline function get_JUMP_P () return _jumpP .check();
     public var JUMP_R (get, never):Bool; inline function get_JUMP_R () return _jumpR .check();
     public var TALK   (get, never):Bool; inline function get_TALK   () return _talk  .check();
+    public var TAIL   (get, never):Bool; inline function get_TAIL   () return _tail  .check();
+    public var TAIL_P (get, never):Bool; inline function get_TAIL_P () return _tailP .check();
     public var ACCEPT (get, never):Bool; inline function get_ACCEPT () return _accept.check();
     public var BACK   (get, never):Bool; inline function get_BACK   () return _back  .check();
     public var MAP    (get, never):Bool; inline function get_MAP    () return _map   .check();
@@ -129,6 +136,8 @@ class Controls extends FlxActionSet
         add(_jumpP);
         add(_jumpR);
         add(_talk);
+        add(_tail);
+        add(_tailP);
         add(_accept);
         add(_back);
         add(_map);
@@ -182,6 +191,7 @@ class Controls extends FlxActionSet
             case RIGHT : _right ;
             case JUMP  : _jump  ;
             case TALK  : _talk  ;
+            case TAIL  : _tail  ;
             case ACCEPT: _accept;
             case BACK  : _back  ;
             case PAUSE : _pause ;
@@ -218,6 +228,8 @@ class Controls extends FlxActionSet
                         func(_jumpP , JUST_PRESSED);
                         func(_jumpR , JUST_RELEASED);
             case TALK  :func(_talk  , JUST_PRESSED);
+            case TAIL  :func(_tail  , PRESSED);
+                        func(_tailP , JUST_PRESSED);
             case ACCEPT:func(_accept, JUST_PRESSED);
             case BACK  :func(_back  , JUST_PRESSED);
             case MAP   :func(_map   , JUST_PRESSED);
@@ -338,6 +350,7 @@ class Controls extends FlxActionSet
                 inline bindKeys(Control.RIGHT , [D, FlxKey.RIGHT]);
                 inline bindKeys(Control.JUMP  , [Z, Y, W, FlxKey.UP]);
                 inline bindKeys(Control.TALK  , [E, F, X]);
+                inline bindKeys(Control.TAIL  , [E, F, X]);
                 inline bindKeys(Control.ACCEPT, [Z, SPACE]);
                 inline bindKeys(Control.BACK  , [X]);
                 inline bindKeys(Control.PAUSE , [P, ENTER]);
@@ -350,6 +363,7 @@ class Controls extends FlxActionSet
                 inline bindKeys(Control.RIGHT , [D]);
                 inline bindKeys(Control.JUMP  , [G, W, Z]);
                 inline bindKeys(Control.TALK  , [H, X]);
+                inline bindKeys(Control.TAIL  , [H, X]);
                 inline bindKeys(Control.ACCEPT, [G, Z]);
                 inline bindKeys(Control.BACK  , [H, X]);
                 inline bindKeys(Control.PAUSE , [ONE]);
@@ -362,6 +376,7 @@ class Controls extends FlxActionSet
                 inline bindKeys(Control.RIGHT , [FlxKey.RIGHT]);
                 inline bindKeys(Control.JUMP  , [O, FlxKey.UP]);
                 inline bindKeys(Control.TALK  , [P]);
+                inline bindKeys(Control.TAIL  , [P]);
                 inline bindKeys(Control.ACCEPT, [O]);
                 inline bindKeys(Control.BACK  , [P]);
                 inline bindKeys(Control.PAUSE , [ENTER]);
@@ -427,6 +442,7 @@ class Controls extends FlxActionSet
             , Control.RIGHT  => [DPAD_RIGHT, LEFT_STICK_DIGITAL_RIGHT]
             , Control.JUMP   => [A]
             , Control.TALK   => [X]
+            , Control.TAIL   => [X]
             , Control.PAUSE  => [START]
             , Control.MAP    => [GUIDE, LEFT_SHOULDER, FlxGamepadInputID.BACK]// not all controllers have these
             , Control.RESET  => [Y]

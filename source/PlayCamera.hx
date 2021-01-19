@@ -1,5 +1,6 @@
 package;
 
+import states.PlayState;
 import data.OgmoTilemap;
 import props.Player;
 
@@ -52,6 +53,8 @@ class PlayCamera extends FlxCamera
 	
 	var groundRect = new FlxRect();
 	var airRect = new FlxRect();
+	var hangRect = new FlxRect();
+	public var mode:CameraMode = Air;
 	
 	var player(get, never):Player;
 	inline function get_player():Player return cast target;
@@ -81,10 +84,29 @@ class PlayCamera extends FlxCamera
 		groundRect.width = w;
 		groundRect.height = player.height;
 		groundRect.y = (height - groundRect.height) / 2 - (TILE_SIZE * 1 * zoom);
+		
+		hangRect.copyFrom(groundRect);
+		// hangRect.y -= TILE_SIZE;
+		// hangRect.height += TILE_SIZE;// snapping doesn't work with this
+		
 		airRect.copyFrom(groundRect);
 		airRect.y -= Player.MAX_JUMP;
 		airRect.height += Player.MAX_JUMP + 3 * TILE_SIZE;
-		deadzone.copyFrom(airRect);
+		
+		updateDeadzone();
+	}
+	
+	function updateDeadzone():Void
+	{
+		deadzone.copyFrom
+		(
+			switch(mode)
+			{
+				case Air   : airRect;
+				case Ground: groundRect;
+				case Hang  : hangRect;
+			}
+		);
 	}
 	
 	override function update(elapsed:Float)
@@ -92,29 +114,40 @@ class PlayCamera extends FlxCamera
 		if (player.state == Talking)// todo: set deadzone to null and call super?
 			return;
 		
-		// Deadzone: taller when jumping, but snap to center when on the ground
-		if (player.state == Alive && player.onGround != player.wasOnGround)
+		if (player.state == Alive)
 		{
-			deadzone.copyFrom(player.onGround ? groundRect : airRect);
-			
-			// Snap to new ground height
-			if (player.onGround)
+			var oldMode = mode;
+			var newMode = switch(player.action)
 			{
-				// Compute the amount of y dis to move the camera
-				targetOffset.y = leadOffset + panOffset;
-				var oldCam = FlxPoint.get().copyFrom(scroll);
-				snapToTarget();
-				snapTimer = 0;
-				snapAmount = scroll.y - oldCam.y;
-				scroll.copyFrom(oldCam);
-				oldCam.put();
-				// The following messes up at lthe bottom of the level, and only helps with visual debugging
-				// if (snapAmount + scroll.y + height + targetOffset.y > maxScrollY)
-				// 	snapAmount = maxScrollY - (scroll.y + height + targetOffset.y);
+				case Platforming | Hooked:
+					player.onGround ? Ground : Air;
+				case Hung | Hanging(_):
+					Hang;
+			}
+			
+			if (newMode != mode)
+			{
+				mode = newMode;
+				updateDeadzone();
 				
-				snapEase = null;
-				if (fallTimer > FALL_LEAD_DELAY)
-					snapEase = FlxEase.smootherStepOut;
+				if (oldMode == Air || newMode == Ground)//if just landed
+				{
+					// Compute the amount of y dis to move the camera
+					targetOffset.y = leadOffset + panOffset;
+					var oldCam = FlxPoint.get().copyFrom(scroll);
+					snapToTarget();
+					snapTimer = 0;
+					snapAmount = scroll.y - oldCam.y;
+					scroll.copyFrom(oldCam);
+					oldCam.put();
+					// The following messes up at lthe bottom of the level, and only helps with visual debugging
+					// if (snapAmount + scroll.y + height + targetOffset.y > maxScrollY)
+					// 	snapAmount = maxScrollY - (scroll.y + height + targetOffset.y);
+					
+					snapEase = null;
+					if (fallTimer > FALL_LEAD_DELAY)
+						snapEase = FlxEase.smootherStepOut;
+				}
 			}
 		}
 		
@@ -131,7 +164,7 @@ class PlayCamera extends FlxCamera
 		}
 		
 		// Look around
-		if (player.controls.DOWN && player.onGround)
+		if (player.controls.DOWN && mode != Air)
 		{
 			panDownTimer += elapsed;
 			if (panDownTimer > PAN_DOWN_DELAY + PAN_DOWN_TIME)
@@ -196,6 +229,7 @@ class PlayCamera extends FlxCamera
 		#if debug
 		if (FlxG.keys.justPressed.C)
 		{
+			(cast FlxG.state:PlayState).disableAllDebugDraw();//TODO: Debug.hx
 			if (debugDeadZone == null)
 			{
 				FlxG.debugger.drawDebug = true;
@@ -218,4 +252,10 @@ class PlayCamera extends FlxCamera
 		
 		super.update(elapsed);
 	}
+}
+enum CameraMode
+{
+	Air;
+	Ground;
+	Hang;
 }

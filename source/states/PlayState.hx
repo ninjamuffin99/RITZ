@@ -7,6 +7,7 @@ import data.OgmoTilemap;
 import data.PlayerSettings;
 import props.Checkpoint;
 import props.Cheese;
+import props.Hook;
 import props.Lock;
 import props.SpikeObstacle;
 import props.Player;
@@ -31,6 +32,7 @@ import flixel.FlxSprite;
 import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup;
 import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxColor;
 
@@ -46,22 +48,24 @@ class PlayState extends flixel.FlxState
 	
 	var levels:Map<String, Level> = [];
 	
-	var bg:FlxBackdrop;
-	var foreground = new FlxGroup();
-	var background = new FlxGroup();
-	var grpCracks = new FlxTypedGroup<OgmoTilemap>();
-	var grpPlayers = new FlxTypedGroup<Player>();
-	var grpCheese = new FlxTypedGroup<Cheese>();
-	var grpTilemaps = new FlxTypedGroup<OgmoTilemap>();
-	var grpPlatforms = new FlxTypedGroup<TriggerPlatform>();
-	var grpOneWayPlatforms = new FlxTypedGroup<Platform>();
-	var grpSpikes = new FlxTypedGroup<SpikeObstacle>();
-	var grpCheckpoint = new FlxTypedGroup<Checkpoint>();
-	var grpLockedDoors = new FlxTypedGroup<Lock>();
-	var grpMusicTriggers = new FlxTypedGroup<MusicTrigger>();
-	var grpSecretTriggers = new FlxTypedGroup<SecretTrigger>();
-	var grpCameraTiles = new FlxTypedGroup<CameraTilemap>();
-	var grpDecalLayers = new FlxTypedGroup<FlxGroup>();
+	public var bg:FlxBackdrop;
+	public var foreground = new FlxGroup();
+	public var background = new FlxGroup();
+	public var grpCracks = new FlxTypedGroup<OgmoTilemap>();
+	public var grpPlayers = new FlxTypedGroup<Player>();
+	public var grpCheese = new FlxTypedGroup<Cheese>();
+	public var grpHooks = new FlxTypedGroup<Hook>();
+	public var grpTilemaps = new FlxTypedGroup<OgmoTilemap>();
+	public var grpPlatforms = new FlxTypedGroup<TriggerPlatform>();
+	public var grpOneWayPlatforms = new FlxTypedGroup<Platform>();
+	public var grpSpikes = new FlxTypedGroup<SpikeObstacle>();
+	public var grpCheckpoint = new FlxTypedGroup<Checkpoint>();
+	public var grpLockedDoors = new FlxTypedGroup<Lock>();
+	public var grpMusicTriggers = new FlxTypedGroup<MusicTrigger>();
+	public var grpSecretTriggers = new FlxTypedGroup<SecretTrigger>();
+	public var grpCameraTiles = new FlxTypedGroup<CameraTilemap>();
+	public var grpDecalLayers = new FlxTypedGroup<FlxGroup>();
+	
 	var musicName:String;
 
 	var gaveCheese = false;
@@ -217,6 +221,8 @@ class PlayState extends flixel.FlxState
 			case "coins" | "cheese":
 				totalCheese++;
 				entity = grpCheese.add(new Cheese(e.x, e.y, e.id, true));
+			case "hook":
+				entity = grpHooks.add(new Hook(e.x, e.y));
 			case "blinking_platform"|"solid_blinking_platform"|"cloud_blinking_platform":
 				var platform = BlinkingPlatform.fromOgmo(e);
 				grpPlatforms.add(platform);
@@ -294,7 +300,7 @@ class PlayState extends flixel.FlxState
 	
 	function warpTo(x:Float, y:Float):Void
 	{
-		grpPlayers.forEach(player->player.hurtAndRespawn(x,y));
+		grpPlayers.forEach(player->player.dieAndRespawn(x,y));
 	}
 	
 	inline function updateCollision()
@@ -303,6 +309,8 @@ class PlayState extends flixel.FlxState
 		
 		checkDoors();
 		updateTriggers();
+		
+		grpPlayers.forEach((player)->player.updateTailPosition());
 	}
 	
 	function updatePlatforms(player:Player)
@@ -403,7 +411,8 @@ class PlayState extends flixel.FlxState
 	}
 	
 	
-	inline function checkPlayerState(player:Player)
+	//inline 
+	function checkPlayerState(player:Player)
 	{
 		if (player.state == Alive)
 		{
@@ -414,7 +423,7 @@ class PlayState extends flixel.FlxState
 			}
 			
 			if (SpikeObstacle.overlap(grpSpikes, player))
-				player.state = Hurt;
+				player.state = Dying;
 			
 			FlxG.overlap(grpCameraTiles, player, 
 				(cameraTiles:CameraTilemap, _)->
@@ -424,8 +433,8 @@ class PlayState extends flixel.FlxState
 			);
 		}
 		
-		if (player.state == Hurt)
-			player.hurtAndRespawn(curCheckpoint.x, curCheckpoint.y - 16);
+		if (player.state == Dying)
+			player.dieAndRespawn(curCheckpoint.x, curCheckpoint.y - 16);
 		
 		dialogueBubble.visible = false;
 		if (player.state == Alive)
@@ -434,6 +443,55 @@ class PlayState extends flixel.FlxState
 				FlxG.overlap(grpCheckpoint, player, handleCheckpoint);
 			
 			collectCheese();
+			switch (player.action)
+			{
+				case Hanging(_) | Hung:
+				case Hooked:
+				case Platforming:
+					var tail = player.tail;
+					if (player.isFalling)
+					{
+						// var bounds = FlxRect.get(player.x, player.y, player.width, player.height);
+						// var center = FlxPoint.get();
+						FlxG.overlap(player, grpHooks, 
+							function (_, hook:Hook)
+							{
+								// hook.getCenter(center);
+								
+								// if (bounds.containsPoint(center))
+									player.onTouchHook(hook);
+							}
+						);
+					}
+					if (!tail.isHooked() && tail.isWhipping())
+					{
+						FlxG.overlap(tail, grpTilemaps, (_, map)->tail.checkMapCollision(map));
+						
+						var overlap:Hook = null;
+						
+						FlxG.overlap(tail, grpHooks, (_, hook)->overlap = hook);
+						
+						if (overlap != null)
+						{
+							// function format(num:Float):String
+							// {
+							// 	// return Std.string(num);
+							// 	var str = Std.string(Math.round(num * 10) / 10);
+							// 	if (str.indexOf(".") == -1)
+							// 		str += ".0";
+							// 	return StringTools.lpad(str, " ", 6);
+							// }
+							// trace
+							// 	( 'hooked'
+							// 	+ '\n\tp :(${format(player.x  )}, ${format(player.y   )})'
+							// 	+ '\n\tts:(${format(tail.x    )}, ${format(tail.y     )})'
+							// 	+ '\n\ttf:(${format(tail.endX )}, ${format(tail.endY  )})'
+							// 	+ '\n\ttr:(${format(tail.width)}, ${format(tail.height)})'
+							// 	);
+							player.onWhipHook(overlap);
+						}
+					}
+			}
 		}
 	}
 	
@@ -488,16 +546,28 @@ class PlayState extends flixel.FlxState
 	
 	function collectCheese()
 	{
-		FlxG.overlap(grpPlayers, grpCheese, function(player:Player, cheese:Cheese)
+		FlxG.overlap(grpPlayers, grpCheese, playerCollectCheese);
+		
+		// collect cheese with tail
+		var player:Player;
+		player = PlayerSettings.player1.avatar;
+		FlxG.overlap(player.tail, grpCheese, (_, cheese)->playerCollectCheese(player, cheese));
+		if (PlayerSettings.numAvatars > 1)
 		{
-			FlxG.sound.play('assets/sounds/collectCheese' + BootState.soundEXT, 0.6);
-			cheese.startFollow(player);
-			player.cheese.add(cheese);
-			NGio.unlockMedal(58879);
-		});
+			player = PlayerSettings.player2.avatar;
+			FlxG.overlap(player.tail, grpCheese, (_, cheese)->playerCollectCheese(player, cheese));
+		}
 		
 		if (cheeseCount >= totalCheese)
 			NGio.unlockMedal(58884);
+	}
+	
+	function playerCollectCheese(player:Player, cheese:Cheese)
+	{
+		FlxG.sound.play('assets/sounds/collectCheese' + BootState.soundEXT, 0.6);
+		cheese.startFollow(player);
+		player.cheese.add(cheese);
+		NGio.unlockMedal(58879);
 	}
 	
 	inline function updateDebugFeatures()
@@ -505,14 +575,36 @@ class PlayState extends flixel.FlxState
 		if (FlxG.keys.justPressed.B)
 			FlxG.debugger.drawDebug = !FlxG.debugger.drawDebug;
 		
-		if (FlxG.keys.justPressed.T)
+		if (FlxG.keys.justPressed.ONE)
 			cheeseCount++;
-
+		
+		if (FlxG.keys.justPressed.T)
+		{
+			disableAllDebugDraw();
+			grpPlayers.forEach((player)->player.tail.ignoreDrawDebug = false);
+			FlxG.debugger.drawDebug = true;
+		}
+		
 		// if (FlxG.keys.justPressed.SEVEN)
 		// 	PlayerSettings.player1.rebindKeys();
 
 		// if (FlxG.keys.justPressed.EIGHT)
 		// 	PlayerSettings.player2.rebindKeys();
+	}
+	
+	public function disableAllDebugDraw()
+	{
+		grpPlayers.forEach((player)->
+		{
+			player.ignoreDrawDebug = true;
+			player.tail.ignoreDrawDebug = true;
+		});
+		foreground.forEach((basic)->{
+			if(Std.isOfType(basic, FlxSprite))
+			{
+				(cast basic:FlxSprite).ignoreDrawDebug = true;
+			}
+		});
 	}
 	
 	function onPlayerRespawn():Void
