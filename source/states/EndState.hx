@@ -2,6 +2,7 @@ package states;
 
 import props.Checkpoint;
 import ui.DialogueSubstate;
+import utils.NGio;
 
 import io.newgrounds.NG;
 
@@ -82,12 +83,12 @@ class EndState extends flixel.FlxState
 
         add(text);
 
-        if (NGio.isLoggedIn)
-        {
-            var hornyMedal = NG.core.medals.get(58882);
-            if (!hornyMedal.unlocked)
-                hornyMedal.sendUnlock();
-        }
+        // if (NGio.isLoggedIn)
+        // {
+        //     var hornyMedal = NG.core.medals.get(58882);
+        //     if (!hornyMedal.unlocked)
+        //         hornyMedal.sendUnlock();
+        // }
         
         super.create();
     }

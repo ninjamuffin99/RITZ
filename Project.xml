@@ -45,10 +45,7 @@
 	<haxelib name="flixel-ui" />
 	<haxelib name="zerolib" />
 	<haxelib name="zerolib-flixel" />
-	
-	<!-- Uncomment/comment to toggle -->
-	<haxedef name="SKIP_TO_PLAYSTATE" if="debug" />
-	<!-- <haxedef name="NG_LOGIN" /> -->
+	<haxelib name="newgrounds" />
 	
 	<!--In case you want to use nape with flixel-->
 	<!--<haxelib name="nape-haxe4" />-->
@@ -87,6 +84,13 @@
 
 	<!-- _________________________________ Custom _______________________________ -->
 
+	<haxedef name="SKIP_TO_PLAYSTATE" if="debug" />
+	<section if="newgrounds">
+		<haxedef name="NG_LOGIN" />
+		<haxedef name="NG_DEBUG_SESSION" if="debug" />
+		<haxedef name="NG_LURKER" />
+	</section >
+	
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
 	<icon path="assets/images/icon.png" />
 </project>
