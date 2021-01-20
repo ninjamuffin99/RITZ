@@ -1,4 +1,4 @@
-package;
+package utils;
 
 import flixel.util.FlxSignal;
 import io.newgrounds.NG;
@@ -19,7 +19,7 @@ class NGio
 	public static var isLoggedIn:Bool = false;
 	public static var scoreboardsLoaded:Bool = false;
 	
-	public static var scoreboardArray:Array<Score> = [];
+	public static var boardsByName:Map<String, ScoreBoard> = [];
 
 	public static var ngDataLoaded(default, null):FlxSignal = new FlxSignal();
 	public static var ngScoresLoaded(default, null):FlxSignal = new FlxSignal();
@@ -29,7 +29,7 @@ class NGio
 		trace("connecting to newgrounds");
 		
 		
-		NG.createAndCheckSession(api, sessionId);
+		NG.createAndCheckSession(api, #if NG_DEBUG true #else false #end, sessionId);
 		
 		NG.core.verbose = true;
 		// Set the encryption cipher/format to RC4/Base64. AES128 and Hex are not implemented yet
@@ -37,7 +37,11 @@ class NGio
 		
 		trace(NG.core.attemptingLogin);
 		
-		if (NG.core.attemptingLogin)
+		if (NG.core.loggedIn)
+		{
+			trace("logged in");
+		}
+		else if (NG.core.attemptingLogin)
 		{
 			/* a session_id was found in the loadervars, this means the user is playing on newgrounds.com
 			 * and we should login shortly. lets wait for that to happen
@@ -52,6 +56,9 @@ class NGio
 			 */
 			NG.core.requestLogin(onNGLogin);
 		}
+		
+		// Load Scoreboards hten call onNGBoardsFetch()
+		NG.core.requestScoreBoards(onNGBoardsFetch);
 	}
 	
 	function onNGLogin():Void
@@ -63,11 +70,7 @@ class NGio
 		// Load medals then call onNGMedalFetch()
 		NG.core.requestMedals(onNGMedalFetch);
 		
-		// Load Scoreboards hten call onNGBoardsFetch()
-		NG.core.requestScoreBoards(onNGBoardsFetch);
-		
 		ngDataLoaded.dispatch();
-		
 	}
 	
 	// --- MEDALS
@@ -92,45 +95,12 @@ class NGio
 	// --- SCOREBOARDS
 	function onNGBoardsFetch():Void
 	{
-		/*
-		// Reading medal info
 		for (id in NG.core.scoreBoards.keys())
 		{
 			var board = NG.core.scoreBoards.get(id);
 			trace('loaded scoreboard id:$id, name:${board.name}');
+			boardsByName[board.name] = board;
 		}
-		*/
-		//var board = NG.core.scoreBoards.get(8004);// ID found in NG project view
-		
-		// Posting a score thats OVER 9000!
-		//board.postScore(FlxG.random.int(0, 1000));
-		
-		// --- To view the scores you first need to select the range of scores you want to see --- 
-		
-		
-		// add an update listener so we know when we get the new scores
-		//board.onUpdate.add(onNGScoresFetch);
-		trace("shoulda got score by NOW!");
-		//board.requestScores(20);// get the best 10 scores ever logged
-		// more info on scores --- http://www.newgrounds.io/help/components/#scoreboard-getscores
-	}
-	
-	function onNGScoresFetch():Void
-	{
-		scoreboardsLoaded = true;
-		
-		ngScoresLoaded.dispatch();
-		
-		for (score in NG.core.scoreBoards.get(8737).scores)
-		{
-			trace('score loaded user:${score.user.name}, score:${score.formatted_value}');
-			
-		}
-		
-		//var board = NG.core.scoreBoards.get(8004);// ID found in NG project view
-		//board.postScore(HighScore.score);
-		
-		//NGio.scoreboardArray = NG.core.scoreBoards.get(8004).scores;
 	}
 	
 	inline static public function unlockMedal(id:Int)

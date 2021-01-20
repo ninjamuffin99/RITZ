@@ -396,8 +396,8 @@ class PlayState extends flixel.FlxState
 		{
 			if (!trigger.hasTriggered)
 			{
-				if (trigger.medal != null)
-					NGio.unlockMedal(trigger.medal);
+				// if (trigger.medal != null)
+				// 	NGio.unlockMedal(trigger.medal);
 				
 				trigger.hasTriggered = true;
 				var oldVol:Float = FlxG.sound.music.volume;
@@ -558,8 +558,8 @@ class PlayState extends flixel.FlxState
 			FlxG.overlap(player.tail, grpCheese, (_, cheese)->playerCollectCheese(player, cheese));
 		}
 		
-		if (cheeseCount >= totalCheese)
-			NGio.unlockMedal(58884);
+		// if (cheeseCount >= totalCheese)
+		// 	NGio.unlockMedal(58884);
 	}
 	
 	function playerCollectCheese(player:Player, cheese:Cheese)
@@ -567,7 +567,7 @@ class PlayState extends flixel.FlxState
 		FlxG.sound.play('assets/sounds/collectCheese' + BootState.soundEXT, 0.6);
 		cheese.startFollow(player);
 		player.cheese.add(cheese);
-		NGio.unlockMedal(58879);
+		// NGio.unlockMedal(58879);
 	}
 	
 	inline function updateDebugFeatures()

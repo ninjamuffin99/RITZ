@@ -20,12 +20,15 @@ class BootState extends flixel.FlxState
     var daText:BitmapText;
     var intro:FlxSprite;
     
-
     override function create() 
     {
         PlayerSettings.init();
         FlxG.autoPause = false;
         FlxG.camera.bgColor = FlxColor.WHITE;
+        
+        #if NG_LOGIN
+        new utils.NGio(data.ApiData.ID, data.ApiData.ENC_KEY, data.ApiData.SESSION);
+        #end
         
         #if SKIP_TO_PLAYSTATE
         FlxG.switchState(new AdventureState());
