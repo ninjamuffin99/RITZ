@@ -29,7 +29,7 @@ class NGio
 		trace("connecting to newgrounds");
 		
 		
-		NG.createAndCheckSession(api, sessionId);
+		NG.createAndCheckSession(api, #if NG_DEBUG true #else false #end, sessionId);
 		
 		NG.core.verbose = true;
 		// Set the encryption cipher/format to RC4/Base64. AES128 and Hex are not implemented yet
@@ -37,7 +37,11 @@ class NGio
 		
 		trace(NG.core.attemptingLogin);
 		
-		if (NG.core.attemptingLogin)
+		if (NG.core.loggedIn)
+		{
+			trace("logged in");
+		}
+		else if (NG.core.attemptingLogin)
 		{
 			/* a session_id was found in the loadervars, this means the user is playing on newgrounds.com
 			 * and we should login shortly. lets wait for that to happen

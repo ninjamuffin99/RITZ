@@ -87,8 +87,9 @@
 	<haxedef name="SKIP_TO_PLAYSTATE" if="debug" />
 	<section if="newgrounds">
 		<haxedef name="NG_LOGIN" />
+		<!-- <haxedef name="NG_LURKER" /> -->
+		<haxedef name="NG_DEBUG" if="debug"/>
 		<haxedef name="NG_DEBUG_SESSION" if="debug" />
-		<haxedef name="NG_LURKER" />
 	</section >
 	
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->

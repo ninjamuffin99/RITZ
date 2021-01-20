@@ -20,7 +20,6 @@ class BootState extends flixel.FlxState
     var daText:BitmapText;
     var intro:FlxSprite;
     
-
     override function create() 
     {
         PlayerSettings.init();
