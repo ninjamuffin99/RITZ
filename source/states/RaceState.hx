@@ -9,6 +9,6 @@ class RaceState extends PlayState
     
     override function createInitialLevel()
     {
-        createLevel("assets/data/ogmo/levels/raceStart0.json");
+        createSection("assets/data/ogmo/levels/raceStart0.json");
     }
 }

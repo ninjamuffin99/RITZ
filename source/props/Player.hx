@@ -156,11 +156,6 @@ class Player extends FlxSprite
         playCamera = new PlayCamera();
         playCamera.init(this);
         
-        playCamera.minScrollX = FlxG.worldBounds.left;
-        playCamera.maxScrollX = FlxG.worldBounds.right;
-        playCamera.minScrollY = FlxG.worldBounds.top;
-        playCamera.maxScrollY = FlxG.worldBounds.bottom;
-        
         FlxG.cameras.add(playCamera);
         FlxCamera.defaultCameras.push(playCamera);
     }

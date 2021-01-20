@@ -2,8 +2,8 @@
   "ogmoVersion": "3.4.0",
   "width": 1408,
   "height": 288,
-  "offsetX": -416,
-  "offsetY": -64,
+  "offsetX": 0,
+  "offsetY": 0,
   "values": {"splits?": ""},
   "layers": [
     {
@@ -29,7 +29,9 @@
       "gridCellHeight": 16,
       "gridCellsX": 88,
       "gridCellsY": 18,
-      "decals": [],
+      "decals": [
+        {"x": 176, "y": 160, "scaleX": 1, "scaleY": 1, "rotation": 90, "texture": "arrow.png", "originX": 0.5, "originY": 0.5}
+      ],
       "folder": "../../images/decals"
     },
     {

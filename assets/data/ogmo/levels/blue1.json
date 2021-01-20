@@ -2,7 +2,7 @@
   "ogmoVersion": "3.4.0",
   "width": 512,
   "height": 288,
-  "offsetX": 0,
+  "offsetX": 1408,
   "offsetY": 0,
   "values": {"splits?": ""},
   "layers": [
@@ -29,7 +29,10 @@
       "gridCellHeight": 16,
       "gridCellsX": 32,
       "gridCellsY": 18,
-      "decals": [],
+      "decals": [
+        {"x": 272, "y": 176, "scaleX": 1, "scaleY": 1, "rotation": 0, "texture": "grass.png", "originX": 0.5, "originY": 0.5},
+        {"x": 224, "y": 176, "scaleX": 1, "scaleY": 1, "rotation": 0, "texture": "grass.png", "originX": 0.5, "originY": 0.5}
+      ],
       "folder": "../../images/decals"
     },
     {

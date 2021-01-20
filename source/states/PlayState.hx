@@ -1,7 +1,7 @@
 package states;
 
 import beat.BeatGame;
-import data.Level;
+import data.Section;
 import data.OgmoTilemap;
 import data.PlayerSettings;
 import props.*;
@@ -39,7 +39,7 @@ class PlayState extends flixel.FlxState
 	inline static var USE_NEW_CAMERA = true;
 	inline static var FIRST_CHEESE_MSG = "Thanks for the cheese, buddy! ";
 	
-	var levels:Map<String, Level> = [];
+	var sections:Map<String, Section> = [];
 	
 	public var bg:FlxBackdrop;
 	public var foreground = new FlxGroup();
@@ -100,6 +100,14 @@ class PlayState extends flixel.FlxState
 		FlxCamera.defaultCameras = [];// Added to in createPlayer
 		createInitialLevel();
 		createUI();
+		grpPlayers.forEach(function(player)
+			{
+				player.playCamera.minScrollX = FlxG.worldBounds.left;
+				player.playCamera.maxScrollX = FlxG.worldBounds.right;
+				player.playCamera.minScrollY = FlxG.worldBounds.top;
+				player.playCamera.maxScrollY = FlxG.worldBounds.bottom;
+			}
+		);
 	}
 	
 	function createInitialLevel()
@@ -122,14 +130,20 @@ class PlayState extends flixel.FlxState
 		add(uiGroup);
 	}
 	
-	function createLevel(levelPath:String, x = 0.0, y = 0.0):FlxGroup
+	function createSection(path:String, ?pos:FlxPoint):FlxGroup
 	{
-		var level = new Level();
-		var ogmo = FlxOgmoUtils.get_ogmo_package("assets/data/ogmo/levelProject.ogmo", levelPath);
+		var ogmo = FlxOgmoUtils.get_ogmo_package("assets/data/ogmo/levelProject.ogmo", path);
+		if (pos == null)
+			pos = FlxPoint.weak(ogmo.level.offsetX, ogmo.level.offsetY);
+		
+		var section = new Section(pos);
+		
 		var map = new OgmoTilemap(ogmo, 'tiles', 0, 3);
+		map.x += section.offset.x;
+		map.y += section.offset.y;
 		#if debug map.ignoreDrawDebug = true; #end
 		map.setTilesCollisions(40, 4, FlxObject.UP);
-		level.map = map;
+		section.map = map;
 		grpTilemaps.add(map);
 		
 		var worldBounds = FlxG.worldBounds;
@@ -139,30 +153,35 @@ class PlayState extends flixel.FlxState
 		if (map.y + map.height > worldBounds.bottom) worldBounds.bottom = map.y + map.height;
 		
 		var crack = new OgmoTilemap(ogmo, 'Crack');
+		crack.x += section.offset.x;
+		crack.y += section.offset.y;
 		#if debug crack.ignoreDrawDebug = true; #end
 		grpCracks.add(crack);
 		
-		var decalGroup = ogmo.level.get_decal_layer('decals').get_decal_group('assets/images/decals');
-		for (decal in decalGroup.members)
+		var decalGroup = ogmo.level.get_decal_layer('decals').get_decal_group('assets/images/decals', false);
+		grpDecalLayers.add(decalGroup);
+		for (decal in (cast decalGroup.members:Array<FlxSprite>))
 		{
-			(cast decal:FlxObject).moves = false;
+			decal.x += section.offset.x;
+			decal.y += section.offset.y;
+			decal.moves = false;
 			#if debug
-			(cast decal:FlxSprite).ignoreDrawDebug = true;
+			decal.ignoreDrawDebug = true;
 			#end
 		}
 		
-		level.add(map);
-		level.add(crack);
-		level.add(decalGroup);
+		section.add(map);
+		section.add(crack);
+		section.add(decalGroup);
 		
-		ogmo.level.get_entity_layer('BG entities').load_entities(entity_loader.bind(_, background, level));
-		ogmo.level.get_entity_layer('FG entities').load_entities(entity_loader.bind(_, foreground, level));
+		ogmo.level.get_entity_layer('BG entities').load_entities(entity_loader.bind(_, background, section));
+		ogmo.level.get_entity_layer('FG entities').load_entities(entity_loader.bind(_, foreground, section));
 		
-		level.cameraTiles = new CameraTilemap(ogmo);
-		grpCameraTiles.add(level.cameraTiles);
+		section.cameraTiles = new CameraTilemap(ogmo);
+		grpCameraTiles.add(section.cameraTiles);
 		
-		levels[levelPath] = level;
-		return level;
+		sections[path] = section;
+		return section;
 	}
 	
 	function createPlayer(x:Float, y:Float):Player
@@ -195,8 +214,18 @@ class PlayState extends flixel.FlxState
 		avatar.destroy();
 	}
 	
-	function entity_loader(e:EntityData, layer:FlxGroup, level:Level)
+	function entity_loader(e:EntityData, layer:FlxGroup, section:Section)
 	{
+		e.x += Std.int(section.offset.x);
+		e.y += Std.int(section.offset.y);
+		if (e.nodes != null)
+		{
+			for (node in e.nodes)
+			{
+				node.x += section.offset.x;
+				node.y += section.offset.y;
+			}
+		}
 		var entity:FlxBasic = null;
 		switch(e.name)
 		{
@@ -206,10 +235,7 @@ class PlayState extends flixel.FlxState
 			
 				var player = createPlayer(e.x, e.y);
 				FlxG.camera = player.playCamera;
-				level.player = player;
-				level.add(player);
-				// entity = level.player;
-				//layer not used
+				// entity = player; //layer not used
 			case "spider":
 				entity = grpEnemies.add(new Enemy(e));
 			case "coins" | "cheese":
@@ -251,7 +277,7 @@ class PlayState extends flixel.FlxState
 		if (entity != null)
 		{
 			layer.add(entity);
-			level.add(entity);
+			section.add(entity);
 		}
 	}
 	
@@ -311,7 +337,7 @@ class PlayState extends flixel.FlxState
 	{
 		// Disable one way platforms when pressing down
 		grpOneWayPlatforms.forEach((platform)->platform.cloudSolid = !player.controls.DOWN);
-		grpTilemaps.forEach((level)->level.setTilesCollisions(40, 4, player.controls.DOWN ? FlxObject.NONE : FlxObject.UP));
+		grpTilemaps.forEach((section)->section.setTilesCollisions(40, 4, player.controls.DOWN ? FlxObject.NONE : FlxObject.UP));
 		FlxG.collide(grpTilemaps, player);
 		
 		var oldPlatform = player.platform;
