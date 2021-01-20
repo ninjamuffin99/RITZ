@@ -1,6 +1,6 @@
 package props;
 
-import OgmoPath;
+import props.OgmoPath;
 import props.Platform;
 
 import flixel.FlxObject;

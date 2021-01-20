@@ -28,15 +28,14 @@ import flixel.util.FlxTimer;
 
 class Player extends FlxSprite
 {
-    static inline var USE_NEW_SETTINGS = true;
     static inline var TAIL_X = 16;
     static inline var TAIL_Y = 25;
     
     public static inline var TILE_SIZE = 32;
-    public static inline var MAX_APEX_TIME = USE_NEW_SETTINGS ? 0.40 : 0.35;
-    public static inline var MIN_JUMP  = TILE_SIZE * (USE_NEW_SETTINGS ? 1.5 : 2.5);
-    public static inline var MAX_JUMP  = TILE_SIZE * (USE_NEW_SETTINGS ? 3.75 : 4.5);
-    public static inline var AIR_JUMP  = TILE_SIZE * (USE_NEW_SETTINGS ? 2.0 : 2.0);
+    public static inline var MAX_APEX_TIME = 0.40;
+    public static inline var MIN_JUMP  = TILE_SIZE * 1.5;
+    public static inline var MAX_JUMP  = TILE_SIZE * 2.75;
+    public static inline var AIR_JUMP  = TILE_SIZE * 2.0;
     
     static inline var MIN_APEX_TIME = 2 * MAX_APEX_TIME * MIN_JUMP / (MIN_JUMP + MAX_JUMP);
     static inline var GRAVITY = 2 * MIN_JUMP / MIN_APEX_TIME / MIN_APEX_TIME;
@@ -44,13 +43,13 @@ class Player extends FlxSprite
     static inline var JUMP_HOLD_TIME = (MAX_JUMP - MIN_JUMP) / -JUMP_SPEED;
     static var airJumpSpeed(default, never) = -Math.sqrt(2 * GRAVITY * AIR_JUMP);
     
-    public inline static var JUMP_DISTANCE = TILE_SIZE * (USE_NEW_SETTINGS ? 5 : 5);
-    public inline static var GROUND_SLOW_DOWN_TIME = (USE_NEW_SETTINGS ? 0.3 : 0.135);
-    public inline static var GROUND_SPEED_UP_TIME  = (USE_NEW_SETTINGS ? 0.25 : 0.16);
-    public inline static var AIR_SLOW_DOWN_TIME    = (USE_NEW_SETTINGS ? 0.2 : 0.135);
-    public inline static var AIR_SPEED_UP_TIME     = (USE_NEW_SETTINGS ? 0.36 : 0.16);
-    public inline static var AIRHOP_SPEED_UP_TIME  = (USE_NEW_SETTINGS ? 0.5 : 0.5);
-    public inline static var FALL_SPEED = (USE_NEW_SETTINGS ? -JUMP_SPEED : 520.0);
+    public inline static var JUMP_DISTANCE = TILE_SIZE * 3;
+    public inline static var GROUND_SLOW_DOWN_TIME = 0.3;
+    public inline static var GROUND_SPEED_UP_TIME  = 0.25;
+    public inline static var AIR_SLOW_DOWN_TIME    = 0.2;
+    public inline static var AIR_SPEED_UP_TIME     = 0.36;
+    public inline static var AIRHOP_SPEED_UP_TIME  = 0.5;
+    public inline static var FALL_SPEED = -JUMP_SPEED;
     
     inline static var MAXSPEED = JUMP_DISTANCE / MAX_APEX_TIME / 2;
     inline static var GROUND_ACCEL = MAXSPEED / GROUND_SPEED_UP_TIME;
@@ -507,20 +506,13 @@ class Player extends FlxSprite
                 #end
             }
             
-            if (USE_NEW_SETTINGS)
-                variableJump_new(elapsed);
-            else
-            {
-                variableJump_old(elapsed);
-                jumpTimer = Math.POSITIVE_INFINITY;
-            }
-            
+            variableJump_new(elapsed);
             
             if (controls.JUMP_P && !airHopped && !wallClimbing)
             {
                 velocity.y = 0;
                 
-                if (USE_NEW_SETTINGS && controls.LEFT != controls.RIGHT)
+                if (controls.LEFT != controls.RIGHT)
                 {
                     // remove boost if reversing direction
                     if (xAirBoost != 0 && !FlxMath.sameSign(acceleration.x, xAirBoost))
@@ -572,6 +564,13 @@ class Player extends FlxSprite
         acceleration.set(0, 0);
         velocity.set(0, 0);
         maxVelocity.set(0, 0);
+    }
+    
+    public function bounce()
+    {
+        setPlatforming();
+        velocity.y = 0;
+        startJump(false);
     }
     
     public function onTouchHook(hook:Hook):Void
@@ -647,9 +646,9 @@ class Player extends FlxSprite
         velocity.x += xAirBoost;
     }
     
-    function startJump()
+    function startJump(allowQuickChange = true)
     {
-        if (USE_NEW_SETTINGS && acceleration.x != 0)
+        if (allowQuickChange && acceleration.x != 0)
         {
             //quick change jump dir
             final allowSkidJump = !onCoyoteGround
@@ -704,26 +703,6 @@ class Player extends FlxSprite
             {
                 jumpTimer = JUMP_HOLD_TIME;
                 apexReached = true;
-            }
-        }
-    }
-    
-    function variableJump_old(elapsed:Float):Void
-    {
-        if (controls.JUMP && !apexReached)
-        {
-            jumped = true;
-            jumpBoost++;
-
-            var C = FlxMath.fastCos(10.7 * jumpBoost * FlxG.elapsed);
-            FlxG.watch.addQuick('Cos', C);
-            if (C < 0)
-            {
-                apexReached = true;
-            }
-            else
-            {
-                velocity.y -= C * (baseJumpStrength * 1.6) * 2;
             }
         }
     }

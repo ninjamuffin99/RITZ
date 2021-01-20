@@ -9,9 +9,10 @@ import props.Player;
 class AdventureState extends PlayState
 {
     inline static var LEVEL_PATH = 
-        // "assets/data/ogmo/levels/dumbassLevel.json";
-        // "assets/data/ogmo/levels/normassLevel.json";
-        "assets/data/ogmo/levels/smartassLevel.json";
+        // "assets/data/ogmo/levels/old/dumbassLevel.json";
+        // "assets/data/ogmo/levels/old/normassLevel.json";
+        // "assets/data/ogmo/levels/old/smartassLevel.json";
+        "assets/data/ogmo/levels/blue0.json";
     
 	var minimap:Minimap;
     
@@ -19,7 +20,7 @@ class AdventureState extends PlayState
     {
         super.create();
         
-		minimap = new Minimap(LEVEL_PATH);
+        minimap = new Minimap(LEVEL_PATH);
     }
     
     override function createInitialLevel()

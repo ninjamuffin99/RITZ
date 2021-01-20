@@ -1,4 +1,4 @@
-package;
+package props;
 
 import openfl.geom.Rectangle;
 
@@ -106,13 +106,21 @@ class OgmoPath extends FlxPath
         
         var values:PathData = cast data.values;
         path.speed = values.speed;
-        path.mode = values.type.getFlxPathMode();
-        path.startDelay = values.startDelay;
-        path.holdPerNode = values.holdPerNode;
-        path.holdPerLoop = values.holdPerLoop;
+        path.mode = getOptionalField(values, "type", PathType.LOOP_FORWARD).getFlxPathMode();
+        path.startDelay = getOptionalField(values, "startDelay", 0.0);
+        path.holdPerNode = getOptionalField(values, "holdPerNode", 0.0);
+        path.holdPerLoop = getOptionalField(values, "holdPerLoop", 0.0);
         
         path.setProperties(path.speed, path.mode);
         return path;
+    }
+    
+    static function getOptionalField<T>(values:Dynamic, field:String, defaultValue:T):T
+    {
+        if (Reflect.hasField(values, field))
+            return Reflect.field(values, field);
+        
+        return defaultValue;
     }
 }
 

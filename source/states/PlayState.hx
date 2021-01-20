@@ -1,21 +1,14 @@
 package states;
 
-import OgmoPath;
 import beat.BeatGame;
 import data.Level;
 import data.OgmoTilemap;
 import data.PlayerSettings;
-import props.Checkpoint;
+import props.*;
 import props.Cheese;
-import props.Hook;
 import props.Lock;
-import props.SpikeObstacle;
-import props.Player;
 import props.Platform;
-import props.BlinkingPlatform;
-import props.MovingPlatform;
-import props.SecretTrigger;
-import props.MusicTrigger;
+
 import ui.BitmapText;
 import ui.Controls;
 import ui.DialogueSubstate;
@@ -59,6 +52,7 @@ class PlayState extends flixel.FlxState
 	public var grpPlatforms = new FlxTypedGroup<TriggerPlatform>();
 	public var grpOneWayPlatforms = new FlxTypedGroup<Platform>();
 	public var grpSpikes = new FlxTypedGroup<SpikeObstacle>();
+	public var grpEnemies = new FlxTypedGroup<Enemy>();
 	public var grpCheckpoint = new FlxTypedGroup<Checkpoint>();
 	public var grpLockedDoors = new FlxTypedGroup<Lock>();
 	public var grpMusicTriggers = new FlxTypedGroup<MusicTrigger>();
@@ -217,7 +211,7 @@ class PlayState extends flixel.FlxState
 				// entity = level.player;
 				//layer not used
 			case "spider":
-				// layer.add(new Enemy(e.x, e.y, OgmoPath.fromEntity(e), e.values.speed));
+				entity = grpEnemies.add(new Enemy(e));
 			case "coins" | "cheese":
 				totalCheese++;
 				entity = grpCheese.add(new Cheese(e.x, e.y, e.id, true));
@@ -421,6 +415,19 @@ class PlayState extends flixel.FlxState
 				player.state = Won;
 				FlxG.camera.fade(FlxColor.BLACK, 2, false, FlxG.switchState.bind(new EndState()));
 			}
+			
+			FlxG.overlap(grpEnemies, player, 
+				(enemy:Enemy, _)->
+				{
+					if (player.y + player.height < enemy.y + enemy.height / 2)
+					{
+						player.bounce();
+						enemy.die();
+					}
+					else
+						player.state = Dying;
+				}
+			);
 			
 			if (SpikeObstacle.overlap(grpSpikes, player))
 				player.state = Dying;
