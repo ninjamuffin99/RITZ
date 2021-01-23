@@ -1,5 +1,6 @@
 package props;
 
+import data.Section;
 import beat.BeatGame;
 import data.PlayerSettings;
 import props.Dust;
@@ -32,9 +33,9 @@ class Player extends FlxSprite
     static inline var TAIL_Y = 25;
     
     public static inline var TILE_SIZE = 32;
-    public static inline var MAX_APEX_TIME = 0.40;
+    public static inline var MAX_APEX_TIME = 0.35;
     public static inline var MIN_JUMP  = TILE_SIZE * 1.5;
-    public static inline var MAX_JUMP  = TILE_SIZE * 2.75;
+    public static inline var MAX_JUMP  = TILE_SIZE * 3.75;
     public static inline var AIR_JUMP  = TILE_SIZE * 2.0;
     
     static inline var MIN_APEX_TIME = 2 * MAX_APEX_TIME * MIN_JUMP / (MIN_JUMP + MAX_JUMP);
@@ -43,9 +44,9 @@ class Player extends FlxSprite
     static inline var JUMP_HOLD_TIME = (MAX_JUMP - MIN_JUMP) / -JUMP_SPEED;
     static var airJumpSpeed(default, never) = -Math.sqrt(2 * GRAVITY * AIR_JUMP);
     
-    public inline static var JUMP_DISTANCE = TILE_SIZE * 3;
-    public inline static var GROUND_SLOW_DOWN_TIME = 0.3;
-    public inline static var GROUND_SPEED_UP_TIME  = 0.25;
+    public inline static var JUMP_DISTANCE = TILE_SIZE * 3.25;
+    public inline static var GROUND_SLOW_DOWN_TIME = 0.25;
+    public inline static var GROUND_SPEED_UP_TIME  = 0.2;
     public inline static var AIR_SLOW_DOWN_TIME    = 0.2;
     public inline static var AIR_SPEED_UP_TIME     = 0.36;
     public inline static var AIRHOP_SPEED_UP_TIME  = 0.5;
@@ -84,8 +85,6 @@ class Player extends FlxSprite
     private var airHopped:Bool = false;
     private var jumped:Bool = false;
     private var jumpTimer:Float = 0;
-    private var hovering:Bool = false;
-    private var wallClimbing:Bool = false;
     /** horizontal boost from being launched, usually by a moving platform */
     private var xAirBoost:Float;
     public var onGround      (default, null):Bool = false;
@@ -109,6 +108,9 @@ class Player extends FlxSprite
     public var controls(get, never):Controls;
     inline function get_controls():Controls return settings.controls;
     public var canTailWhip = false;
+    public var canAirHop = false;
+    
+    public var currentSection:Section;
     
     public function new(x:Float, y:Float):Void
     {
@@ -125,7 +127,7 @@ class Player extends FlxSprite
         
         loadGraphic("assets/images/ritz.png", true, 32, 32);
         addBeatAnim('idle', [0, 1, 2, 3], 1);
-        addBeatAnim('walk', [4, 5, 5, 1], 1.5);
+        addBeatAnim('walk', [4, 5, 1], 1.5);
         animation.add('jumping', [5]);
         animation.add('skid', [6]);
         animation.add('falling', [7]);
@@ -428,7 +430,6 @@ class Player extends FlxSprite
                 drag.x = GROUND_DRAG;
                 airHopped = false;
                 jumped = false;
-                hovering = false;
                 apexReached = false;
                 jumpBoost = 0;
                 jumpTimer = 0;
@@ -455,9 +456,6 @@ class Player extends FlxSprite
             }
             else if (!whipping)
                 accel = GROUND_ACCEL;
-
-            // if (hovering)
-            //     hoverMulti = 0.6;
             
             acceleration.x = (controls.LEFT ? -1 : 1) * accel;
         }
@@ -503,7 +501,7 @@ class Player extends FlxSprite
             
             variableJump_new(elapsed);
             
-            if (controls.JUMP_P && !airHopped && !wallClimbing)
+            if (controls.JUMP_P && !airHopped && canAirHop)
             {
                 velocity.y = 0;
                 
@@ -529,12 +527,6 @@ class Player extends FlxSprite
                 airHopped = true;
                 FlxG.sound.play('assets/sounds/doubleJump' + BootState.soundEXT, 0.75);
             }
-        }
-
-        if (wallClimbing)
-        {
-            airHopped = false;
-            hovering = false;
         }
         
         animation.play(anim);
