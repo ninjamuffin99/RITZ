@@ -33,7 +33,7 @@ class Player extends FlxSprite
     static inline var TAIL_Y = 25;
     
     public static inline var TILE_SIZE = 32;
-    public static inline var MAX_APEX_TIME = 0.35;
+    public static inline var MAX_APEX_TIME = 0.45;
     public static inline var MIN_JUMP  = TILE_SIZE * 1.5;
     public static inline var MAX_JUMP  = TILE_SIZE * 3.75;
     public static inline var AIR_JUMP  = TILE_SIZE * 2.0;

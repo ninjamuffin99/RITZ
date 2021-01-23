@@ -1,5 +1,7 @@
 package data;
 
+import flixel.FlxCamera;
+import flixel.math.FlxRect;
 import flixel.util.FlxColor;
 import data.OgmoTilemap;
 import props.*;
@@ -50,6 +52,15 @@ class Section extends FlxGroup
     inline function get_width():Float return map.width;
     public var height(get, never):Float;
     inline function get_height():Float return map.height;
+    
+    public var left(get, never):Float;
+    inline function get_left():Float return x;
+    public var top(get, never):Float;
+    inline function get_top():Float return y;
+    public var right(get, never):Float;
+    inline function get_right():Float return x + width;
+    public var bottom(get, never):Float;
+    inline function get_bottom():Float return y + height;
     
     var state(get, never):PlayState;
     inline function get_state():PlayState return cast FlxG.state;
@@ -166,13 +177,34 @@ class Section extends FlxGroup
             layer.add(entity);
     }
     
-    public function extendWorldBounds()
+    public function setFocus(camera:FlxCamera)
     {
-        var worldBounds = FlxG.worldBounds;
-        if (map.x < worldBounds.x) worldBounds.x = map.x;
-        if (map.y < worldBounds.y) worldBounds.y = map.y;
-        if (map.x + map.width  > worldBounds.right) worldBounds.right = map.x + map.width;
-        if (map.y + map.height > worldBounds.bottom) worldBounds.bottom = map.y + map.height;
+        setWorldBounds();
+        final bounds = FlxG.worldBounds;
+        camera.minScrollX = bounds.left;
+        camera.maxScrollX = bounds.right;
+        camera.minScrollY = bounds.top;
+        camera.maxScrollY = bounds.bottom;
+    }
+    
+    public function setWorldBounds()
+    {
+        final bounds = extendRect();
+        FlxG.worldBounds.copyFrom(bounds);
+        bounds.put();
+    }
+    
+    public function extendRect(?rect:FlxRect)
+    {
+        if (rect == null)
+            return FlxRect.get(left, top, right, bottom);
+        
+        if (rect.left   > left  ) rect.left   = left  ;
+        if (rect.top    > top   ) rect.top    = top   ;
+        if (rect.right  < right ) rect.right  = right ;
+        if (rect.bottom < bottom) rect.bottom = bottom;
+        
+        return rect;
     }
     
     override function update(elapsed:Float)
@@ -224,8 +256,8 @@ class Section extends FlxGroup
     {
         if (avatar.state == Alive)
         {
-            if (avatar.x > FlxG.worldBounds.width)
-                avatar.state = Won;
+            // if (avatar.x > FlxG.worldBounds.width)
+            //     avatar.state = Won;
             
             FlxG.overlap(grpEnemies, avatar, 
                 (enemy:Enemy, _)->
@@ -359,6 +391,12 @@ class Section extends FlxGroup
     public function hasAvatar(avatar:Player)
     {
         return grpPlayers.members.indexOf(avatar) >= 0;
+    }
+    
+    public function isOnScreen()
+    {
+        return map.isOnScreen(PlayerSettings.player1.camera)
+            || (PlayerSettings.numAvatars > 1 && map.isOnScreen(PlayerSettings.player2.camera));
     }
     
     function resetProps():Void

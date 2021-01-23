@@ -39,11 +39,11 @@ class PlayState extends flixel.FlxState
 	inline static var USE_NEW_CAMERA = true;
 	inline static var FIRST_CHEESE_MSG = "Thanks for the cheese, buddy! ";
 	
-	var sections = new FlxTypedGroup<Section>();
-	var players = new FlxTypedGroup<Player>();
-	
 	var bg:FlxBackdrop;
+	var sections = new FlxTypedGroup<Section>();
+	var avatars = new FlxTypedGroup<Player>();
 	
+	var cameraMode = CameraMode.AllSections;
 	var musicName:String;
 
 	var gaveCheese = false;
@@ -77,27 +77,50 @@ class PlayState extends flixel.FlxState
 		
 		add(bg);
 		add(sections);
-		add(players);
+		add(avatars);
 		add(dialogueBubble);
 		createUI();
 		
-		var firstAvatar = PlayerSettings.player1.avatar;
+		var avatar1 = PlayerSettings.player1.avatar;
 		if (curCheckpoint == null)
-			curCheckpoint = new Checkpoint(firstAvatar.x, firstAvatar.y, "");
+			curCheckpoint = new Checkpoint(avatar1.x, avatar1.y, "");
 		
-		players.add(firstAvatar);
+		avatars.add(avatar1);
+		avatar1.currentSection.setWorldBounds();
 		if (PlayerSettings.numAvatars == 2)
-			players.add(PlayerSettings.player2.avatar);
+		{
+			var avatar2 = PlayerSettings.player2.avatar;
+			avatars.add(avatar2);
+			if (cameraMode == AllSections)
+				avatar2.currentSection.extendRect(FlxG.worldBounds);
+			else if (avatar2.currentSection != avatar1.currentSection)
+				throw "Players cannot be in separate rooms with CameraMode.SingleSection";
+		}
 		
-		var worldBounds = FlxG.worldBounds;
-		players.forEach(function(player)
+		switch (cameraMode)
+		{
+			case AllSections:
 			{
-				player.playCamera.minScrollX = worldBounds.left;
-				player.playCamera.maxScrollX = worldBounds.right;
-				player.playCamera.minScrollY = worldBounds.top;
-				player.playCamera.maxScrollY = worldBounds.bottom;
+				var bounds:FlxRect = null;
+				for (section in sections.members)
+				{
+					if (section != null)
+						bounds = section.extendRect(bounds);
+				}
+				
+				for (player in avatars.members)
+				{
+					player.playCamera.minScrollX = bounds.left  ;
+					player.playCamera.maxScrollX = bounds.right ;
+					player.playCamera.minScrollY = bounds.top   ;
+					player.playCamera.maxScrollY = bounds.bottom;
+				}
 			}
-		);
+			case SingleSection:
+			{
+				avatar1.currentSection.setFocus(avatar1.playCamera);
+			}
+		}
 	}
 	
 	
@@ -126,7 +149,6 @@ class PlayState extends flixel.FlxState
 		var section = new Section(path, pos);
 		totalCheese += section.grpCheese.length;
 		sections.add(section);
-		section.extendWorldBounds();
 		return section;
 	}
 	
@@ -139,13 +161,24 @@ class PlayState extends flixel.FlxState
 		if (PlayerSettings.player2 != null && PlayerSettings.player2.avatar != null)
 			throw "Only 2 players allowed right now";
 		
-		final firstPlayer = PlayerSettings.player1.avatar;
-		firstPlayer.currentSection.createAvatar(firstPlayer.x, firstPlayer.y);
+		final avatar1 = PlayerSettings.player1.avatar;
+		var avatar2 = avatar1.currentSection.createAvatar(avatar1.x, avatar1.y);
+		if (cameraMode == AllSections)
+		{
+			avatar2.camera.minScrollX = avatar1.camera.minScrollX;
+			avatar2.camera.maxScrollX = avatar1.camera.maxScrollX;
+			avatar2.camera.minScrollY = avatar1.camera.minScrollY;
+			avatar2.camera.maxScrollY = avatar1.camera.maxScrollY;
+		}
+		avatars.add(avatar2);
 	}
 	
 	@:allow(ui.pause.MainPage)
 	function removeSecondPlayer(avatar:Player)
 	{
+		avatars.remove(avatar);
+		if (avatars.members.length > 1)
+			avatars.members.pop();//remove null
 		avatar.currentSection.grpPlayers.remove(avatar);
 		avatar.destroy();
 	}
@@ -161,11 +194,11 @@ class PlayState extends flixel.FlxState
 		}
 		
 		var pauseSubstate:PauseSubstate = null;
-		players.forEach
+		avatars.forEach
 		(
-			player->
+			avatar->
 			{
-				if (pauseSubstate == null && player.controls.PAUSE)
+				if (pauseSubstate == null && avatar.controls.PAUSE)
 				{
 					if (PlayerSettings.numPlayers == 1)
 						pauseSubstate = new PauseSubstate(PlayerSettings.player1);
@@ -174,7 +207,7 @@ class PlayState extends flixel.FlxState
 				}
 				
 				if (pauseSubstate == null)
-					checkAvatarState(player);
+					checkAvatarState(avatar);
 			}
 		);
 		
@@ -182,6 +215,8 @@ class PlayState extends flixel.FlxState
 			openSubState(pauseSubstate);
 		
 		cheeseCountText.text = cheeseCount + (cheeseNeeded > 0 ? "/" + cheeseNeeded : "");
+		
+		updateWorldBounds();
 		
 		#if debug updateDebugFeatures(); #end
 	}
@@ -237,12 +272,49 @@ class PlayState extends flixel.FlxState
 		}
 	}
 	
-	function warpTo(x:Float, y:Float):Void
+	function updateWorldBounds()
 	{
-		players.forEach(player->player.dieAndRespawn(x,y));
+		switch(cameraMode)
+		{
+			case AllSections:
+			{
+				var changeBounds = false;
+				for (section in sections.members)
+				{
+					if (section != null)
+					{
+						final onScreen = section.isOnScreen();
+						if (section.exists != onScreen)
+						{
+							section.exists = onScreen;
+							changeBounds = true;
+						}
+					}
+				}
+				
+				if (changeBounds)
+				{
+					FlxG.worldBounds.set(Math.POSITIVE_INFINITY, Math.POSITIVE_INFINITY, Math.NEGATIVE_INFINITY, Math.NEGATIVE_INFINITY);
+					for (section in sections.members)
+					{
+						if (section != null)
+							section.extendRect(FlxG.worldBounds);
+					}
+				}
+			}
+			case SingleSection:
+			{
+				
+			}
+		}
 	}
 	
-	public function checkDoor (lock:Lock, player:Player)
+	function warpTo(x:Float, y:Float):Void
+	{
+		avatars.forEach(avatar->avatar.dieAndRespawn(x,y));
+	}
+	
+	public function checkDoor (lock:Lock, avatar:Player)
 	{
 		if (cheeseNeededText == null)
 		{
@@ -347,7 +419,7 @@ class PlayState extends flixel.FlxState
 		if (FlxG.keys.justPressed.T)
 		{
 			disableAllDebugDraw();
-			players.forEach((player)->player.tail.ignoreDrawDebug = false);
+			avatars.forEach((avatar)->avatar.tail.ignoreDrawDebug = false);
 			FlxG.debugger.drawDebug = true;
 		}
 		
@@ -360,10 +432,10 @@ class PlayState extends flixel.FlxState
 	
 	public function disableAllDebugDraw()
 	{
-		players.forEach((player)->
+		avatars.forEach((avatar)->
 		{
-			player.ignoreDrawDebug = true;
-			player.tail.ignoreDrawDebug = true;
+			avatar.ignoreDrawDebug = true;
+			avatar.tail.ignoreDrawDebug = true;
 		});
 		
 		sections.forEach((section)->section.disableAllDebugDraw());
@@ -383,4 +455,10 @@ class PlayState extends flixel.FlxState
 		}
 		musicName = name;
 	}
+}
+
+enum CameraMode
+{
+	AllSections;
+	SingleSection;
 }
