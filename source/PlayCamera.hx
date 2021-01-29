@@ -111,6 +111,12 @@ class PlayCamera extends FlxCamera
 	
 	override function update(elapsed:Float)
 	{
+		if (target == null)
+		{
+			super.update(elapsed);
+			return;
+		}
+		
 		if (player.state == Talking)// todo: set deadzone to null and call super?
 			return;
 		

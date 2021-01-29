@@ -43,7 +43,7 @@ class PlayState extends flixel.FlxState
 	var sections = new FlxTypedGroup<Section>();
 	var avatars = new FlxTypedGroup<Player>();
 	
-	var cameraMode = CameraMode.AllSections;
+	var cameraMode = CameraMode.SingleSection;
 	var musicName:String;
 
 	var gaveCheese = false;
@@ -118,6 +118,11 @@ class PlayState extends flixel.FlxState
 			}
 			case SingleSection:
 			{
+				for (section in sections.members)
+				{
+					if (section != avatar1.currentSection)
+						section.exists = false;
+				}
 				avatar1.currentSection.setFocus(avatar1.playCamera);
 			}
 		}
@@ -147,7 +152,7 @@ class PlayState extends flixel.FlxState
 	function createSection(path:String, ?pos:FlxPoint):Section
 	{
 		var section = new Section(path, pos);
-		totalCheese += section.grpCheese.length;
+		totalCheese += section.totalCheese;
 		sections.add(section);
 		return section;
 	}
@@ -216,8 +221,6 @@ class PlayState extends flixel.FlxState
 		
 		cheeseCountText.text = cheeseCount + (cheeseNeeded > 0 ? "/" + cheeseNeeded : "");
 		
-		updateWorldBounds();
-		
 		#if debug updateDebugFeatures(); #end
 	}
 	
@@ -225,93 +228,103 @@ class PlayState extends flixel.FlxState
 	{
 		switch (avatar.state)
 		{
-			case Alive:
-				var oldSection = avatar.currentSection;
-				// check exits
-				sections.forEach((section)->
-					{
-						if (!section.overlaps(avatar) && section.hasAvatar(avatar))
-						{
-							section.avatarExit(avatar);
-							if (section == avatar.currentSection)
-								avatar.currentSection = null;
-						}
-					}
-				);
-				// check entrances
-				sections.forEach((section)->
-					{
-						if (section.overlaps(avatar))
-						{
-							if (avatar.currentSection == null)
-								avatar.currentSection = section;
-							
-							if (!section.hasAvatar(avatar))
-								section.avatarEnter(avatar);
-						}
-					}
-				);
-				
-				if (avatar.currentSection == null)
-				{
-					if (oldSection.y > avatar.y + avatar.height)
-						avatar.currentSection = oldSection;
-					else if (oldSection.y + oldSection.height < avatar.y)
-						avatar.state = Dying;
-					else
-					{
-						var edge = avatar.x > oldSection.x + oldSection.width ? "right" : "left";
-						throw 'Missing level to the $edge of ${oldSection.path}';
-					}
-				}
-			case Dying:
-				avatar.dieAndRespawn(curCheckpoint.x, curCheckpoint.y - 16);
+			case Alive | Respawning:
+				updateSections(avatar);
+			case Dead:
+				avatar.respawn(curCheckpoint.x, curCheckpoint.y - 16);
 			case Won:
 				FlxG.camera.fade(FlxColor.BLACK, 2, false, FlxG.switchState.bind(new EndState()));
 			default:
 		}
 	}
 	
-	function updateWorldBounds()
+	function updateSections(avatar:Player)
 	{
-		switch(cameraMode)
+		if (cameraMode == AllSections)
+			checkVisibleSections();
+		
+		var oldSection = avatar.currentSection;
+		for (section in sections.iterator(section->!section.overlaps(avatar)))
 		{
-			case AllSections:
+			if (section == avatar.currentSection)
+				avatar.currentSection = null;
+			
+			if (section.hasAvatar(avatar))
+				section.avatarExit(avatar);
+		}
+		
+		for (section in sections.iterator(section->section.overlaps(avatar)))
+		{
+			// dont check !hasAvatar here becuase it may have already entered
+			if (avatar.currentSection == null)
+				avatar.currentSection = section;
+			
+			if (!section.hasAvatar(avatar))
+				section.avatarEnter(avatar);
+		}
+		
+		if (avatar.currentSection == null)
+		{
+			avatar.currentSection = oldSection;
+			if (oldSection.bottom < avatar.y)
+				avatar.state = Hurt;
+			else if (oldSection.y <= avatar.y)
 			{
-				var changeBounds = false;
-				for (section in sections.members)
-				{
-					if (section != null)
-					{
-						final onScreen = section.isOnScreen();
-						if (section.exists != onScreen)
-						{
-							section.exists = onScreen;
-							changeBounds = true;
-						}
-					}
-				}
-				
-				if (changeBounds)
-				{
-					FlxG.worldBounds.set(Math.POSITIVE_INFINITY, Math.POSITIVE_INFINITY, Math.NEGATIVE_INFINITY, Math.NEGATIVE_INFINITY);
-					for (section in sections.members)
-					{
-						if (section != null)
-							section.extendRect(FlxG.worldBounds);
-					}
-				}
+				var edge = avatar.x > oldSection.x + oldSection.width ? "right" : "left";
+				throw 'Missing level to the $edge of ${oldSection.path}';
 			}
-			case SingleSection:
+		}
+		else if (avatar.currentSection != oldSection)
+		{
+			if (cameraMode == SingleSection && avatar.state == Alive)
+				switchSection(avatar.currentSection, oldSection);
+			else if (cameraMode == SingleSection && avatar.state == Respawning)
+				switchSection(avatar.currentSection, oldSection, false);
+		}
+	}
+	
+	function checkVisibleSections()
+	{
+		var changeBounds = false;
+		for (section in sections.members)
+		{
+			final onScreen = section.isOnScreen();
+			if (section.exists != onScreen)
 			{
-				
+				section.exists = onScreen;
+				changeBounds = true;
+			}
+		}
+		
+		if (changeBounds)
+		{
+			FlxG.worldBounds.set(Math.POSITIVE_INFINITY, Math.POSITIVE_INFINITY, Math.NEGATIVE_INFINITY, Math.NEGATIVE_INFINITY);
+			for (section in sections.members)
+			{
+				if (section != null)
+					section.extendRect(FlxG.worldBounds);
 			}
 		}
 	}
 	
-	function warpTo(x:Float, y:Float):Void
+	function switchSection(to:Section, from:Section, animate = true)
 	{
-		avatars.forEach(avatar->avatar.dieAndRespawn(x,y));
+		// if (animate)
+		// {
+		// }
+		// else
+		{
+			var camera = PlayerSettings.player1.camera;
+			to.exists = true;
+			from.exists = false;
+			to.setFocus(camera);
+		}
+	}
+	
+	function warpTo(checkpoint:Checkpoint):Void
+	{
+		curCheckpoint = checkpoint;
+		avatars.forEach(avatar->avatar.die());
 	}
 	
 	public function checkDoor (lock:Lock, avatar:Player)
@@ -355,7 +368,7 @@ class PlayState extends flixel.FlxState
 	{
 		var autoTalk = checkpoint.autoTalk;
 		var dialogue = checkpoint.dialogue;
-		if (!gaveCheese && player.cheese.length > 0)
+		if (!gaveCheese && player.followCheese.isNotEmpty()) 
 		{
 			gaveCheese = true;
 			autoTalk = true;
@@ -388,24 +401,12 @@ class PlayState extends flixel.FlxState
 			FlxG.sound.play('assets/sounds/checkpoint' + BootState.soundEXT, 0.8);
 		}
 		
-		if (!player.cheese.isEmpty())
-		{
-			player.cheese.first().sendToCheckpoint(checkpoint, onFeedCheese);
-			player.cheese.clear();
-		}
+		player.feedAllCheese(checkpoint, onFeedCheese);
 	}
 	
 	public function onFeedCheese(cheese:Cheese)
 	{
 		cheeseCount++;
-	}
-	
-	public function playerCollectCheese(player:Player, cheese:Cheese)
-	{
-		FlxG.sound.play('assets/sounds/collectCheese' + BootState.soundEXT, 0.6);
-		cheese.startFollow(player);
-		player.cheese.add(cheese);
-		// NGio.unlockMedal(58879);
 	}
 	
 	inline function updateDebugFeatures()

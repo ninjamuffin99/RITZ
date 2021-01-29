@@ -23,26 +23,27 @@ using zero.flixel.utilities.FlxOgmoUtils;
 
 class Section extends FlxGroup
 {
-    public var path:String;
+    public var path(default, null):String;
+    public var totalCheese(default, null) = 0;
     
-    public var map:OgmoTilemap;
-    public var crack:OgmoTilemap;
-    public var cameraTiles:CameraTilemap;
-    public var foreground = new FlxGroup();
-    public var background = new FlxGroup();
-    public var grpDecals = new FlxGroup();
-    public var grpPlayers = new FlxTypedGroup<Player>();
+    public var map        (default, null):OgmoTilemap;
+    public var crack      (default, null):OgmoTilemap;
+    public var cameraTiles(default, null):CameraTilemap;
+    public var foreground (default, null) = new FlxGroup();
+    public var background (default, null) = new FlxGroup();
+    public var grpDecals  (default, null) = new FlxGroup();
+    public var grpPlayers (default, null) = new FlxTypedGroup<Player>();
     
-    public var grpCheese = new FlxTypedGroup<Cheese>();
-    public var grpHooks = new FlxTypedGroup<Hook>();
-    public var grpPlatforms = new FlxTypedGroup<TriggerPlatform>();
-    public var grpOneWayPlatforms = new FlxTypedGroup<Platform>();
-    public var grpSpikes = new FlxTypedGroup<SpikeObstacle>();
-    public var grpEnemies = new FlxTypedGroup<Enemy>();
-    public var grpCheckpoint = new FlxTypedGroup<Checkpoint>();
-    public var grpLockedDoors = new FlxTypedGroup<Lock>();
-    public var grpMusicTriggers = new FlxTypedGroup<MusicTrigger>();
-    public var grpSecretTriggers = new FlxTypedGroup<SecretTrigger>();
+    public var grpCheese         (default, null) = new FlxTypedGroup<Cheese         >();
+    public var grpHooks          (default, null) = new FlxTypedGroup<Hook           >();
+    public var grpPlatforms      (default, null) = new FlxTypedGroup<TriggerPlatform>();
+    public var grpOneWayPlatforms(default, null) = new FlxTypedGroup<Platform       >();
+    public var grpSpikes         (default, null) = new FlxTypedGroup<SpikeObstacle  >();
+    public var grpEnemies        (default, null) = new FlxTypedGroup<Enemy          >();
+    public var grpCheckpoint     (default, null) = new FlxTypedGroup<Checkpoint     >();
+    public var grpLockedDoors    (default, null) = new FlxTypedGroup<Lock           >();
+    public var grpMusicTriggers  (default, null) = new FlxTypedGroup<MusicTrigger   >();
+    public var grpSecretTriggers (default, null) = new FlxTypedGroup<SecretTrigger  >();
     
     public var x(get, never):Float;
     inline function get_x():Float return map.x;
@@ -139,7 +140,9 @@ class Section extends FlxGroup
             case "spider":
                 entity = grpEnemies.add(new Enemy(e));
             case "coins" | "cheese":
-                entity = grpCheese.add(new Cheese(e.x, e.y, e.id, true));
+                final cheese = grpCheese.add(new Cheese(e.x, e.y, e.id, layer, true));
+                totalCheese++;
+                entity = cheese;
             case "hook":
                 entity = grpHooks.add(new Hook(e.x, e.y));
             case "blinking_platform"|"solid_blinking_platform"|"cloud_blinking_platform":
@@ -197,7 +200,7 @@ class Section extends FlxGroup
     public function extendRect(?rect:FlxRect)
     {
         if (rect == null)
-            return FlxRect.get(left, top, right, bottom);
+            return FlxRect.get(x, y, width, height);
         
         if (rect.left   > left  ) rect.left   = left  ;
         if (rect.top    > top   ) rect.top    = top   ;
@@ -269,12 +272,12 @@ class Section extends FlxGroup
                         enemy.die();
                     }
                     else
-                        avatar.state = Dying;
+                        avatar.state = Hurt;
                 }
             );
             
             if (SpikeObstacle.overlap(grpSpikes, avatar))
-                avatar.state = Dying;
+                avatar.state = Hurt;
             
             FlxG.overlap(cameraTiles, avatar, 
                 (cameraTiles:CameraTilemap, _)->
@@ -345,20 +348,26 @@ class Section extends FlxGroup
     
     function collectCheese()
     {
-        FlxG.overlap(grpPlayers, grpCheese, state.playerCollectCheese);
+        FlxG.overlap(grpPlayers, grpCheese, playerCollectCheese);
         
         // collect cheese with tail
         var player:Player;
         player = PlayerSettings.player1.avatar;
-        FlxG.overlap(player.tail, grpCheese, (_, cheese)->state.playerCollectCheese(player, cheese));
+        FlxG.overlap(player.tail, grpCheese, (_, cheese)->playerCollectCheese(player, cheese));
         if (PlayerSettings.numAvatars > 1)
         {
             player = PlayerSettings.player2.avatar;
-            FlxG.overlap(player.tail, grpCheese, (_, cheese)->state.playerCollectCheese(player, cheese));
+            FlxG.overlap(player.tail, grpCheese, (_, cheese)->playerCollectCheese(player, cheese));
         }
         
         // if (cheeseCount >= totalCheese)
         // 	NGio.unlockMedal(58884);
+    }
+    
+    function playerCollectCheese(player:Player, cheese:Cheese)
+    {
+        FlxG.sound.play('assets/sounds/collectCheese.mp3', 0.6);
+        cheese.startFollow(player);
     }
     
     public function disableAllDebugDraw()
@@ -376,9 +385,13 @@ class Section extends FlxGroup
         return containsPoint(FlxPoint.weak(x, y));
     }
     
-    public function overlaps(obj:FlxObject)
+    public function overlaps(object:FlxObject)
     {
-        return FlxG.overlap(obj, map);
+        return object.x + object.width > left
+            && object.x < right
+            && object.y + object.height > top
+            && object.y < bottom;
+        // return FlxG.overlap(obj, map);
         // return map.overlaps(obj);
         // return obj.overlaps(map);
     }

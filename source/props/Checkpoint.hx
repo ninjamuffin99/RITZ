@@ -1,5 +1,6 @@
 package props;
 
+import flixel.group.FlxGroup;
 import beat.BeatGame;
 
 import flixel.util.FlxColor;
@@ -15,7 +16,8 @@ class Checkpoint extends FlxSprite
     public var autoTalk = false;
     public var cameraOffsetX = 0.0;
 
-    public function new(x:Float, y:Float, dialogue:String, collectible = false) {
+    public function new(x:Float, y:Float, dialogue:String, collectible = false)
+    {
         this.dialogue = dialogue;
         super(x, y + 2);
         moves = false;

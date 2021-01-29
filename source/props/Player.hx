@@ -34,8 +34,8 @@ class Player extends FlxSprite
     
     public static inline var TILE_SIZE = 32;
     public static inline var MAX_APEX_TIME = 0.45;
-    public static inline var MIN_JUMP  = TILE_SIZE * 1.5;
-    public static inline var MAX_JUMP  = TILE_SIZE * 3.75;
+    public static inline var MIN_JUMP  = TILE_SIZE * 1.25;
+    public static inline var MAX_JUMP  = TILE_SIZE * 3.25;
     public static inline var AIR_JUMP  = TILE_SIZE * 2.0;
     
     static inline var MIN_APEX_TIME = 2 * MAX_APEX_TIME * MIN_JUMP / (MIN_JUMP + MAX_JUMP);
@@ -44,7 +44,7 @@ class Player extends FlxSprite
     static inline var JUMP_HOLD_TIME = (MAX_JUMP - MIN_JUMP) / -JUMP_SPEED;
     static var airJumpSpeed(default, never) = -Math.sqrt(2 * GRAVITY * AIR_JUMP);
     
-    public inline static var JUMP_DISTANCE = TILE_SIZE * 3.25;
+    public inline static var JUMP_DISTANCE = TILE_SIZE * 4.25;
     public inline static var GROUND_SLOW_DOWN_TIME = 0.25;
     public inline static var GROUND_SPEED_UP_TIME  = 0.2;
     public inline static var AIR_SLOW_DOWN_TIME    = 0.2;
@@ -101,14 +101,15 @@ class Player extends FlxSprite
     public var platform:MovingPlatform = null;
     // public var hook:Hook = null;
     
-    public var cheese = new List<Cheese>();
+    public var followCheese = new CheeseList();
+    var leavingCheese = new CheeseList();
     
     public var settings:PlayerSettings;
     public var playCamera(default, null):PlayCamera;
     public var controls(get, never):Controls;
     inline function get_controls():Controls return settings.controls;
     public var canTailWhip = false;
-    public var canAirHop = false;
+    public var canAirHop = true;
     
     public var currentSection:Section;
     
@@ -162,24 +163,28 @@ class Player extends FlxSprite
         FlxCamera.defaultCameras.push(playCamera);
     }
     
-    public function dieAndRespawn(x, y):Void
+    public function die():Void
     {
-        for (c in cheese)
-            c.resetToSpawn();
-        cheese.clear();
+        while(followCheese.length > 0)
+        {
+            final cheese = followCheese.shift();
+            leavingCheese.add(cheese);
+            cheese.resetToSpawn(leavingCheese.remove.bind(cheese));
+        }
         
-        state = Respawning;
+        state = Dying;
         tail.setState(Idle);
         animation.play('fucking died lmao');
         FlxG.sound.play('assets/sounds/damageTaken' + BootState.soundEXT, 0.6);
 
-        new FlxTimer().start(0.5, (_)->respawn(x, y));
+        new FlxTimer().start(0.5, (_)->state = Dead);
     }
     
     public function respawn(x, y):Void
     {
         reset(x, y);
         platform = null;
+        // state = Respawning;
         state = Alive;
         acceleration.y = GRAVITY;
         onRespawn.dispatch();
@@ -191,21 +196,20 @@ class Player extends FlxSprite
         switch (state)
         {
             case Won:
-            case Dying:
+            case Hurt: die();
+            case Dying | Dead:
             case Talking:
             case Respawning:
-                velocity.set();
-                acceleration.set();
-                xAirBoost = 0;
-                
                 super.update(elapsed);
             case Alive if (controls.RESET):
-                state = Dying;
+                die();
             case Alive:
                 updateAlive(elapsed);
         }
         
         dust.update(elapsed);
+        followCheese.update(elapsed);
+        leavingCheese.update(elapsed);
         
         #if debug
         if (jumpSprite != null)
@@ -324,6 +328,8 @@ class Player extends FlxSprite
     override function draw()
     {
         dust.draw();
+        followCheese.draw();
+        leavingCheese.draw();
         
         if (tail.visible)
             tail.draw();
@@ -347,7 +353,7 @@ class Player extends FlxSprite
         || (isTouchingAll(FlxObject.DOWN | FlxObject.UP) && (platform == null || !platform.oneWayPlatform)))
         {
             // crushed
-            state = Dying;
+            state = Hurt;
             return;
         }
         
@@ -694,6 +700,23 @@ class Player extends FlxSprite
         }
     }
     
+    public function feedAllCheese(checkpoint:Checkpoint, onFeed:(Cheese)->Void)
+    {
+        if (followCheese.isNotEmpty())
+        {
+            var first = followCheese.getFirst();
+            while(followCheese.length > 0)
+                leavingCheese.add(followCheese.shift());
+            
+            first.sendToCheckpoint(checkpoint, function (cheese)
+                {
+                    leavingCheese.remove(cheese);
+                    onFeed(cheese);
+                }
+            );
+        }
+    }
+    
     function makeDust(type:DustType):Dust
     {
         var newDust = dust.recycle(Dust);
@@ -792,11 +815,52 @@ abstract JumpSprite(FlxSpriteGroup) to FlxSprite
     }
 }
 
+@:forward(add, update, draw, length)
+abstract CheeseList (FlxTypedGroup<Cheese>) from FlxTypedGroup<Cheese> to FlxTypedGroup<Cheese>
+{
+    inline public function new()
+    {
+        this = new FlxTypedGroup<Cheese>();
+    }
+    
+    inline public function remove(cheese:Cheese)
+    {
+        return this.remove(cheese, true);
+    }
+    
+    inline public function shift()
+    {
+        return this.remove(this.members[0], true);
+    }
+    
+    public function getFirst()
+    {
+        return this.members[0];
+    }
+    
+    public function getLast()
+    {
+        return this.members[this.length - 1];
+    }
+    
+    inline public function isEmpty()
+    {
+        return this.length == 0;
+    }
+    
+    inline public function isNotEmpty()
+    {
+        return this.length > 0;
+    }
+}
+
 enum PlayerState
 {
     Alive;
     Talking;
+    Hurt;
     Dying;
+    Dead;
     Respawning;
     Won;
 }

@@ -5,26 +5,29 @@ import flixel.util.FlxTimer;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.group.FlxGroup;
 import flixel.math.FlxVector;
-import flixel.util.FlxColor;
 import flixel.math.FlxMath;
 import flixel.math.FlxPoint;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
 
 class Cheese extends FlxSprite
 {
     var followTarget:FlxObject = null;
     var follower:Cheese = null;
     var startPos = new FlxPoint();
+    var container:FlxGroup = null;
     var mode:CheeseState = Idle;
     var flickerTimer = 0.0;
     var eatCallback:(Cheese)->Void;
     
-    public function new(x:Float, y:Float, id:Int, collectible = false)
+    public function new(x:Float, y:Float, id:Int, container:FlxGroup, collectible = false)
     {
         super(x, y);
         startPos.set(x, y);
+        this.container = container;
         ID = id;
 
         loadGraphic("assets/images/cheese.png", true, 32, 32);
@@ -64,14 +67,14 @@ class Cheese extends FlxSprite
         if (target == null)
             throw "null follow target";
         
-        if (target.cheese.length == 0)
+        if (target.followCheese.isEmpty())
         {
             followTarget = target;
             animation.play("follow", true);
         }
         else
         {
-            var leadCheese = target.cheese.last();
+            var leadCheese = target.followCheese.getLast();
             followTarget = leadCheese;
             leadCheese.follower = this;
             var animFrame = leadCheese.animation.curAnim.curFrame - 1;
@@ -87,6 +90,8 @@ class Cheese extends FlxSprite
         mode = GetAnim;
         moves = true;
         solid = false;
+        container.remove(this, true);
+        target.followCheese.add(this);
         
         // make it start moving a little so it's really clear we just touched it
         
@@ -120,7 +125,7 @@ class Cheese extends FlxSprite
         });
     }
     
-    public function resetToSpawn():Void
+    public function resetToSpawn(onComplete:()->Void):Void
     {
         followTarget = null;
         follower = null;
@@ -136,11 +141,13 @@ class Cheese extends FlxSprite
         flickerTimer = Math.min(maxTime, distance / minSpeed);
         FlxTween.tween(this, { x:startPos.x, y:startPos.y }, flickerTimer,
             { ease:FlxEase.smoothStepInOut
-            , onComplete:(_)->
+            , onComplete:function(_)
                 {
                     solid = true;
                     mode = Idle;
                     moves = false;
+                    container.add(this);
+                    onComplete();
                 }
             }
         );
@@ -210,18 +217,27 @@ class Cheese extends FlxSprite
                 velocity.y = distance.y * 4;
                 if (distance.lengthSquared < 15*15)
                 {
+                    var checkpoint:Checkpoint = cast followTarget;
                     eatCallback(this);
                     if (follower != null)
-                        follower.sendToCheckpoint(cast followTarget, eatCallback);
-                    followTarget = null;
-                    follower = null;
-                    eatCallback = null;
-                    kill();
+                        follower.sendToCheckpoint(checkpoint, eatCallback);
+                    
+                    destroy();
                 }
             case _:
                 throw "unhandled state" + mode.getName();
         }
         distance.put();
+    }
+    
+    override function destroy()
+    {
+        super.destroy();
+        
+        container = null;
+        followTarget = null;
+        follower = null;
+        eatCallback = null;
     }
 }
 
