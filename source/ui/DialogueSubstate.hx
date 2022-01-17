@@ -32,7 +32,7 @@ class DialogueSubstate extends flixel.FlxSubState
         uiCamera.height = playerCamera.height;
         uiCamera.bgColor = 0;
         cameras = [uiCamera];
-        FlxG.cameras.add(uiCamera);
+        FlxG.cameras.add(uiCamera, false);
         
         var textSize = 16;//uiCamera.width < FlxG.width ? 8 : 16;
         dialogueText = new TypeTextTwo(0, 0, uiCamera.width, parseDialogue(dialogue), textSize);

@@ -159,8 +159,7 @@ class Player extends FlxSprite
         playCamera = new PlayCamera();
         playCamera.init(this);
         
-        FlxG.cameras.add(playCamera);
-        FlxCamera.defaultCameras.push(playCamera);
+        FlxG.cameras.add(playCamera, true);
     }
     
     public function die():Void
@@ -734,7 +733,6 @@ class Player extends FlxSprite
     {
         super.destroy();
         FlxG.cameras.remove(playCamera);
-        FlxCamera.defaultCameras.remove(playCamera);
         if (settings != null)
         {
             PlayerSettings.removeAvatar(this);

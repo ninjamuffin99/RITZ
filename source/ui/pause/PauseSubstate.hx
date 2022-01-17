@@ -60,7 +60,7 @@ class PauseSubstate extends flixel.FlxSubState
     inline function copyCamera(original:FlxCamera):FlxCamera
     {
         var camera = new FlxCamera(Std.int(original.x), Std.int(original.y), original.width, original.height, 0);
-        FlxG.cameras.add(camera);
+        FlxG.cameras.add(camera, false);
         camera.bgColor = 0;
         return camera;
     }
@@ -168,10 +168,7 @@ class PauseScreen extends FlxGroup
     
     override function update(elapsed:Float)
     {
-        var oldCameras = FlxCamera.defaultCameras;
-        FlxCamera.defaultCameras = cameras;
         super.update(elapsed);
-        FlxCamera.defaultCameras = oldCameras;
         
         if (!settings.controls.PAUSE)
             pauseReleased = true;

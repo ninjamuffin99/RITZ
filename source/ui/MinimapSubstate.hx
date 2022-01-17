@@ -44,7 +44,7 @@ class MinimapSubstate extends flixel.FlxSubState
         mapCamera.maxScrollX = map.width;
         mapCamera.maxScrollY = map.height;
         mapCamera.follow(cursor, TOPDOWN);
-        FlxG.cameras.add(mapCamera);
+        FlxG.cameras.add(mapCamera, false);
         cameras = [mapCamera];
         
         var help = new InputHelp();

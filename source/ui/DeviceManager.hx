@@ -42,7 +42,7 @@ class DeviceManager extends FlxSubState
         
         final camera = new FlxCamera(0, 0, FlxG.width, FlxG.height);
         camera.bgColor = 0x0;
-        FlxG.cameras.add(camera);
+        FlxG.cameras.add(camera, false);
         cameras = [camera];
         
         final border = 8;
@@ -298,7 +298,7 @@ class DeviceManager extends FlxSubState
                 cast (FlxG.state, PlayState).createSecondPlayer();
                 // bring to front
                 FlxG.cameras.remove(camera, false);
-                FlxG.cameras.add(camera);
+                FlxG.cameras.add(camera, false);
             }
         }
         

@@ -71,8 +71,6 @@ class PlayState extends flixel.FlxState
 		
 		FlxG.worldBounds.set(0, 0, 0, 0);
 		FlxG.cameras.remove(FlxG.camera);
-		FlxG.camera = null;
-		FlxCamera.defaultCameras = [];// Added to in createPlayer
 		createInitialLevel();
 		
 		add(bg);
