@@ -314,8 +314,12 @@ class PlayState extends flixel.FlxState
 		{
 			var camera = PlayerSettings.player1.camera;
 			to.exists = true;
-			from.exists = false;
 			to.setFocus(camera);
+			
+			// from can be null when players are added
+			if (from != null)
+				from.exists = false;
+			
 		}
 	}
 	
