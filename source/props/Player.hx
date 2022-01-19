@@ -108,8 +108,8 @@ class Player extends FlxSprite
     public var playCamera(default, null):PlayCamera;
     public var controls(get, never):Controls;
     inline function get_controls():Controls return settings.controls;
-    public var canTailWhip = false;
-    public var canAirHop = true;
+    
+    public var abilities(default, null) = new PlayerAbilities();
     
     public var currentSection:Section;
     
@@ -389,7 +389,7 @@ class Player extends FlxSprite
                     updateTailPosition();
                 }
             }
-            else if (controls.TAIL_P && canTailWhip)
+            else if (controls.TAIL_P && abilities.canTailWhip)
             {
                 if (!onGround)
                 {
@@ -506,7 +506,7 @@ class Player extends FlxSprite
             
             variableJump_new(elapsed);
             
-            if (controls.JUMP_P && !airHopped && canAirHop)
+            if (controls.JUMP_P && !airHopped && abilities.canAirHop)
             {
                 velocity.y = 0;
                 
@@ -869,4 +869,27 @@ enum PlayerAction
     Hanging(tween:FlxTween);
     Hung;
     Hooked;
+}
+
+class PlayerAbilities
+{
+    public var canTailWhip(default, null) = false;
+    public var canAirHop(default, null) = false;
+    
+    public function new () { }
+    
+    public function addPowerUp(powerUp:PlayerPowerUp)
+    {
+        switch(powerUp)
+        {
+            case TAIL_WHIP: canTailWhip = true;
+            case AIR_HOP: canAirHop = true;
+        }
+    }
+}
+
+enum abstract PlayerPowerUp(String)
+{
+    var TAIL_WHIP = "tail_whip";
+    var AIR_HOP = "air_hop";
 }
