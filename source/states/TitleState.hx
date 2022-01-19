@@ -21,15 +21,25 @@ class TitleState extends flixel.FlxState
         FlxG.sound.play('assets/sounds/titleCrash' + BootState.soundEXT, 0.4);
         
         var titleBg = new FlxSprite("assets/images/ui/intro/bg.png");
+        titleBg.setGraphicSize(FlxG.width, FlxG.height);
+        titleBg.screenCenter();
         add(titleBg);
         
+        var cheese = new FlxSprite("assets/images/ui/intro/cheese.png");
+        cheese.screenCenter();
+        add(cheese);
+        
         var ritz = new FlxSprite();
-        ritz.loadGraphic("assets/images/ui/intro/ritz.png", true, titleBg.graphic.width, titleBg.graphic.height);
+        ritz.loadGraphic("assets/images/ui/intro/ritz.png", true, cheese.graphic.width, cheese.graphic.height);
+        ritz.x = cheese.x;
+        ritz.y = cheese.y;
         ritz.animation.add('idle', [ritz.animation.frames - 1]);
         ritz.animation.play('idle');
         add(ritz);
 
         pressStart = new FlxSprite().loadGraphic("assets/images/ui/intro/instructions.png");
+        pressStart.x = cheese.x;
+        pressStart.y = cheese.y;
         add(pressStart);
 
         FlxFlicker.flicker(pressStart, 0, 0.5);
@@ -41,13 +51,13 @@ class TitleState extends flixel.FlxState
     {
         if ((FlxG.keys.justPressed.ANY || FlxG.gamepads.anyButton(JUST_PRESSED)) && FlxG.sound.music != null)
         {
-            
             FlxFlicker.flicker(pressStart, 1, 0.04, false, true, function(_)
             {
                 //FlxG.sound.play('assets/sounds/ritzstartjingle' + BootState.soundEXT);
                 FlxG.camera.fade(FlxColor.BLACK, 2, false, function()
                 {
-                    FlxG.switchState(new MainMenuState());
+                    // FlxG.switchState(new MainMenuState());
+                    FlxG.switchState(new AdventureState());
                 });
             });
             

@@ -49,6 +49,7 @@ class BootState extends flixel.FlxState
         
         intro = new FlxSprite();
         intro.loadGraphic("assets/images/ui/intro/ritz.png", true, 480, 288);
+        intro.screenCenter();
         intro.animation.add('standby', [0], 0, false);
         intro.animation.add('start', [for (i in 0...intro.animation.frames) i], 12, false);
         intro.animation.play('standby');
