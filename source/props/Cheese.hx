@@ -167,7 +167,7 @@ class Cheese extends FlxSprite
     function updateFollow(elapsed:Float):Void
     {
         final distance = FlxVector.get(followTarget.x - x, followTarget.y - y);
-        final followDistance = Std.is(followTarget, Player) ? 25 : 15;
+        final followDistance = (followTarget is Player) ? 25 : 15;
         switch (mode)
         {
             case GetAnim://nothing
