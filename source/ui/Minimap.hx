@@ -110,7 +110,7 @@ class Minimap extends flixel.group.FlxGroup
 }
 
 @:forward
-abstract MiniTilemap(OgmoTilemap) to OgmoTilemap
+abstract MiniTilemap(OgmoTilemap) to FlxTilemap
 {
     inline static var OLD_TILE_SIZE = Minimap.OLD_TILE_SIZE;
     inline static var TILE_SIZE = Minimap.TILE_SIZE;
