@@ -85,6 +85,7 @@
 	<!-- _________________________________ Custom _______________________________ -->
 
 	<haxedef name="SKIP_TO_PLAYSTATE" if="debug" />
+	<!-- <haxedef name="ALLOW_MULTIPLAYER" /> -->
 	<section if="newgrounds">
 		<haxedef name="NG_LOGIN" />
 		<!-- <haxedef name="NG_LURKER" /> -->

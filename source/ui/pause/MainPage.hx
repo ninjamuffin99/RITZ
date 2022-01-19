@@ -36,6 +36,7 @@ class MainPage extends PausePage
         addButton("CONTINUE", navCallback.bind(Ready));
         addButton("MUTE", ()->FlxG.sound.muted = !FlxG.sound.muted);
         addButton("CONTROLS", navCallback.bind(Controls));
+        #if ALLOW_MULTIPLAYER
         if (PlayerSettings.numAvatars == 1)
         {
             var button:BitmapText = null;
@@ -56,6 +57,7 @@ class MainPage extends PausePage
                 }
             );
         }
+        #end
         addButton("RESTART", onSelectRestart);
         buttons.y = title.y + title.lineHeight * 2;
         add(buttons);
