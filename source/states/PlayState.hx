@@ -147,9 +147,9 @@ class PlayState extends flixel.FlxState
 		add(uiGroup);
 	}
 	
-	function createSection(path:String, ?pos:FlxPoint):Section
+	function createSection(path:String, ?pos:FlxPoint, removeSpawns = false):Section
 	{
-		var section = new Section(path, pos);
+		var section = new Section(path, pos, removeSpawns);
 		totalCheese += section.totalCheese;
 		sections.add(section);
 		return section;
@@ -323,10 +323,14 @@ class PlayState extends flixel.FlxState
 		}
 	}
 	
-	function warpTo(checkpoint:Checkpoint):Void
+	function warpToCheckPoint(checkpoint:Checkpoint):Void
 	{
 		curCheckpoint = checkpoint;
 		avatars.forEach(avatar->avatar.die());
+	}
+	function warpTo(x:Float, y:Float):Void
+	{
+		//Todo
 	}
 	
 	public function checkDoor (lock:Lock, avatar:Player)

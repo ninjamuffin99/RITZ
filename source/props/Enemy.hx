@@ -11,11 +11,14 @@ import flixel.FlxObject;
 import flixel.util.FlxColor;
 import flixel.FlxSprite;
 
-class Enemy extends FlxSprite
+class Enemy extends FlxSprite implements Bouncer
 {
     inline static var RESPAWN_TIME = 5.0;
     inline static var RESPAWN_BLINK_TIME = 1.0;
     inline static var RESPAWN_BLINK_FREQ = 1.0 / 8;
+    
+    public var bumpMin(default, null) = 0.0;
+    public var bumpMax(default, null) = 2.0;
     
     var spawn = FlxPoint.get();
     var spawnTimer = 0.0;

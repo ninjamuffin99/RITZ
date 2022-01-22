@@ -1,5 +1,7 @@
 package data;
 
+import flixel.effects.FlxFlicker;
+import zero.flixel.ec.Entity;
 import flixel.FlxCamera;
 import flixel.math.FlxRect;
 import flixel.util.FlxColor;
@@ -24,6 +26,7 @@ using zero.flixel.utilities.FlxOgmoUtils;
 class Section extends FlxGroup
 {
     public var path(default, null):String;
+    public var removeSpawns(default, null):Bool;
     public var totalCheese(default, null) = 0;
     
     public var map        (default, null):OgmoTilemap;
@@ -36,12 +39,14 @@ class Section extends FlxGroup
     
     public var grpCheese         (default, null) = new FlxTypedGroup<Cheese         >();
     public var grpHooks          (default, null) = new FlxTypedGroup<Hook           >();
+    public var grpSprings        (default, null) = new FlxTypedGroup<Spring         >();
     public var grpPlatforms      (default, null) = new FlxTypedGroup<TriggerPlatform>();
     public var grpOneWayPlatforms(default, null) = new FlxTypedGroup<Platform       >();
     public var grpSpikes         (default, null) = new FlxTypedGroup<SpikeObstacle  >();
     public var grpEnemies        (default, null) = new FlxTypedGroup<Enemy          >();
     public var grpCheckpoint     (default, null) = new FlxTypedGroup<Checkpoint     >();
     public var grpLockedDoors    (default, null) = new FlxTypedGroup<Lock           >();
+    public var grpPowerUps       (default, null) = new FlxTypedGroup<PowerUp        >();
     public var grpMusicTriggers  (default, null) = new FlxTypedGroup<MusicTrigger   >();
     public var grpSecretTriggers (default, null) = new FlxTypedGroup<SecretTrigger  >();
     
@@ -66,9 +71,10 @@ class Section extends FlxGroup
     var state(get, never):PlayState;
     inline function get_state():PlayState return cast FlxG.state;
     
-    public function new (path:String, ?offset:FlxPoint)
+    public function new (path:String, ?offset:FlxPoint, removeSpawns = false)
     {
         this.path = path;
+        this.removeSpawns = removeSpawns;
         super();
         
         var ogmo = FlxOgmoUtils.get_ogmo_package("assets/data/ogmo/levelProject.ogmo", path);
@@ -172,6 +178,10 @@ class Section extends FlxGroup
                 entity = grpSecretTriggers.add(new SecretTrigger(e.x, e.y, e.width, e.height));
             case 'locked' | 'locked_tall':
                 entity = grpLockedDoors.add(Lock.fromOgmo(e));
+            case 'powerUp':
+                entity = grpPowerUps.add(PowerUp.fromOgmo(e));
+            case 'spring':
+                entity = grpSprings.add(Spring.fromOgmo(e));
             case unhandled:
                 throw 'Unhandled token:$unhandled';
         }
@@ -268,7 +278,7 @@ class Section extends FlxGroup
                     if (avatar.y + avatar.height < enemy.y + enemy.height / 2)
                     {
                         avatar.y = enemy.y - avatar.height;
-                        avatar.bounce();
+                        avatar.bounce(enemy);
                         enemy.die();
                     }
                     else
@@ -278,6 +288,14 @@ class Section extends FlxGroup
             
             if (SpikeObstacle.overlap(grpSpikes, avatar))
                 avatar.state = Hurt;
+            
+            FlxG.overlap(grpSprings, avatar, 
+                (spring:Spring, _)->
+                {
+                    avatar.y = spring.y - avatar.height;
+                    avatar.bounce(spring);
+                }
+            );
             
             FlxG.overlap(cameraTiles, avatar, 
                 (cameraTiles:CameraTilemap, _)->
@@ -293,7 +311,7 @@ class Section extends FlxGroup
             if (avatar.onGround)
                 FlxG.overlap(grpCheckpoint, avatar, state.handleCheckpoint);
             
-            collectCheese();
+            collectPickups(avatar);
             switch (avatar.action)
             {
                 case Hanging(_) | Hung:
@@ -346,19 +364,15 @@ class Section extends FlxGroup
         }
     }
     
-    function collectCheese()
+    function collectPickups(player:Player)
     {
-        FlxG.overlap(grpPlayers, grpCheese, playerCollectCheese);
+        FlxG.overlap(player, grpCheese, playerCollectCheese);
         
         // collect cheese with tail
-        var player:Player;
-        player = PlayerSettings.player1.avatar;
         FlxG.overlap(player.tail, grpCheese, (_, cheese)->playerCollectCheese(player, cheese));
-        if (PlayerSettings.numAvatars > 1)
-        {
-            player = PlayerSettings.player2.avatar;
-            FlxG.overlap(player.tail, grpCheese, (_, cheese)->playerCollectCheese(player, cheese));
-        }
+        
+        
+        FlxG.overlap(player, grpPowerUps, playerCollectPowerUp);
         
         // if (cheeseCount >= totalCheese)
         // 	NGio.unlockMedal(58884);
@@ -368,6 +382,19 @@ class Section extends FlxGroup
     {
         FlxG.sound.play('assets/sounds/collectCheese.mp3', 0.6);
         cheese.startFollow(player);
+    }
+    
+    function playerCollectPowerUp(player:Player, powerUp:PowerUp)
+    {
+        player.abilities.addPowerUp(powerUp.type);
+        player.state = Talking;
+        FlxFlicker.flicker(powerUp, 1, 0.04, false);
+        FlxG.sound.play('assets/sounds/allcheesesunlocked.mp3', 0.6).onComplete
+        =   ()->
+            {
+                powerUp.exists = false;
+                player.state = Alive;
+            };
     }
     
     public function disableAllDebugDraw()

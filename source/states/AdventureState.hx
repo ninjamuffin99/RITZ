@@ -1,5 +1,7 @@
 package states;
 
+import haxe.io.Path;
+import haxe.Json;
 import openfl.utils.Assets;
 import ui.MinimapSubstate;
 import ui.Minimap;
@@ -9,72 +11,103 @@ import props.Player;
 
 class AdventureState extends PlayState
 {
-    inline static var LEVEL_PREFIX = 
-        "blue";
+    static var level = WorldWithStart("assets/data/ogmo/levelProject.ogmo", "blue0");
     
-    // inline static var LEVEL_PATH = 
-        // "assets/data/ogmo/levels/old/dumbassLevel.json";
-        // "assets/data/ogmo/levels/old/normassLevel.json";
-        // "assets/data/ogmo/levels/old/smartassLevel.json";
+    #if debug
+    static var debugLevel:LevelType =
+        Single("assets/data/ogmo/levels/ideas/springs.json")
+        // Single("assets/data/ogmo/levels/old/dumbassLevel.json")
+        // Single("assets/data/ogmo/levels/old/normassLevel.json")
+        // Single("assets/data/ogmo/levels/old/smartassLevel.json")
+        // null
+        ;
+    #end
     
-	// var minimap:Minimap;
+    var minimap:Minimap;
     
     override function create()
     {
         super.create();
         
-        // minimap = new Minimap(LEVEL_PATH);
+        #if ENABLE_MAP
+        minimap = new Minimap(LEVEL_PATH);
+        #end
     }
     
     override function createInitialLevel()
     {
-        // createLevel(LEVEL_PATH);
+        #if debug
+        if (debugLevel != null)
+            level = debugLevel;
+        #end
         
-        createSectionsByPrefix(LEVEL_PREFIX);
-    }
-    
-    function createSectionsByPrefix(prefix:String)
-    {
-        var i = 0;
-        var levelPath = 'assets/data/ogmo/levels/$prefix$i.json';
-        while (Assets.exists(levelPath))
+        switch(level)
         {
-            var level = createSection(levelPath);
-            
-            // if (i > 0)
-            //     level.kill();
-            i++;
-            levelPath = 'assets/data/ogmo/levels/$prefix$i.json';
+            case World(path): createWorld(path);
+            case WorldWithStart(path, start): createWorld(path, start);
+            case Single(path): createSection(path);
         }
     }
     
-    // override function update(elapsed:Float)
-    // {
-    //     super.update(elapsed);
+    function createWorld(ogmoPath:String, ?start:String)
+    {
+        var ogmo = Json.parse(Assets.getText(ogmoPath));
+        var paths:Array<String> = cast ogmo.worldLevelPaths;
         
-    //     var pressedMap = false;
-    //     grpPlayers.forEach
-    //     (
-    //         player->
-    //         {
-    //             minimap.updateSeen(player.playCamera);
-                
-    //             if (!pressedMap && player.controls.MAP)
-    //                 openSubState(new MinimapSubstate(minimap, player, warpTo));
-    //         }
-    //     );
-    // }
-    
-    // override function handleCheckpoint(checkpoint:Checkpoint, player:Player)
-    // {
-    //     super.handleCheckpoint(checkpoint, player);
-    //     minimap.showCheckpointGet(checkpoint.ID);
-    // }
-    
-    // override function onFeedCheese(cheese:Cheese)
-    // {
-    //     super.onFeedCheese(cheese);
+        if(paths == null)
+            throw "No worldLevelpaths found in " + ogmoPath;
         
-    //     minimap.showCheeseGet(cheese.ID);
-    // }
+        var directory = Path.directory(ogmoPath);
+        for (path in paths)
+        {
+            final id = Path.withoutExtension(Path.withoutDirectory(path));
+            final removeSpawns = start != null && id != start;
+            createSection(directory + "/" + path, removeSpawns);
+        }
+    }
+    
+    override function update(elapsed:Float)
+    {
+        super.update(elapsed);
+        
+        if (minimap != null)
+        {
+            updateMap(elapsed);
+        }
+    }
+    
+    function updateMap(elapsed:Float)
+    {
+        var pressedMap = false;
+        for (player in avatars)
+        {
+            minimap.updateSeen(player.playCamera);
+            
+            if (!pressedMap && player.controls.MAP)
+                openSubState(new MinimapSubstate(minimap, player, warpTo));
+        }
+    }
+    
+    override function handleCheckpoint(checkpoint:Checkpoint, player:Player)
+    {
+        super.handleCheckpoint(checkpoint, player);
+        
+        if (minimap != null)
+            minimap.showCheckpointGet(checkpoint.ID);
+    }
+    
+    override function onFeedCheese(cheese:Cheese)
+    {
+        super.onFeedCheese(cheese);
+        
+        if (minimap != null)
+            minimap.showCheeseGet(cheese.ID);
+    }
+}
+
+private enum LevelType
+{
+    World(ogmoPath:String);
+    WorldWithStart(ogmoPath:String, startLevel:String);
+    Single(levelPath:String);
 }

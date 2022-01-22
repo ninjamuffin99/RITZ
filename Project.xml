@@ -14,10 +14,10 @@
 	<!-- ____________________________ Window Settings ___________________________ -->
 
 	<!--These window settings apply to all targets-->
-	<window width="1080" height="704" fps="60" background="#3d73a2" hardware="true" vsync="false" />
+	<window width="1024" height="640" fps="60" background="#3d73a2" hardware="true" vsync="false" />
 
 	<!--HTML5-specific-->
-	<window if="html5" resizable="true" />
+	<window if="html5" resizable="false" />
 
 	<!--Desktop-specific-->
 	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" />
@@ -86,6 +86,8 @@
 
 	<haxedef name="SKIP_TO_PLAYSTATE" if="debug" />
 	<!-- <haxedef name="ALLOW_MULTIPLAYER" /> -->
+	<!-- <haxedef name="ENABLE_MAP" unless="ALLOW_MULTIPLAYER" /> -->
+	
 	<section if="newgrounds">
 		<haxedef name="NG_LOGIN" />
 		<!-- <haxedef name="NG_LURKER" /> -->

@@ -1,10 +1,12 @@
 package props;
 
+import flixel.FlxBasic;
 import data.Section;
 import beat.BeatGame;
 import data.PlayerSettings;
 import props.Dust;
 import props.MovingPlatform;
+import props.PowerUp;
 import states.BootState;
 import ui.Controls;
 
@@ -34,14 +36,12 @@ class Player extends FlxSprite
     
     public static inline var TILE_SIZE = 32;
     public static inline var MAX_APEX_TIME = 0.45;
-    public static inline var MIN_JUMP  = TILE_SIZE * 1.25;
-    public static inline var MAX_JUMP  = TILE_SIZE * 3.25;
-    public static inline var AIR_JUMP  = TILE_SIZE * 2.0;
+    public static inline var MIN_JUMP = TILE_SIZE * 1.25;
+    public static inline var MAX_JUMP = TILE_SIZE * 3.25;
+    public static inline var AIR_JUMP = TILE_SIZE * 2.0;
     
     static inline var MIN_APEX_TIME = 2 * MAX_APEX_TIME * MIN_JUMP / (MIN_JUMP + MAX_JUMP);
     static inline var GRAVITY = 2 * MIN_JUMP / MIN_APEX_TIME / MIN_APEX_TIME;
-    static inline var JUMP_SPEED = -2 * MIN_JUMP / MIN_APEX_TIME;
-    static inline var JUMP_HOLD_TIME = (MAX_JUMP - MIN_JUMP) / -JUMP_SPEED;
     static var airJumpSpeed(default, never) = -Math.sqrt(2 * GRAVITY * AIR_JUMP);
     
     public inline static var JUMP_DISTANCE = TILE_SIZE * 4.25;
@@ -50,7 +50,6 @@ class Player extends FlxSprite
     public inline static var AIR_SLOW_DOWN_TIME    = 0.2;
     public inline static var AIR_SPEED_UP_TIME     = 0.36;
     public inline static var AIRHOP_SPEED_UP_TIME  = 0.5;
-    public inline static var FALL_SPEED = -JUMP_SPEED;
     
     inline static var MAXSPEED = JUMP_DISTANCE / MAX_APEX_TIME / 2;
     inline static var GROUND_ACCEL = MAXSPEED / GROUND_SPEED_UP_TIME;
@@ -81,12 +80,15 @@ class Player extends FlxSprite
     
     /** Input buffering, allow normal jump slightly after walking off a ledge */
     static inline var COYOTE_TIME = 8/60;
-    private var coyoteTimer:Float = 0;
-    private var airHopped:Bool = false;
-    private var jumped:Bool = false;
-    private var jumpTimer:Float = 0;
+    var coyoteTimer:Float = 0;
+    var airHopped:Bool = false;
+    var jumped:Bool = false;
+    var fallVelocity:Float = 0;
+    var jumpVelocity:Float = 0;
+    var jumpTimer:Float = 0;
+    var jumpMaxTime:Float = 0;
     /** horizontal boost from being launched, usually by a moving platform */
-    private var xAirBoost:Float;
+    var xAirBoost:Float;
     public var onGround      (default, null):Bool = false;
     public var wasOnGround   (default, null):Bool = false;
     public var onCoyoteGround(default, null):Bool = false;
@@ -150,8 +152,20 @@ class Player extends FlxSprite
         
         drag.x = AIR_DRAG;
         acceleration.y = GRAVITY;
+        calcJumpVars(MIN_JUMP, MAX_JUMP);
+        fallVelocity = -jumpVelocity;
         maxVelocity.x = MAXSPEED;
-        maxVelocity.y = FALL_SPEED;
+        maxVelocity.y = fallVelocity;
+        
+        #if debug
+        FlxG.watch.add(maxVelocity, "y", "Player.maxVelocity.y");
+        FlxG.watch.add(velocity, "y", "Player.velocity.y");
+        FlxG.watch.add(acceleration, "y", "Player.acceleration.y");
+        FlxG.watch.add(this, "jumpVelocity");
+        FlxG.watch.add(this, "fallVelocity");
+        FlxG.watch.add(this, "jumpTimer");
+        FlxG.watch.add(this, "jumpMaxTime");
+        #end
     }
     
     function initCamera():Void
@@ -233,8 +247,7 @@ class Player extends FlxSprite
                         if (tween != null)
                             tween.cancel();
                         
-                        setPlatforming();
-                        startJump();
+                        startHangJump();
                     }
                     
                     switch (action)
@@ -370,7 +383,7 @@ class Player extends FlxSprite
         // }
         
         if (isFalling)
-            maxVelocity.y = FALL_SPEED;
+            maxVelocity.y = fallVelocity;
         
         var anim:String = animation.curAnim.name;
         var whipping = tail.isWhipping();
@@ -490,7 +503,7 @@ class Player extends FlxSprite
         if (onCoyoteGround)
         {
             if (!whipping && controls.JUMP_P)
-                startJump();
+                startVariableJump();
         }
         else if (!whipping)
         {
@@ -504,33 +517,11 @@ class Player extends FlxSprite
                 #end
             }
             
-            variableJump_new(elapsed);
+            checkHoldJump(elapsed);
             
             if (controls.JUMP_P && !airHopped && abilities.canAirHop)
             {
-                velocity.y = 0;
-                
-                if (controls.LEFT != controls.RIGHT)
-                {
-                    // remove boost if reversing direction
-                    if (xAirBoost != 0 && !FlxMath.sameSign(acceleration.x, xAirBoost))
-                    {
-                        xAirBoost = 0;
-                        maxVelocity.x = MAXSPEED;
-                    }
-                    velocity.x = maxVelocity.x * (controls.LEFT ? -1 : 1);
-                }
-                // if ((velocity.x > 0 && left) || (velocity.x < 0 && right))
-                // {
-                //     sorta sidejump style boost thingie
-                //     velocity.y -= 200;
-                //     velocity.x *= -0.1;
-                // }
-                    
-                // velocity.y = -600;
-                velocity.y = airJumpSpeed;
-                airHopped = true;
-                FlxG.sound.play('assets/sounds/doubleJump' + BootState.soundEXT, 0.75);
+                startAirHop();
             }
         }
         
@@ -542,13 +533,21 @@ class Player extends FlxSprite
         action = Platforming;
         acceleration.y = GRAVITY;
         maxVelocity.x = MAXSPEED;
-        maxVelocity.y = FALL_SPEED;
+        maxVelocity.y = fallVelocity;
         jumped = false;
         apexReached = false;
         jumpBoost = 0;
         jumpTimer = 0;
         xAirBoost = 0;
         airHopped = false;
+    }
+    
+    function calcJumpVars(minJump:Float, maxJump:Float)
+    {
+        final minApexTime = 2 * MAX_APEX_TIME * minJump / (minJump + maxJump);
+        acceleration.y = 2 * minJump / minApexTime / minApexTime;
+        this.jumpVelocity = -2 * minJump / minApexTime;
+        jumpMaxTime = (maxJump - minJump) / -jumpVelocity;
     }
     
     function stopMovement()
@@ -558,11 +557,11 @@ class Player extends FlxSprite
         maxVelocity.set(0, 0);
     }
     
-    public function bounce()
+    public function bounce(bouncer:Bouncer)
     {
         setPlatforming();
         velocity.y = 0;
-        startJump(false);
+        startVariableJump(false, MIN_JUMP + bouncer.bumpMin * TILE_SIZE, MAX_JUMP + bouncer.bumpMax * TILE_SIZE);
     }
     
     public function onTouchHook(hook:Hook):Void
@@ -638,17 +637,22 @@ class Player extends FlxSprite
         velocity.x += xAirBoost;
     }
     
+    function startVariableJump(allowQuickChange = true, minJump = MIN_JUMP, maxJump = MAX_JUMP)
+    {
+        calcJumpVars(minJump, maxJump);
+        startJump(allowQuickChange);
+    }
+    
     function startJump(allowQuickChange = true)
     {
-        if (allowQuickChange && acceleration.x != 0)
+        if (allowQuickChange)
         {
             //quick change jump dir
-            final allowSkidJump = !onCoyoteGround
-                || (velocity.x != 0 && !FlxMath.sameSign(acceleration.x, velocity.x));
-            if (allowSkidJump)
+            if (checkSkidJump())
                 velocity.x = maxVelocity.x * (controls.LEFT ? -1 : 1);
         }
-        maxVelocity.y = Math.max(-airJumpSpeed, -JUMP_SPEED);
+        maxVelocity.y = -jumpVelocity;
+        velocity.y = 0;
         if (platform != null)
         {
             if (platform.transferVelocity.y < 0)
@@ -665,7 +669,7 @@ class Player extends FlxSprite
             jumpSprite.y = y + height;
         }
         #end
-        velocity.y += JUMP_SPEED;
+        velocity.y += jumpVelocity;
         jumped = true;
         onGround = false;
         onCoyoteGround = false;
@@ -674,29 +678,67 @@ class Player extends FlxSprite
         coyoteTimer = COYOTE_TIME;
     }
     
-    function variableJump_new(elapsed:Float):Void
+    function checkSkidJump()
+    {
+        return acceleration.x != 0
+            && (!onCoyoteGround || (velocity.x != 0 && !FlxMath.sameSign(acceleration.x, velocity.x)));
+    }
+    
+    function checkHoldJump(elapsed:Float):Void
     {
         if (controls.JUMP && !apexReached)
         {
-            
-            if (!jumped)
-            {
-                velocity.y = 0;
-                startJump();
-            }
+            if (!jumped && abilities.canLateHop)
+                startLateHop();
             
             jumpTimer += elapsed;
-            if (jumpTimer < JUMP_HOLD_TIME)
+            if (jumpTimer < jumpMaxTime)
             {
-                if (velocity.y > JUMP_SPEED)
-                    velocity.y = JUMP_SPEED;
+                if (velocity.y > jumpVelocity)
+                    velocity.y = jumpVelocity;
             }
             else
             {
-                jumpTimer = JUMP_HOLD_TIME;
+                jumpTimer = Math.POSITIVE_INFINITY;
                 apexReached = true;
             }
         }
+        else
+        {
+            jumpTimer = Math.POSITIVE_INFINITY;
+        }
+    }
+    
+    function startAirHop()
+    {
+        velocity.y = 0;
+        
+        if (controls.LEFT != controls.RIGHT)
+        {
+            // remove boost if reversing direction
+            if (xAirBoost != 0 && !FlxMath.sameSign(acceleration.x, xAirBoost))
+            {
+                xAirBoost = 0;
+                maxVelocity.x = MAXSPEED;
+            }
+            velocity.x = maxVelocity.x * (controls.LEFT ? -1 : 1);
+        }
+        jumpVelocity = airJumpSpeed;
+        velocity.y = jumpVelocity;
+        airHopped = true;
+        FlxG.sound.play('assets/sounds/doubleJump' + BootState.soundEXT, 0.75);
+    }
+    
+    function startLateHop()
+    {
+        velocity.y = 0;
+        startVariableJump();
+    }
+    
+    function startHangJump()
+    {
+        setPlatforming();
+        startVariableJump();
     }
     
     public function feedAllCheese(checkpoint:Checkpoint, onFeed:(Cheese)->Void)
@@ -875,21 +917,23 @@ class PlayerAbilities
 {
     public var canTailWhip(default, null) = false;
     public var canAirHop(default, null) = false;
+    public var canLateHop(default, null) = false;
     
-    public function new () { }
+    public function new ()
+    {
+        
+    }
     
-    public function addPowerUp(powerUp:PlayerPowerUp)
+    public function addPowerUp(powerUp:PowerUpType)
     {
         switch(powerUp)
         {
-            case TAIL_WHIP: canTailWhip = true;
-            case AIR_HOP: canAirHop = true;
+            case TAIL_WHIP:
+                canTailWhip = true;
+            case AIR_HOP:
+                canAirHop = true;
+            case LATE_HOP:
+                canLateHop = true;
         }
     }
-}
-
-enum abstract PlayerPowerUp(String)
-{
-    var TAIL_WHIP = "tail_whip";
-    var AIR_HOP = "air_hop";
 }
