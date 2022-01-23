@@ -84,7 +84,7 @@ class PlayState extends flixel.FlxState
 			curCheckpoint = new Checkpoint(avatar1.x, avatar1.y, "");
 		
 		avatars.add(avatar1);
-		avatar1.currentSection.setWorldBounds();
+		avatar1.currentSection.setFocus(avatar1.camera);
 		if (PlayerSettings.numAvatars == 2)
 		{
 			var avatar2 = PlayerSettings.player2.avatar;

@@ -17,8 +17,16 @@
   "compactExport": false,
   "externalScript": "",
   "playCommand": "",
-  "entityTags": ["FG", "platform", "trigger", "blinking", "moving", "cloud", "solid", "enemy", "hurt"],
+  "entityTags": ["FG", "platform", "trigger", "blinking", "moving", "cloud", "solid", "enemy", "hurt", "Cam"],
   "layers": [
+    {
+      "definition": "entity",
+      "name": "Rooms",
+      "gridSize": {"x": 32, "y": 32},
+      "exportID": "88678353",
+      "requiredTags": ["Cam"],
+      "excludedTags": []
+    },
     {
       "definition": "tile",
       "name": "CameraView",
@@ -45,7 +53,7 @@
       "gridSize": {"x": 16, "y": 16},
       "exportID": "29930198",
       "requiredTags": [],
-      "excludedTags": ["BG"]
+      "excludedTags": ["BG", "Cam"]
     },
     {
       "definition": "tile",
@@ -62,7 +70,7 @@
       "gridSize": {"x": 16, "y": 16},
       "exportID": "72728410",
       "requiredTags": [],
-      "excludedTags": ["FG"]
+      "excludedTags": ["FG", "Cam"]
     },
     {
       "definition": "tile",
@@ -934,8 +942,8 @@
       "tileSize": {"x": 32, "y": 32},
       "resizeableX": false,
       "resizeableY": false,
-      "rotatable": false,
-      "rotationDegrees": 360,
+      "rotatable": true,
+      "rotationDegrees": 4,
       "canFlipX": false,
       "canFlipY": false,
       "canSetColor": false,
@@ -947,6 +955,86 @@
       "values": [],
       "texture": "images/spring.png",
       "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAMdJREFUWIVjYBgFo2AUjIJRMApGwSgYBQMMGLEJ6gQs+U9LS69siIHby4LN4lMro4k2LHrOdZIsv737HAof7hKdgCX/VV2NUCSXpmhSxVJsjoCFAkoIMLx7hGpRFyqfFgDFAbfPvqG5hegAayIkFtTX18MTa2NjI1lmkaWJGhbDABMlmim1nGJQX1//Hzk0yAEk+eDKsnCclulEraRtGriyLPy/tookQmDpfQaGaEU49+qd52Q5gigNWC2HAQodQVAxXsup4AgA3KtJ3S4txSEAAAAASUVORK5CYII="
+    },
+    {
+      "exportID": "87902403",
+      "name": "debugPlayer",
+      "limit": 1,
+      "size": {"x": 32, "y": 32},
+      "origin": {"x": 0, "y": 0},
+      "originAnchored": true,
+      "shape": {
+        "label": "Rectangle",
+        "points": [
+          {"x": -1, "y": -1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": 1}
+        ]
+      },
+      "color": "#ff0000ff",
+      "tileX": false,
+      "tileY": false,
+      "tileSize": {"x": 32, "y": 32},
+      "resizeableX": false,
+      "resizeableY": false,
+      "rotatable": false,
+      "rotationDegrees": 360,
+      "canFlipX": false,
+      "canFlipY": false,
+      "canSetColor": false,
+      "hasNodes": false,
+      "nodeLimit": 0,
+      "nodeDisplay": 0,
+      "nodeGhost": true,
+      "tags": ["FG"],
+      "values": [
+        {"name": "air_hop", "definition": "Boolean", "display": 0, "defaults": true},
+        {"name": "tail_whip", "definition": "Boolean", "display": 0, "defaults": true},
+        {"name": "late_hop", "definition": "Boolean", "display": 0, "defaults": true}
+      ],
+      "texture": "images/ritz.png",
+      "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAb5JREFUWIXFlz1SwzAQhZ8ZbsLQ0NHlAIESxjVlgIYD5Aw5AA0MJbUGygwXSJUTxMdIuxSSlZW8+k/gNXYca7+n1erHwD+rO1IcqmXUGpgA6e1O3zx9HYJ3NnyQU2OAHCDXCH+/PwCev6Oss6PBRzF48t0KA+GALPWBNmKdlBiIFZoW6/2w2WPY7JMxzgsMZPeejTt2mOvrYo6Lj59J01wDRb3fLeb2XoJyZQ9BqpgAOe3cDISZUDQEKaV6i0Mm0wtEoCGIiC8wjpbLpb1frVZQSonv9X1v2TkGknAf1Pe9CDdgrk4cAiIiDhqD+fBQD0Ngev0ELq90rNtrfQ20sb3OhSTBgIUzA11oFjTvkjF4CagqExP4KC/9CNWAYJCEAmpV9iyIifjUA/T0M3H1zulloXt5cLgtCxEBwGw2C/3fASAD9J9b1RogIKsukhkuPg9I8BPUR9yAUoqUUmTMEK23ND5Hzs7JVJMB18166/w2mZFMiMaadkOllJ3TiXogBOqh6lQcg7GdzoeKJqqP5Qn5Bo6aAccIEWF4vLEPzaGEg6OcJgPO15A5E5oDaXbc5lkAYPIxUqLmIThB3L/VL6fFs+sK96bmAAAAAElFTkSuQmCC"
+    },
+    {
+      "exportID": "88680998",
+      "name": "room",
+      "limit": -1,
+      "size": {"x": 512, "y": 320},
+      "origin": {"x": 0, "y": 0},
+      "originAnchored": true,
+      "shape": {
+        "label": "Rectangle",
+        "points": [
+          {"x": -1, "y": -1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": -1},
+          {"x": -1, "y": 1},
+          {"x": 1, "y": 1}
+        ]
+      },
+      "color": "#ff0000ff",
+      "tileX": false,
+      "tileY": false,
+      "tileSize": {"x": 512, "y": 320},
+      "resizeableX": true,
+      "resizeableY": true,
+      "rotatable": false,
+      "rotationDegrees": 360,
+      "canFlipX": false,
+      "canFlipY": false,
+      "canSetColor": false,
+      "hasNodes": false,
+      "nodeLimit": 0,
+      "nodeDisplay": 0,
+      "nodeGhost": true,
+      "tags": ["Cam"],
+      "values": [],
+      "texture": "images/room.png",
+      "textureImage": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAFACAYAAADKyMQLAAAAAXNSR0IArs4c6QAABWFJREFUeJzt2rENhDAUBUGMriLXQpnUQktcA6SYYGdCRy9cfXmcc94bAJCyfz0AAFhPAABAkAAAgCABAABBv6fH47rG6iEAwDuePvy7AABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAAQJAAAIEgAAECQAACBIAABAkAAAgCABAABBAgAAggQAAASNc8776xEAwFouAAAQJAAAIEgAAECQAACAoD+3DgqfvPPMSQAAAABJRU5ErkJggg=="
     }
   ],
   "tilesets": [

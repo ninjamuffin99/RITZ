@@ -15,7 +15,8 @@ class AdventureState extends PlayState
     
     #if debug
     static var debugLevel:LevelType =
-        Single("assets/data/ogmo/levels/ideas/springs.json")
+        Single("assets/data/ogmo/levels/ideas/giant.json")
+        // Single("assets/data/ogmo/levels/ideas/springs.json")
         // Single("assets/data/ogmo/levels/old/dumbassLevel.json")
         // Single("assets/data/ogmo/levels/old/normassLevel.json")
         // Single("assets/data/ogmo/levels/old/smartassLevel.json")

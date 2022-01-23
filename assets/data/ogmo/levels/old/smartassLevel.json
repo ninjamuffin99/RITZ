@@ -7,6 +7,17 @@
   "values": {"splits?": ""},
   "layers": [
     {
+      "name": "Rooms",
+      "_eid": "88678353",
+      "offsetX": 0,
+      "offsetY": 0,
+      "gridCellWidth": 32,
+      "gridCellHeight": 32,
+      "gridCellsX": 100,
+      "gridCellsY": 128,
+      "entities": []
+    },
+    {
       "name": "CameraView",
       "_eid": "39425898",
       "offsetX": 0,

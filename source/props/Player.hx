@@ -1,8 +1,8 @@
 package props;
 
-import flixel.FlxBasic;
-import data.Section;
 import beat.BeatGame;
+import data.Room;
+import data.Section;
 import data.PlayerSettings;
 import props.Dust;
 import props.MovingPlatform;
@@ -10,6 +10,7 @@ import props.PowerUp;
 import states.BootState;
 import ui.Controls;
 
+import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -114,6 +115,7 @@ class Player extends FlxSprite
     public var abilities(default, null) = new PlayerAbilities();
     
     public var currentSection:Section;
+    public var currentRoom(default, null):Room;
     
     public function new(x:Float, y:Float):Void
     {
@@ -174,6 +176,12 @@ class Player extends FlxSprite
         playCamera.init(this);
         
         FlxG.cameras.add(playCamera, true);
+    }
+    
+    public function switchRoom(room:Room)
+    {
+        currentRoom = room;
+        playCamera.setScrollBounds(room.x, room.right, room.y, room.bottom);
     }
     
     public function die():Void
@@ -913,6 +921,13 @@ enum PlayerAction
     Hooked;
 }
 
+typedef OgmoDebugAbilities =
+{
+    final tail_whip:Bool;
+    final air_hop:Bool;
+    final late_hop:Bool;
+}
+
 class PlayerAbilities
 {
     public var canTailWhip(default, null) = false;
@@ -922,6 +937,13 @@ class PlayerAbilities
     public function new ()
     {
         
+    }
+    
+    public function unlockDebug(data:OgmoDebugAbilities)
+    {
+        canTailWhip = data.tail_whip;
+        canAirHop = data.air_hop;
+        canLateHop = data.late_hop;
     }
     
     public function addPowerUp(powerUp:PowerUpType)

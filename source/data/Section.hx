@@ -50,6 +50,8 @@ class Section extends FlxGroup
     public var grpMusicTriggers  (default, null) = new FlxTypedGroup<MusicTrigger   >();
     public var grpSecretTriggers (default, null) = new FlxTypedGroup<SecretTrigger  >();
     
+    public var rooms(default, null) = new FlxTypedGroup<Room>();
+    
     public var x(get, never):Float;
     inline function get_x():Float return map.x;
     public var y(get, never):Float;
@@ -111,6 +113,7 @@ class Section extends FlxGroup
         
         createOffsetEntityLayer(ogmo.level.get_entity_layer('BG entities'), offset, background);
         createOffsetEntityLayer(ogmo.level.get_entity_layer('FG entities'), offset, foreground);
+        createOffsetEntityLayer(ogmo.level.get_entity_layer('Rooms'), offset, null);
         
         cameraTiles = new CameraTilemap(ogmo);
     }
@@ -138,11 +141,24 @@ class Section extends FlxGroup
         var entity:FlxBasic = null;
         switch(e.name)
         {
-            case "player":
+            case "room":
+                if (layer != null)
+                    throw "cannot add room entity to a layer";
+                rooms.add(Room.fromOgmo(e));
+            case "player"|"debugPlayer":
+            {
+                if (removeSpawns)
+                    return;
+                
                 var player = createAvatar(e.x, e.y);
                 player.currentSection = this;
                 FlxG.camera = player.playCamera;
+                
+                if (e.name == "debugPlayer")
+                    player.abilities.unlockDebug(cast e.values);
+                
                 // entity = player; //layer not used
+            }
             case "spider":
                 entity = grpEnemies.add(new Enemy(e));
             case "coins" | "cheese":
@@ -192,12 +208,47 @@ class Section extends FlxGroup
     
     public function setFocus(camera:FlxCamera)
     {
-        setWorldBounds();
-        final bounds = FlxG.worldBounds;
-        camera.minScrollX = bounds.left;
-        camera.maxScrollX = bounds.right;
-        camera.minScrollY = bounds.top;
-        camera.maxScrollY = bounds.bottom;
+        if (rooms.length > 0 && PlayerSettings.numPlayers == 1)
+        {
+            detectPlayerRoom(PlayerSettings.player1.avatar);
+        }
+        else
+        {
+            setWorldBounds();
+            final bounds = FlxG.worldBounds;
+            camera.minScrollX = bounds.left;
+            camera.maxScrollX = bounds.right;
+            camera.minScrollY = bounds.top;
+            camera.maxScrollY = bounds.bottom;
+        }
+    }
+    
+    function detectPlayerRoom(player:Player)
+    {
+        var newRooms:Array<Room> = [];
+        FlxG.overlap(rooms, player, (room, _)->newRooms.push(room));
+        
+        if (newRooms.length == 0)
+            throw "no room found";
+        
+        var overlap = 0.0;
+        var roomRect = FlxRect.get();
+        var playerRect = player.getHitbox();
+        var newRoom = newRooms[0];
+        for (room in newRooms)
+        {
+            room.getHitbox(roomRect);
+            roomRect.union(playerRect);
+            if (overlap < roomRect.width * roomRect.height)
+            {
+                overlap = roomRect.width * roomRect.height;
+                newRoom = room;
+            }
+        }
+        roomRect.put();
+        playerRect.put();
+        
+        player.switchRoom(newRoom);
     }
     
     public function setWorldBounds()
@@ -269,6 +320,9 @@ class Section extends FlxGroup
     {
         if (avatar.state == Alive)
         {
+            if (rooms.length > 0 && avatar.currentRoom.overlaps(avatar) == false)
+                detectPlayerRoom(avatar);
+            
             // if (avatar.x > FlxG.worldBounds.width)
             //     avatar.state = Won;
             
