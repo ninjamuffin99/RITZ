@@ -162,6 +162,24 @@ abstract MiniTilemap(OgmoTilemap) to FlxTilemap
                         entity.y -= OLD_TILE_SIZE;
                 }
                 stampMapOf(this, entity, graphic, fg);
+            case 'spring':
+                var graphic = 0;
+                switch(entity.rotation)
+                {
+                    case 0:
+                        graphic = SPRING_U;
+                    case 90:
+                        graphic = SPRING_R;
+                        entity.x -= OLD_TILE_SIZE;
+                    case 180:
+                        graphic = SPRING_D;
+                        entity.x -= OLD_TILE_SIZE;
+                        entity.y -= OLD_TILE_SIZE;
+                    case -90 | 270:
+                        graphic = SPRING_L;
+                        entity.y -= OLD_TILE_SIZE;
+                }
+                stampMapOf(this, entity, graphic, fg);
             case "checkpoint":
                 var p = new FlxPoint(Math.floor(entity.x / OLD_TILE_SIZE), Math.floor(entity.y / OLD_TILE_SIZE));
                 checkpoints[entity.id] = p;
@@ -226,7 +244,11 @@ enum abstract EntityTile(Int) from Int to Int
     var CHEESE_X = 61;
     var RAT      = 62;
     var RAT_X    = 63;
-    var DOOR     = 64;
+    var SPRING_U = 64;
+    var SPRING_R = 65;
+    var SPRING_D = 66;
+    var SPRING_L = 67;
+    var DOOR     = 68;
     var PLATFORM = 35;
     var CLOUD    = 43;
 }

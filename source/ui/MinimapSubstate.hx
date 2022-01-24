@@ -128,7 +128,7 @@ class MapCursor extends flixel.FlxSprite
     {
         this.map = map;
         this.controls = controls;
-        super("assets/images/mapCursor.png");
+        super("assets/images/map_cursor.png");
         tileX = Math.floor(x / Minimap.OLD_TILE_SIZE);
         tileY = Math.floor(y / Minimap.OLD_TILE_SIZE);
         
@@ -150,14 +150,14 @@ class MapCursor extends flixel.FlxSprite
         final pressedY = (controls.DOWN  ? 1 : 0) - (controls.UP   ? 1 : 0);
         
         // Always Move if just pressed
-        if (pressedX != 0 && controls.LEFT_P || controls.RIGHT_P)
+        if (pressedX != 0 && (controls.LEFT_P || controls.RIGHT_P))
         {
             timer = FIRST_MOVE_RATE;
             moveX = pressedX;
         }
         
         // Always Move if just pressed
-        if (pressedY != 0 && controls.UP_P || controls.DOWN_P)
+        if (pressedY != 0 && (controls.UP_P || controls.DOWN_P))
         {
             timer = FIRST_MOVE_RATE;
             moveY = pressedY;

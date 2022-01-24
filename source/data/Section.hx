@@ -203,7 +203,7 @@ class Section extends FlxGroup
             case "checkpoint":
                 entity = grpCheckpoint.add(Checkpoint.fromOgmo(e));
                 // #if debug
-                // if (!minimap.checkpoints.exists(rat.ID))
+                // if (minimap != null && !minimap.checkpoints.exists(rat.ID))
                 // 	throw "Non-existent checkpoint id:" + rat.ID;
                 // #end
             case "musicTrigger":

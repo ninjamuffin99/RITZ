@@ -31,7 +31,13 @@ class AdventureState extends PlayState
         super.create();
         
         #if ENABLE_MAP
-        minimap = new Minimap(LEVEL_PATH);
+        switch(level)
+        {
+            case Single(path):
+                minimap = new Minimap(path);
+            case World(path) | WorldWithStart(path, _):
+                //Todo
+        }
         #end
     }
     

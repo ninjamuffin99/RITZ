@@ -86,7 +86,7 @@
 
 	<haxedef name="SKIP_TO_PLAYSTATE" if="debug" />
 	<!-- <haxedef name="ALLOW_MULTIPLAYER" /> -->
-	<!-- <haxedef name="ENABLE_MAP" unless="ALLOW_MULTIPLAYER" /> -->
+	<haxedef name="ENABLE_MAP" unless="ALLOW_MULTIPLAYER" />
 	
 	<section if="newgrounds">
 		<haxedef name="NG_LOGIN" />
