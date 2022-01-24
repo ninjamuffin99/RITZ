@@ -34,6 +34,21 @@ abstract OgmoTilemap(FlxTilemap) to FlxTilemap
 		}
 	}
 	
+	public function swapAllTiles(index:Int, replacement = 0, handler:(FlxPoint)->Void)
+	{
+		var indices = this.getTileInstances(index);
+		if (indices == null)
+			return;
+		
+		for (i in indices)
+		{
+			final coord = this.getTileCoordsByIndex(i, false);
+			handler(coord);
+			coord.put();
+			this.setTileByIndex(i, replacement);
+		}
+	}
+	
 	inline public function setTileCollisions(index:Int, allowCollisions:Int)
 	{
 		

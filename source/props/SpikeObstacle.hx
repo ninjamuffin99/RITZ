@@ -1,6 +1,9 @@
 package props;
 
+import ui.Minimap;
+import zero.utilities.OgmoUtils;
 import beat.BeatGame;
+import data.OgmoTilemap;
 
 import flixel.FlxBasic;
 import flixel.FlxG;
@@ -29,35 +32,9 @@ class SpikeObstacle extends Obstacle
         
         switch(rotation)
         {
-            case 0:
-                // offset.x = 6;
-                // width -= (offset.x * 2) + 1;
-                // offset.y = 3;
-                // height -= 4;
-            case 90:
-                this.x -= SIZE;
-                // offset.x = 3;
-                // width -= 4;
-                // offset.y = 6;
-                // height -= (offset.y * 2) + 1;
-            case 180|-180:
-                this.x -= SIZE;
-                this.y -= SIZE;
-                // offset.x = 6;
-                // width -= (offset.x * 2) + 1;
-                // offset.y = 4;
-                // height -= 3;
-            case -90 | 270:
-                this.y -= SIZE;
-                // offset.x = 4;
-                // width -= 3;
-                // offset.y = 6;
-                // height -= (offset.y * 2) + 1;
-            default:
-                throw 'unhandled angle: $rotation @($x,$y)';
+            case 0 | 90 | 180 | -180 | -90 | 270:// nothing
+            default: throw 'unhandled angle: $rotation @($x,$y)';
         }
-        this.x += offset.x;
-        this.y += offset.y;
     }
     
     inline function setKillMode():Void
@@ -167,9 +144,41 @@ class SpikeObstacle extends Obstacle
     }
     
     inline static public function overlap
-        ( spikes:FlxTypedGroup<SpikeObstacle>
-        , objectOrGroup
-        , ?notifyCallback:(SpikeObstacle, Dynamic)->Void
-        ):Bool
+    ( spikes:FlxTypedGroup<SpikeObstacle>
+    , objectOrGroup
+    , ?notifyCallback:(SpikeObstacle, Dynamic)->Void
+    ):Bool
+    {
         return Obstacle.overlap(cast spikes, objectOrGroup, cast notifyCallback);
+    }
+    
+    static public function fromOgmo(e:EntityData)
+    {
+        var x = e.x;
+        var y = e.y;
+        
+        switch(e.rotation)
+        {
+            case 0:
+            case 90:
+                x -= SIZE;
+            case 180|-180:
+                x -= SIZE;
+                y -= SIZE;
+            case -90 | 270:
+                y -= SIZE;
+            default:
+                throw 'unhandled angle: ${e.rotation} @(${e.x},${e.y})';
+        }
+        
+        return new SpikeObstacle(e.x, e.y, e.rotation);
+    }
+    
+    static public function forEachFromMap(map:OgmoTilemap, handler:SpikeObstacle->Void)
+    {
+        map.swapAllTiles(SPIKE_U, (p)->handler(new SpikeObstacle(p.x, p.y,   0)));
+        map.swapAllTiles(SPIKE_R, (p)->handler(new SpikeObstacle(p.x, p.y,  90)));
+        map.swapAllTiles(SPIKE_D, (p)->handler(new SpikeObstacle(p.x, p.y, 180)));
+        map.swapAllTiles(SPIKE_L, (p)->handler(new SpikeObstacle(p.x, p.y, -90)));
+    }
 }

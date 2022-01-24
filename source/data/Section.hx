@@ -115,6 +115,25 @@ class Section extends FlxGroup
         createOffsetEntityLayer(ogmo.level.get_entity_layer('FG entities'), offset, foreground);
         createOffsetEntityLayer(ogmo.level.get_entity_layer('Rooms'), offset, null);
         
+        SpikeObstacle.forEachFromMap(map, (spike)->
+        {
+            grpSpikes.add(spike);
+            foreground.add(spike);
+        });
+        
+        Spring.forEachFromMap(map, (spring)->
+        {
+            grpSprings.add(spring);
+            foreground.add(spring);
+        });
+        
+        Cheese.forEachFromMap(map, foreground, (cheese)->
+        {
+            grpCheese.add(cheese);
+            foreground.add(cheese);
+            totalCheese++;
+        });
+        
         cameraTiles = new CameraTilemap(ogmo);
     }
     
@@ -180,7 +199,7 @@ class Section extends FlxGroup
                     grpOneWayPlatforms.add(platform);
                 entity = platform;
             case "spike":
-                entity = grpSpikes.add(new SpikeObstacle(e.x, e.y, e.rotation));
+                entity = grpSpikes.add(SpikeObstacle.fromOgmo(e));
             case "checkpoint":
                 entity = grpCheckpoint.add(Checkpoint.fromOgmo(e));
                 // #if debug

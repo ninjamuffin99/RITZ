@@ -1,7 +1,9 @@
 package props;
 
 import beat.BeatGame;
-import flixel.util.FlxTimer;
+import data.OgmoTilemap;
+import ui.Minimap;
+
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -12,9 +14,12 @@ import flixel.math.FlxPoint;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 
 class Cheese extends FlxSprite
 {
+    static public var lastID = 0;
+    
     var followTarget:FlxObject = null;
     var follower:Cheese = null;
     var startPos = new FlxPoint();
@@ -23,12 +28,16 @@ class Cheese extends FlxSprite
     var flickerTimer = 0.0;
     var eatCallback:(Cheese)->Void;
     
-    public function new(x:Float, y:Float, id:Int, container:FlxGroup, collectible = false)
+    public function new(x:Float, y:Float, id:Int = -1, container:FlxGroup, collectible = false)
     {
         super(x, y);
         startPos.set(x, y);
         this.container = container;
-        ID = id;
+        
+        if (id == -1)
+            id = lastID + 1;
+        
+        lastID = ID = id;
 
         loadGraphic("assets/images/cheese.png", true, 32, 32);
         animation.add('idle', [0]);
@@ -238,6 +247,11 @@ class Cheese extends FlxSprite
         followTarget = null;
         follower = null;
         eatCallback = null;
+    }
+    
+    static public function forEachFromMap(map:OgmoTilemap, container:FlxGroup, handler:Cheese->Void)
+    {
+        map.swapAllTiles(CHEESE_X, (p)->handler(new Cheese(p.x, p.y, container, true)));
     }
 }
 
