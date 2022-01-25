@@ -99,7 +99,7 @@ class Controls extends FlxActionSet
     public var gamepadsAdded:Array<Int> = [];
     public var keyboardScheme = KeyboardScheme.None;
     
-    public var UP     (get, never):Bool; inline function get_UP     () return _left  .check();
+    public var UP     (get, never):Bool; inline function get_UP     () return _up    .check();
     public var LEFT   (get, never):Bool; inline function get_LEFT   () return _left  .check();
     public var RIGHT  (get, never):Bool; inline function get_RIGHT  () return _right .check();
     public var DOWN   (get, never):Bool; inline function get_DOWN   () return _down  .check();
