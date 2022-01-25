@@ -178,6 +178,10 @@ class Section extends FlxGroup
             }
             case "spider":
                 entity = grpEnemies.add(new Enemy(e));
+            case "room":
+                if (layer != null)
+                    throw "cannot add room entity to a layer";
+                rooms.add(Room.fromOgmo(e));
             case "coins" | "cheese":
                 final cheese = grpCheese.add(new Cheese(e.x, e.y, e.id, layer, true));
                 totalCheese++;
@@ -246,7 +250,12 @@ class Section extends FlxGroup
         FlxG.overlap(rooms, player, (room, _)->newRooms.push(room));
         
         if (newRooms.length == 0)
-            throw "no room found";
+        {
+            if (player.currentRoom == null)
+                throw "no room found";
+            
+            return;
+        }
         
         var overlap = 0.0;
         var roomRect = FlxRect.get();
