@@ -39,6 +39,7 @@ class Section extends FlxGroup
     public var grpCheese         (default, null) = new FlxTypedGroup<Cheese         >();
     public var grpHooks          (default, null) = new FlxTypedGroup<Hook           >();
     public var grpSprings        (default, null) = new FlxTypedGroup<Spring         >();
+    public var grpBalloons       (default, null) = new FlxTypedGroup<Balloon        >();
     public var grpPlatforms      (default, null) = new FlxTypedGroup<TriggerPlatform>();
     public var grpOneWayPlatforms(default, null) = new FlxTypedGroup<Platform       >();
     public var grpSpikes         (default, null) = new FlxTypedGroup<SpikeObstacle  >();
@@ -133,6 +134,12 @@ class Section extends FlxGroup
             totalCheese++;
         });
         
+        Balloon.forEachFromMap(map, (balloon)->
+        {
+            grpBalloons.add(balloon);
+            foreground.add(balloon);
+        });
+        
         cameraTiles = new CameraTilemap(ogmo);
     }
     
@@ -219,6 +226,8 @@ class Section extends FlxGroup
                 entity = grpPowerUps.add(PowerUp.fromOgmo(e));
             case 'spring':
                 entity = grpSprings.add(Spring.fromOgmo(e));
+            case 'balloon':
+                entity = grpBalloons.add(Balloon.fromOgmo(e));
             case unhandled:
                 throw 'Unhandled token:$unhandled';
         }
@@ -374,6 +383,14 @@ class Section extends FlxGroup
                 {
                     avatar.y = spring.y - avatar.height;
                     avatar.bounce(spring);
+                }
+            );
+            
+            FlxG.overlap(grpBalloons, avatar, 
+                (balloon:Balloon, _)->
+                {
+                    avatar.bounce(balloon);
+                    balloon.pop();
                 }
             );
             

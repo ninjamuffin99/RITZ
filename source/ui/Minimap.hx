@@ -179,6 +179,8 @@ abstract MiniTilemap(OgmoTilemap) to FlxTilemap
                         entity.y -= OLD_TILE_SIZE;
                 }
                 stampMapOf(this, entity, graphic, fg);
+            case "balloon":
+                stampMapOf(this, entity, BALLOON, fg);
             case "checkpoint":
                 var p = new FlxPoint(Math.floor(entity.x / OLD_TILE_SIZE), Math.floor(entity.y / OLD_TILE_SIZE));
                 checkpoints[entity.id] = p;
@@ -194,7 +196,10 @@ abstract MiniTilemap(OgmoTilemap) to FlxTilemap
                     stampAllMapOf(this, entity, CLOUD, fg);
             case 'locked' | 'locked_tall':
                 stampAllMapOf(this, entity, DOOR, fg);
-            case "player" | "spider" | "musicTrigger" | "secretTrigger" | "hook"://unusued
+            case "player" | "debugPlayer" | "spider"
+                | "musicTrigger" | "secretTrigger"
+                | "hook" | "powerUp":
+                //unusued
             case type: throw 'Unhandled entity type: $type';
         }
     }
@@ -248,6 +253,7 @@ enum abstract EntityTile(Int) from Int to Int
     var SPRING_D = 66;
     var SPRING_L = 67;
     var DOOR     = 68;
+    var BALLOON  = 70;
     var PLATFORM = 35;
     var CLOUD    = 43;
 }
