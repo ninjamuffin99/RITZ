@@ -7,8 +7,6 @@ import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.math.FlxVector;
 
-import zero.utilities.OgmoUtils;
-
 class MovingPlatform extends TriggerPlatform
 {
     inline static var TRANSFER_DELAY = 0.2;

@@ -7,8 +7,6 @@ import flixel.FlxG;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 
-import zero.utilities.OgmoUtils;
-
 class Lock extends flixel.FlxSprite
 {
     public var amountNeeded:Int = 0;

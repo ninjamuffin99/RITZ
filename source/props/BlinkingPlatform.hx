@@ -1,12 +1,11 @@
 package props;
 
 import beat.BeatGame;
+import props.Platform;
+
 import flixel.tweens.FlxEase;
 import flixel.graphics.FlxGraphic;
 import flixel.FlxG;
-import props.Platform;
-
-import zero.utilities.OgmoUtils;
 
 typedef BlinkingPlatformValues = TriggerPlatformValues & 
 {

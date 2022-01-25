@@ -6,8 +6,6 @@ import openfl.geom.Rectangle;
 import flixel.FlxG;
 import flixel.FlxObject;
 
-import zero.utilities.OgmoUtils;
-
 @:noCompletion
 typedef PlatformValues = {
     ?graphic       :String,

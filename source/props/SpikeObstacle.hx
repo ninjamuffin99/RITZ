@@ -1,9 +1,8 @@
 package props;
 
-import ui.Minimap;
-import zero.utilities.OgmoUtils;
 import beat.BeatGame;
 import data.OgmoTilemap;
+import ui.Minimap;
 
 import flixel.FlxBasic;
 import flixel.FlxG;

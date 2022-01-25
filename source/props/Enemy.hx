@@ -1,15 +1,13 @@
 package props;
 
-import flixel.effects.FlxFlicker;
 import data.PlayerSettings;
 
-import zero.utilities.OgmoUtils;
-
+import flixel.FlxObject;
+import flixel.FlxSprite;
+import flixel.effects.FlxFlicker;
 import flixel.math.FlxPoint;
 import flixel.util.FlxPath;
-import flixel.FlxObject;
 import flixel.util.FlxColor;
-import flixel.FlxSprite;
 
 class Enemy extends FlxSprite implements Bouncer
 {

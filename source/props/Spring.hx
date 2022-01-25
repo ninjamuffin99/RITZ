@@ -5,8 +5,6 @@ import ui.Minimap;
 
 import flixel.FlxSprite;
 
-import zero.utilities.OgmoUtils;
-
 class Spring extends FlxSprite implements Bouncer
 {
     public var bumpMin(default, null) = 1.0;

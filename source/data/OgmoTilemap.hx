@@ -6,7 +6,6 @@ import flixel.math.FlxPoint;
 import flixel.tile.FlxTilemap;
 
 import zero.flixel.utilities.FlxOgmoUtils;
-import zero.utilities.OgmoUtils;
 
 using zero.utilities.OgmoUtils;
 using zero.flixel.utilities.FlxOgmoUtils;

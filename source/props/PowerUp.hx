@@ -1,9 +1,8 @@
 package props;
 
 import props.Player;
-import flixel.FlxSprite;
 
-import zero.utilities.OgmoUtils;
+import flixel.FlxSprite;
 
 enum abstract PowerUpType(String)
 {

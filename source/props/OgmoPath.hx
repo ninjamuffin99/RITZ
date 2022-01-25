@@ -11,8 +11,6 @@ import flixel.math.FlxRect;
 import flixel.math.FlxVector;
 import flixel.util.FlxPath;
 
-import zero.utilities.OgmoUtils;
-
 typedef PathData =
 {
     speed:Float,

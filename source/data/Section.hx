@@ -17,7 +17,6 @@ import flixel.FlxSprite;
 import flixel.math.FlxPoint;
 import flixel.group.FlxGroup;
 
-import zero.utilities.OgmoUtils;
 import zero.flixel.utilities.FlxOgmoUtils;
 
 using zero.utilities.OgmoUtils;

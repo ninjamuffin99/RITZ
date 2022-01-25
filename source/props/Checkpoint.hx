@@ -6,8 +6,6 @@ import beat.BeatGame;
 import flixel.util.FlxColor;
 import flixel.FlxSprite;
 
-import zero.utilities.OgmoUtils;
-
 typedef OgmoValues = { autoTalk:Bool, cameraOffsetX:Float };
 
 class Checkpoint extends FlxSprite
