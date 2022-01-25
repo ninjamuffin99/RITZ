@@ -122,7 +122,7 @@ abstract MiniTilemap(OgmoTilemap) to FlxTilemap
         for (tileset in ogmo.project.tilesets)
             if (tileset.label == "Tiles")
             {
-                tileset.path = "../../images/minimap.png";
+                tileset.path = "../../images/minimap8.png";
                 if (tileset.tileWidth != OLD_TILE_SIZE || tileset.tileHeight != OLD_TILE_SIZE)
                     throw 'Unexpected tile size in ogmo file.'
                         + ' expected:($OLD_TILE_SIZE x $OLD_TILE_SIZE)'
