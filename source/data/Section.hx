@@ -159,10 +159,9 @@ class Section extends FlxGroup
         var entity:FlxBasic = null;
         switch(e.name)
         {
-            case "room":
-                if (layer != null)
-                    throw "cannot add room entity to a layer";
-                rooms.add(Room.fromOgmo(e));
+            #if !debug
+            case "debugPlayer":
+            #end
             case "player"|"debugPlayer":
             {
                 if (removeSpawns)
