@@ -14,7 +14,7 @@ class Tail extends FlxSprite
 {
     inline static var TILE_SIZE = Player.TILE_SIZE;
     inline static var TILE_SIZE_HALF = Player.TILE_SIZE >> 1;
-    inline static var LENGTH = 64;
+    inline static var LENGTH = 32*3;
     inline static var WHIP_TIME = 0.15;
     
     public var state(default, null):State = Idle;

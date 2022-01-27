@@ -137,8 +137,7 @@ class Player extends FlxSprite
         animation.add('skid', [6]);
         animation.add('falling', [7]);
         animation.add('fucking died lmao', [8, 9, 10, 11, 12], 12);
-        animation.add('whipStart', [13, 14, 15, 16], 18, false);
-        animation.add('whip', [16]);
+        animation.add('whip', [13, 14, 15, 16], 18, false);
         animation.add('hang_intro', [17]);
         animation.add('hang_loop', [17]);
 
@@ -400,17 +399,7 @@ class Player extends FlxSprite
         
         if (!whipping)
         {
-            if (anim == "whipStart")
-            {
-                whipping = true;
-                if (animation.curAnim.finished)
-                {
-                    anim = "whip";
-                    tail.whip(controls.LEFT != controls.RIGHT ? controls.RIGHT : flipX);
-                    updateTailPosition();
-                }
-            }
-            else if (controls.TAIL_P && abilities.canTailWhip)
+            if (controls.TAIL_P && abilities.canTailWhip)
             {
                 if (!onGround)
                 {
@@ -419,11 +408,13 @@ class Player extends FlxSprite
                     apexReached = true;
                 }
                 maxVelocity.x = WHIPPING_MAXSPEED;
-                anim = 'whipStart';
+                anim = 'whip';
+                tail.whip(controls.LEFT != controls.RIGHT ? controls.RIGHT : flipX);
+                updateTailPosition();
                 whipping = true;
             }
         }
-        else
+        else // whipping
         {
             if (tail.state == Extended)
             {
