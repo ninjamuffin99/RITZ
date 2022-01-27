@@ -40,15 +40,18 @@ class Enemy extends FlxSprite implements Bouncer
         setFacingFlip(FlxObject.RIGHT, true, false);
 
         path = OgmoPath.fromEntity(data);
-        path.autoCenter = false;
-        
-        for (n in path.nodes)
+        if (path != null)
         {
-            n.x += x - data.x;
-            n.y += y - data.y;
+            path.autoCenter = false;
+            
+            for (n in path.nodes)
+            {
+                n.x += x - data.x;
+                n.y += y - data.y;
+            }
+            
+            path.restart();
         }
-        
-        path.restart();
     }
 
     override public function update(elapsed:Float)
@@ -81,8 +84,11 @@ class Enemy extends FlxSprite implements Bouncer
     {
         solid = false;
         spawnTimer = 5.0;
-        path.active = false;
         velocity.set(0, 0);
+        
+        if (path != null)
+            path.active = false;
+        
         FlxFlicker.flicker(this, RESPAWN_BLINK_TIME, RESPAWN_BLINK_FREQ, false, true, (_)->onDeathComplete());
     }
     
@@ -96,6 +102,7 @@ class Enemy extends FlxSprite implements Bouncer
         spawnTimer = 0;
         visible = true;
         solid = true;
-        path.restart();
+        if (path != null)
+            path.restart();
     }
 }
