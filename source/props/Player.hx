@@ -45,7 +45,7 @@ class Player extends FlxSprite
     static inline var GRAVITY = 2 * MIN_JUMP / MIN_APEX_TIME / MIN_APEX_TIME;
     static var airJumpSpeed(default, never) = -Math.sqrt(2 * GRAVITY * AIR_JUMP);
     
-    public inline static var JUMP_DISTANCE = TILE_SIZE * 4.25;
+    public inline static var JUMP_DISTANCE = TILE_SIZE * 6.25;
     public inline static var GROUND_SLOW_DOWN_TIME = 0.25;
     public inline static var GROUND_SPEED_UP_TIME  = 0.2;
     public inline static var AIR_SLOW_DOWN_TIME    = 0.2;
