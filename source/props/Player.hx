@@ -42,8 +42,8 @@ class Player extends FlxSprite
     public static inline var AIR_JUMP = TILE_SIZE * 2.0;
     
     static inline var MIN_APEX_TIME = 2 * MAX_APEX_TIME * MIN_JUMP / (MIN_JUMP + MAX_JUMP);
-    static inline var GRAVITY = 2 * MIN_JUMP / MIN_APEX_TIME / MIN_APEX_TIME;
-    static var airJumpSpeed(default, never) = -Math.sqrt(2 * GRAVITY * AIR_JUMP);
+    static inline var DEFAULT_GRAVITY = 2 * MIN_JUMP / MIN_APEX_TIME / MIN_APEX_TIME;
+    static final airJumpSpeed = -Math.sqrt(2 * DEFAULT_GRAVITY * AIR_JUMP);
     
     public inline static var JUMP_DISTANCE = TILE_SIZE * 6.25;
     public inline static var GROUND_SLOW_DOWN_TIME = 0.25;
@@ -51,6 +51,7 @@ class Player extends FlxSprite
     public inline static var AIR_SLOW_DOWN_TIME    = 0.2;
     public inline static var AIR_SPEED_UP_TIME     = 0.36;
     public inline static var AIRHOP_SPEED_UP_TIME  = 0.5;
+    public inline static var DEFAULT_FALL_SPEED = 2 * MIN_JUMP / MIN_APEX_TIME;
     
     inline static var MAXSPEED = JUMP_DISTANCE / MAX_APEX_TIME / 2;
     inline static var GROUND_ACCEL = MAXSPEED / GROUND_SPEED_UP_TIME;
@@ -84,7 +85,6 @@ class Player extends FlxSprite
     var coyoteTimer:Float = 0;
     var airHopped:Bool = false;
     var jumped:Bool = false;
-    var fallVelocity:Float = 0;
     var jumpVelocity:Float = 0;
     var jumpTimer:Float = 0;
     var jumpMaxTime:Float = 0;
@@ -152,18 +152,16 @@ class Player extends FlxSprite
         setFacingFlip(FlxObject.RIGHT, true, false);
         
         drag.x = AIR_DRAG;
-        acceleration.y = GRAVITY;
+        acceleration.y = DEFAULT_GRAVITY;
         calcJumpVars(MIN_JUMP, MAX_JUMP);
-        fallVelocity = -jumpVelocity;
         maxVelocity.x = MAXSPEED;
-        maxVelocity.y = fallVelocity;
+        maxVelocity.y = -jumpVelocity;
         
         #if debug
         FlxG.watch.add(maxVelocity, "y", "Player.maxVelocity.y");
         FlxG.watch.add(velocity, "y", "Player.velocity.y");
         FlxG.watch.add(acceleration, "y", "Player.acceleration.y");
         FlxG.watch.add(this, "jumpVelocity");
-        FlxG.watch.add(this, "fallVelocity");
         FlxG.watch.add(this, "jumpTimer");
         FlxG.watch.add(this, "jumpMaxTime");
         #end
@@ -206,7 +204,7 @@ class Player extends FlxSprite
         platform = null;
         // state = Respawning;
         state = Alive;
-        acceleration.y = GRAVITY;
+        acceleration.y = DEFAULT_GRAVITY;
         onRespawn.dispatch();
     }
 
@@ -381,7 +379,7 @@ class Player extends FlxSprite
         //     if (controls.JUMP_P)
         //     {
         //         tail.setState(Idle);
-        //         acceleration.y = GRAVITY;
+        //         acceleration.y = DEFAULT_GRAVITY;
         //         maxVelocity.x = MAXSPEED;
         //         startJump();
         //         animation.play("jumping");
@@ -390,7 +388,10 @@ class Player extends FlxSprite
         // }
         
         if (isFalling)
-            maxVelocity.y = fallVelocity;
+        {
+            acceleration.y = DEFAULT_GRAVITY;
+            maxVelocity.y = DEFAULT_FALL_SPEED;
+        }
         
         var anim:String = animation.curAnim.name;
         var whipping = tail.isWhipping();
@@ -418,7 +419,7 @@ class Player extends FlxSprite
         {
             if (tail.state == Extended)
             {
-                acceleration.y = GRAVITY;
+                acceleration.y = DEFAULT_GRAVITY;
                 maxVelocity.x = MAXSPEED;
             }
         }
@@ -530,9 +531,9 @@ class Player extends FlxSprite
     function setPlatforming()
     {
         action = Platforming;
-        acceleration.y = GRAVITY;
+        acceleration.y = DEFAULT_GRAVITY;
         maxVelocity.x = MAXSPEED;
-        maxVelocity.y = fallVelocity;
+        maxVelocity.y = DEFAULT_FALL_SPEED;
         jumped = false;
         apexReached = false;
         jumpBoost = 0;
@@ -921,7 +922,7 @@ typedef OgmoDebugAbilities =
 
 class PlayerAbilities
 {
-    public var canTailWhip(default, null) = false;
+    public var canTailWhip(default, null) = true;
     public var canAirHop(default, null) = false;
     public var canLateHop(default, null) = false;
     
