@@ -429,6 +429,7 @@ class Section extends FlxGroup
                             }
                         );
                     }
+                    
                     if (!tail.isHooked() && tail.isWhipping())
                     {
                         tail.checkMapCollision(map);

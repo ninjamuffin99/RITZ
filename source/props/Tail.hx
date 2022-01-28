@@ -1,6 +1,7 @@
 package props;
 
 import flixel.FlxObject;
+import flixel.FlxG;
 import flixel.FlxSprite;
 import openfl.geom.Rectangle;
 import flixel.math.FlxPoint;
@@ -22,6 +23,7 @@ class Tail extends FlxSprite
     public var whipRight(default, null) = true;
     
     public var length(default, null) = 0.0;
+    public var currentMax(default, null):Float = LENGTH;
     public var endX(get, never):Float;
     public var endY(get, never):Float;
     var timer = 0.0;
@@ -34,6 +36,8 @@ class Tail extends FlxSprite
         visible = false;
         origin.set(1, 1);
         offset.set(1, 1);
+        
+        FlxG.watch.add(this, "length", "tail.length");
     }
     
     public function checkMapCollision(map:FlxTilemap):Void
@@ -56,16 +60,26 @@ class Tail extends FlxSprite
                     tileX--;
             }
             
-            final buffer = 8;
+            final buffer = 2;//8;
             if (whipRight)
             {
                 final hitX = map.x + tileX * TILE_SIZE;
-                setLength(hitX - x + buffer);
+                final newLen = hitX - x + buffer;
+                if (newLen <= LENGTH)
+                {
+                    currentMax = newLen;
+                    setLength(length);
+                }
             }
             else
             {
                 final hitX = map.x + (tileX + 1) * TILE_SIZE;
-                setLength(x + length - hitX + buffer);
+                final newLen = x + length - hitX + buffer;
+                if (newLen <= LENGTH)
+                {
+                    currentMax = newLen;
+                    setLength(length);
+                }
             }
         }
     }
@@ -95,7 +109,7 @@ class Tail extends FlxSprite
                     setState(Idle);
                 }
                 else
-                    setLength(LENGTH * FlxEase.quintOut((WHIP_TIME - timer) / WHIP_TIME));
+                    setLength(currentMax * FlxEase.quintOut((WHIP_TIME - timer) / WHIP_TIME));
             case Idle:
             case Extended:
                 if (!holdTail)
@@ -110,6 +124,7 @@ class Tail extends FlxSprite
         if (state == Idle)
         {
             whipRight = toRight;
+            currentMax = LENGTH;
             setState(Extending);
         }
     }
@@ -154,6 +169,14 @@ class Tail extends FlxSprite
     {
         // if (value == 0)
         //     return length = width = 0;
+        
+        #if debug
+        if (value > LENGTH)
+            throw "HE'S PACKIN HEAT!";
+        #end
+        
+        if (value > currentMax)
+            value = currentMax;
         
         if (!whipRight)
             x += length - value;
