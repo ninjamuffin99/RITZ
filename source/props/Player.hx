@@ -525,7 +525,9 @@ class Player extends FlxSprite
             }
         }
         
-        animation.play(anim);
+        if (animation.name != anim)
+            // trace('from: ${animation.name} to: $anim');
+            animation.play(anim);
     }
     
     function setPlatforming()
