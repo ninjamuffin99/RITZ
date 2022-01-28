@@ -13,6 +13,8 @@ import flixel.util.FlxColor;
 @:allow(props.Player)
 class Tail extends FlxSprite
 {
+    inline static var INFINITE_JUMP_EXTEND = false;
+    
     inline static var TILE_SIZE = Player.TILE_SIZE;
     inline static var TILE_SIZE_HALF = Player.TILE_SIZE >> 1;
     inline static var LENGTH = 32*3;
@@ -112,7 +114,7 @@ class Tail extends FlxSprite
                     setLength(currentMax * FlxEase.quintOut((WHIP_TIME - timer) / WHIP_TIME));
             case Idle:
             case Extended:
-                if (!holdTail)
+                if (!holdTail || INFINITE_JUMP_EXTEND == false)
                     setState(Retracting);
             case Hooking(x, y):
                 drawTo(x, y);
