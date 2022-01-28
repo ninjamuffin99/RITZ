@@ -31,7 +31,7 @@ class NGio
 		
 		NG.createAndCheckSession(api, #if NG_DEBUG true #else false #end, sessionId);
 		
-		NG.core.verbose = true;
+		// NG.core.verbose = true;
 		// Set the encryption cipher/format to RC4/Base64. AES128 and Hex are not implemented yet
 		NG.core.initEncryption(encKey);// Found in you NG project view
 		
