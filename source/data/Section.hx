@@ -490,9 +490,12 @@ class Section extends FlxGroup
         player.abilities.addPowerUp(powerUp.type);
         player.state = Talking;
         FlxFlicker.flicker(powerUp, 1, 0.04, false);
+        var musicVol = FlxG.sound.music.volume;
+        FlxG.sound.music.fadeOut(0.25, 0.15);
         FlxG.sound.play('assets/sounds/allcheesesunlocked.mp3', 0.6).onComplete
         =   ()->
             {
+                FlxG.sound.music.fadeIn(0.25, musicVol);
                 powerUp.exists = false;
                 player.state = Alive;
             };
