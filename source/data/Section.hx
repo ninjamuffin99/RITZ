@@ -434,6 +434,9 @@ class Section extends FlxGroup
                     {
                         tail.checkMapCollision(map);
                         
+                        if (tail.state == Extending)
+                            FlxG.overlap(tail, grpEnemies, (_, enemy)->enemy.die());
+                        
                         var overlap:Hook = null;
                         
                         FlxG.overlap(tail, grpHooks, (_, hook)->overlap = hook);

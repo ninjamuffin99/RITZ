@@ -20,7 +20,7 @@ class Tail extends FlxSprite
     inline static var LENGTH = 32*3;
     inline static var WHIP_TIME = 0.15;
     
-    public var state(default, null):State = Idle;
+    public var state(default, null):TailState = Idle;
     public var holdTail = false;
     public var whipRight(default, null) = true;
     
@@ -140,7 +140,7 @@ class Tail extends FlxSprite
         angle = line.degrees;
     }
     
-    function setState(toState:State)
+    function setState(toState:TailState)
     {
         final fromState = this.state;
         if (toState == fromState)
@@ -209,7 +209,8 @@ class Tail extends FlxSprite
     inline public function isWhipping() return state.match(Extending | Extended | Retracting);
     inline public function isHooked() return state.match(Hooking(_, _));
 }
-private enum State
+
+enum TailState
 {
     Idle;
     Extending;
