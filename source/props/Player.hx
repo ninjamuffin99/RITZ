@@ -924,7 +924,7 @@ typedef OgmoDebugAbilities =
 
 class PlayerAbilities
 {
-    public var canTailWhip(default, null) = true;
+    public var canTailWhip(default, null) = false;
     public var canAirHop(default, null) = false;
     public var canLateHop(default, null) = false;
     
