@@ -1,13 +1,15 @@
 package states;
 
-import haxe.io.Path;
-import haxe.Json;
-import openfl.utils.Assets;
 import ui.MinimapSubstate;
 import ui.Minimap;
 import props.Cheese;
 import props.Checkpoint;
 import props.Player;
+
+import openfl.utils.Assets;
+
+import haxe.Json;
+import haxe.io.Path;
 
 class AdventureState extends PlayState
 {
@@ -15,12 +17,12 @@ class AdventureState extends PlayState
     
     #if debug
     static var debugLevel:LevelType =
-        Single("assets/data/ogmo/levels/ideas/giant.json")
+        // Single("assets/data/ogmo/levels/ideas/giant.json")
         // Single("assets/data/ogmo/levels/ideas/springs.json")
         // Single("assets/data/ogmo/levels/old/dumbassLevel.json")
         // Single("assets/data/ogmo/levels/old/normassLevel.json")
         // Single("assets/data/ogmo/levels/old/smartassLevel.json")
-        // null
+        null
         ;
     #end
     
@@ -31,13 +33,7 @@ class AdventureState extends PlayState
         super.create();
         
         #if ENABLE_MAP
-        switch(level)
-        {
-            case Single(path):
-                minimap = new Minimap(path);
-            case World(path) | WorldWithStart(path, _):
-                //Todo
-        }
+        minimap = new Minimap(level);
         #end
     }
     
@@ -91,7 +87,7 @@ class AdventureState extends PlayState
             minimap.updateSeen(player.playCamera);
             
             if (!pressedMap && player.controls.MAP)
-                openSubState(new MinimapSubstate(minimap, player, warpTo));
+                openSubState(new MinimapSubstate(minimap, player, warpToCheckpointAt));
         }
     }
     
@@ -112,7 +108,7 @@ class AdventureState extends PlayState
     }
 }
 
-private enum LevelType
+enum LevelType
 {
     World(ogmoPath:String);
     WorldWithStart(ogmoPath:String, startLevel:String);

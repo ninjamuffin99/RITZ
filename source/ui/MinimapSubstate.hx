@@ -32,17 +32,21 @@ class MinimapSubstate extends flixel.FlxSubState
         controls = player.controls;
         super();
         
-        var bg = new FlxSprite().makeGraphic(FlxG.camera.width, FlxG.camera.height, 0xFFaad6e6);
-        bg.scrollFactor.set();
+        var bounds = map.bounds;
+        var bg = new FlxSprite(bounds.x, bounds.y);
+        bg.makeGraphic(1, 1, 0xFFaad6e6);
+        bg.setGraphicSize(Std.int(bounds.width), Std.int(bounds.height));
+        // bg.centerOrigin();
+        // bg.offset.set(0, 0);
+        bg.origin.set(0, 0);
+        
         add(bg);
         add(map);
         add(cursor = new MapCursor(player.x, player.y, map, controls));
         
         mapCamera = new FlxCamera(0, 0, FlxG.camera.width, FlxG.camera.height, FlxG.camera.zoom);
-        mapCamera.bgColor = 0xFFaad6e6;
-        mapCamera.minScrollX = mapCamera.minScrollY = 0;
-        mapCamera.maxScrollX = map.width;
-        mapCamera.maxScrollY = map.height;
+        mapCamera.bgColor = 0xFF222034;
+        mapCamera.setScrollBoundsRect(bounds.x, bounds.y, bounds.width, bounds.height);
         mapCamera.follow(cursor, TOPDOWN);
         FlxG.cameras.add(mapCamera, false);
         cameras = [mapCamera];
@@ -74,7 +78,11 @@ class MinimapSubstate extends flixel.FlxSubState
                         ( "Warp to this checkpoint?\n(Lose all trailing cheese)"
                         ,   function onYes()
                             {
-                                travelCallback(cursor.tileX * Minimap.OLD_TILE_SIZE, cursor.tileY * Minimap.OLD_TILE_SIZE);
+                                travelCallback
+                                (
+                                    (cursor.tileX + 0.5) * Minimap.OLD_TILE_SIZE,
+                                    (cursor.tileY + 0.5) * Minimap.OLD_TILE_SIZE
+                                );
                                 close();
                             }
                         ,   function onNo()

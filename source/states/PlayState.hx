@@ -323,14 +323,37 @@ class PlayState extends flixel.FlxState
 		}
 	}
 	
-	function warpToCheckPoint(checkpoint:Checkpoint):Void
+	function warpToCheckpoint(checkpoint:Checkpoint):Void
 	{
 		curCheckpoint = checkpoint;
 		avatars.forEach(avatar->avatar.die());
 	}
-	function warpTo(x:Float, y:Float):Void
+	
+	function warpToCheckpointAt(x:Float, y:Float):Void
 	{
-		//Todo
+		var p = FlxPoint.get(x, y);
+		var toCheckpoint:Checkpoint = null;
+		for (section in sections.members)
+		{
+			if (section.containsPoint(p))
+			{
+				for (checkpoint in section.grpCheckpoint.members)
+				{
+					if (checkpoint.overlapsPoint(p))
+					{
+						toCheckpoint = checkpoint;
+						break;
+					}
+				}
+				break;
+			}
+		}
+		p.put();
+		
+		if (toCheckpoint == null)
+			throw "No checkpoint found at x, y";
+		
+		warpToCheckpoint(toCheckpoint);
 	}
 	
 	public function checkDoor (lock:Lock, avatar:Player)

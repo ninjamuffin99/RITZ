@@ -506,7 +506,10 @@ class Section extends FlxGroup
     
     public function contains(x:Float, y:Float)
     {
-        return containsPoint(FlxPoint.weak(x, y));
+        return x >= this.x
+            && y >= this.y
+            && x - this.x < width
+            && y - this.y < height;
     }
     
     public function overlaps(object:FlxObject)
@@ -522,7 +525,9 @@ class Section extends FlxGroup
     
     inline public function containsPoint(p:FlxPoint)
     {
-        return map.overlapsPoint(p);
+        var result = contains(p.x, p.y);
+        p.putWeak();
+        return result;
     }
     
     public function hasAvatar(avatar:Player)
