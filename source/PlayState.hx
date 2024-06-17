@@ -153,12 +153,12 @@ class PlayState extends FlxState
 					platform.updateHitbox();
 				}
 				
-				platform.path.setProperties(e.values.speed, FlxPath.LOOP_FORWARD);
+				platform.path.setProperties(e.values.speed, LOOP_FORWARD);
 				platform.visible = e.values.visible;
 
 				if (e.values.onewayplatform)
 				{
-					platform.allowCollisions = FlxObject.UP;
+					platform.allowCollisions = UP;
 				}
 				
 				var lastStringbit:String = Std.string(e.values.color).substring(1, 7);
@@ -327,7 +327,7 @@ class PlayState extends FlxState
 			}
 		}
 
-		if (player.justTouched(FlxObject.FLOOR))
+		if (player.justTouched(FLOOR))
 			add(new Dust(player.x, player.y));
 		
 		dialogueBubble.visible = false;

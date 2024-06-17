@@ -22,7 +22,7 @@ class MenuState extends FlxState
         title = new FlxSprite();
         title.frames = tex;
         title.animation.add('baby', [0]);
-        title.animation.add('ritz', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 12, false);
+        title.animation.add('ritz', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 12, false);
         title.animation.play('baby');
         add(title);
 

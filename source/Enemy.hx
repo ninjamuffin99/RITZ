@@ -13,18 +13,18 @@ class Enemy extends FlxSprite
         animation.add('idle', [0, 1, 2, 3], 12);
         animation.add('walk', [4, 5, 6, 7], 12);
 
-        setFacingFlip(FlxObject.LEFT, false, false);
-        setFacingFlip(FlxObject.RIGHT, true, false);
+        setFacingFlip(LEFT, false, false);
+        setFacingFlip(RIGHT, true, false);
 
         path = p;
-        path.autoCenter = false;
+        path.centerMode = TOP_LEFT;
         
         for (n in path.nodes)
         {
             n.y += 14;
         }
 
-        path.start(null, speed, FlxPath.LOOP_FORWARD);
+        path.start(null, speed, LOOP_FORWARD);
 
 
         height -= 14;
@@ -41,9 +41,9 @@ class Enemy extends FlxSprite
             animation.play('walk');
 
             if (velocity.x > 0)
-                facing = FlxObject.RIGHT;
+                facing = RIGHT;
             else
-                facing = FlxObject.LEFT;
+                facing = LEFT;
 
         }
         else

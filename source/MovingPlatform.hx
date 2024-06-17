@@ -12,8 +12,8 @@ class MovingPlatform extends FlxSprite
         super(x, y);
 
         path = p;
-        path.autoCenter = false;
-        path.start(null, 50, FlxPath.LOOP_FORWARD);
+        path.centerMode = TOP_LEFT;
+        path.start(null, 50, LOOP_FORWARD);
         immovable = true;
     }
 }

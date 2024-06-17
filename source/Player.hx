@@ -48,8 +48,8 @@ class Player extends FlxSprite
         width -= 12;
         offset.x = 6;
 
-        setFacingFlip(FlxObject.LEFT, false, false);
-        setFacingFlip(FlxObject.RIGHT, true, false);
+        setFacingFlip(LEFT, false, false);
+        setFacingFlip(RIGHT, true, false);
 
         drag.x = 700;
         maxVelocity.x = 230;
@@ -172,7 +172,7 @@ class Player extends FlxSprite
 
             var hoverMulti:Float = 1;
 
-            if (!isTouching(FlxObject.FLOOR) && doubleJumped && velocity.y > 0)
+            if (!isTouching(FLOOR) && doubleJumped && velocity.y > 0)
                 hoverMulti = 0.3;
 
             if (hovering)
@@ -180,12 +180,12 @@ class Player extends FlxSprite
             
             if (left)
             {
-                facing = FlxObject.LEFT;
+                facing = LEFT;
                 acceleration.x = -speed * hoverMulti;
             }
             if (right)
             {
-                facing = FlxObject.RIGHT;
+                facing = RIGHT;
                 acceleration.x = speed * hoverMulti;
             }
         }
@@ -197,7 +197,7 @@ class Player extends FlxSprite
 
         //wallJumping();      
         
-        if (isTouching(FlxObject.FLOOR))
+        if (isTouching(FLOOR))
         {
             doubleJumped = false;
             jumped = false;
@@ -219,7 +219,7 @@ class Player extends FlxSprite
         {
             animation.play('jumping');
 
-            if (isTouching(FlxObject.CEILING))  
+            if (isTouching(CEILING))  
                 apexReached = true;
 
             if (jump && !apexReached && canJump)
@@ -301,7 +301,7 @@ class Player extends FlxSprite
 
     private function wallJumping():Void
     {
-        if (isTouching(FlxObject.WALL))
+        if (isTouching(WALL))
         {
             
             if (jump && down)
