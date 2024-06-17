@@ -1,14 +1,9 @@
 package;
 
+import flixel.FlxG;
 import flixel.util.FlxSignal;
 import io.newgrounds.NG;
-import io.newgrounds.objects.Medal;
-import io.newgrounds.objects.Score;
-import io.newgrounds.objects.ScoreBoard;
-import io.newgrounds.components.ScoreBoardComponent.Period;
 import openfl.display.Stage;
-
-import flixel.FlxG;
 
 /**
  * MADE BY GEOKURELI THE LEGENED GOD HERO MVP
@@ -17,9 +12,7 @@ class NGio
 {
 	
 	public static var isLoggedIn:Bool = false;
-	public static var scoreboardsLoaded:Bool = false;
-	
-	public static var scoreboardArray:Array<Score> = [];
+
 
 	public static var ngDataLoaded(default, null):FlxSignal = new FlxSignal();
 	public static var ngScoresLoaded(default, null):FlxSignal = new FlxSignal();
@@ -27,8 +20,7 @@ class NGio
 	public function new(api:String, encKey:String, ?sessionId:String) {
 		
 		trace("connecting to newgrounds");
-		
-		
+
 		NG.createAndCheckSession(api, sessionId);
 		
 		NG.core.verbose = true;
@@ -50,10 +42,15 @@ class NGio
 			/* They are NOT playing on newgrounds.com, no session id was found. We must start one manually, if we want to.
 			 * Note: This will cause a new browser window to pop up where they can log in to newgrounds
 			 */
-			NG.core.requestLogin(onNGLogin);
+			NG.core.requestLogin(requestLogin);
 		}
 	}
-	
+
+	function requestLogin(outcome):Void
+	{
+		onNGLogin();
+	}
+
 	function onNGLogin():Void
 	{
 		trace ('logged in! user:${NG.core.user.name}');
@@ -62,16 +59,14 @@ class NGio
 		//FlxG.save.flush();
 		// Load medals then call onNGMedalFetch()
 		NG.core.requestMedals(onNGMedalFetch);
-		
-		// Load Scoreboards hten call onNGBoardsFetch()
-		NG.core.requestScoreBoards(onNGBoardsFetch);
+
 		
 		ngDataLoaded.dispatch();
 		
 	}
 	
 	// --- MEDALS
-	function onNGMedalFetch():Void
+	function onNGMedalFetch(outcome):Void
 	{
 		
 		/*
@@ -87,49 +82,5 @@ class NGio
 		if (!unlockingMedal.unlocked)
 			unlockingMedal.sendUnlock();
 		*/
-	}
-	
-	// --- SCOREBOARDS
-	function onNGBoardsFetch():Void
-	{
-		/*
-		// Reading medal info
-		for (id in NG.core.scoreBoards.keys())
-		{
-			var board = NG.core.scoreBoards.get(id);
-			trace('loaded scoreboard id:$id, name:${board.name}');
-		}
-		*/
-		//var board = NG.core.scoreBoards.get(8004);// ID found in NG project view
-		
-		// Posting a score thats OVER 9000!
-		//board.postScore(FlxG.random.int(0, 1000));
-		
-		// --- To view the scores you first need to select the range of scores you want to see --- 
-		
-		
-		// add an update listener so we know when we get the new scores
-		//board.onUpdate.add(onNGScoresFetch);
-		trace("shoulda got score by NOW!");
-		//board.requestScores(20);// get the best 10 scores ever logged
-		// more info on scores --- http://www.newgrounds.io/help/components/#scoreboard-getscores
-	}
-	
-	function onNGScoresFetch():Void
-	{
-		scoreboardsLoaded = true;
-		
-		ngScoresLoaded.dispatch();
-		
-		for (score in NG.core.scoreBoards.get(8737).scores)
-		{
-			trace('score loaded user:${score.user.name}, score:${score.formatted_value}');
-			
-		}
-		
-		//var board = NG.core.scoreBoards.get(8004);// ID found in NG project view
-		//board.postScore(HighScore.score);
-		
-		//NGio.scoreboardArray = NG.core.scoreBoards.get(8004).scores;
 	}
 }
