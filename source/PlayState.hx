@@ -136,6 +136,13 @@ class PlayState extends FlxState
 
 		coinCount = 0;
 
+		#if !debug
+		new FlxTimer().start(100, function(_)
+		{
+			NG.core.calls.gateway.ping().send();
+		}, 0);
+		#end
+
 		super.create();
 	}
 
@@ -434,7 +441,7 @@ class PlayState extends FlxState
 				if (NGio.isLoggedIn)
 				{
 					var hornyMedal = NG.core.medals.get(58879);
-					if (!hornyMedal.unlocked)
+					// if (!hornyMedal.unlocked)
 						hornyMedal.sendUnlock();
 				}
 			}
