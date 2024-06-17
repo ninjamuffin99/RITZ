@@ -105,7 +105,7 @@
       "exportID": "46479631",
       "name": "coins",
       "limit": -1,
-      "size": {"x": 16, "y": 16},
+      "size": {"x": 32, "y": 32},
       "origin": {"x": 0, "y": 0},
       "originAnchored": true,
       "shape": {

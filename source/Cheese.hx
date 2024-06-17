@@ -17,5 +17,7 @@ class Cheese extends FlxSprite
         width -= 5;
         offset.y = 2;
         height -= 7;
+		this.x -= 2;
+		this.y -= 2;
     }
 }

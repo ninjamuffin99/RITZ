@@ -1,9 +1,9 @@
 package;
 
-import flixel.math.FlxMath;
-import flixel.FlxObject;
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.math.FlxMath;
 
 class Player extends FlxSprite
 {
@@ -14,7 +14,7 @@ class Player extends FlxSprite
     private var canJump:Bool = false;
 
     // Not a boost per se, simply a counter for the cos wave thing
-    private var jumpBoost:Int = 0;
+	private var jumpBoost:Float = 0;
 
     public var gettingHurt:Bool = false;
 
@@ -43,8 +43,8 @@ class Player extends FlxSprite
 
         animation.play("idle");
 
-        height -= 12;
-        offset.y = 10;
+		height -= 12;
+		offset.y = 11;
         width -= 12;
         offset.x = 6;
 
@@ -224,9 +224,9 @@ class Player extends FlxSprite
 
             if (jump && !apexReached && canJump)
             {
-                jumpBoost++;
+				jumpBoost += (1 / 60) / FlxG.elapsed;
 
-                var C = FlxMath.fastCos(10.7 * jumpBoost * FlxG.elapsed);
+				var C = FlxMath.fastCos(5.35 * jumpBoost * FlxG.elapsed);
                 FlxG.watch.addQuick('Cos', C);
                 if (C < 0)
                 {
@@ -234,7 +234,7 @@ class Player extends FlxSprite
                 }
                 else
                 {
-                    velocity.y -= C * (baseJumpStrength * 1.6) * 2;
+					velocity.y -= (C * (baseJumpStrength * 1.6) * 2);
                 }
             }
 

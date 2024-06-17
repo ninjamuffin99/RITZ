@@ -132,6 +132,8 @@ class PlayState extends FlxState
 		debug.scrollFactor.set(0, 0);
 		debug.color = FlxColor.BLACK;
 		debug.setFormat(null, 16, FlxColor.WHITE, null, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		debug.borderSize = 1;
+		debug.borderQuality = 1;
 		add(debug);
 
 		coinCount = 0;

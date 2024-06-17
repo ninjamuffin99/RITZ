@@ -14,12 +14,12 @@ class SpikeObstacle extends Obstacle
         animation.play('idle', false, false, FlxMath.wrap(Std.int(x / 64), 0, 3));
 
         offset.y = 3;
-        height -= 4;
+		height -= 3;
         offset.x = 10;
         width -= (offset.x * 2) + 1;
 
-        this.y += 2;
-        this.x += 13;
+		this.y += 3;
+		this.x += 10;
         
     }
 }
