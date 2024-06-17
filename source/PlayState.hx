@@ -18,6 +18,7 @@ import flixel.text.FlxText;
 import flixel.tile.FlxTilemap;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxStringUtil;
 import flixel.util.FlxTimer;
 import io.newgrounds.NG;
 
@@ -143,6 +144,7 @@ class PlayState extends FlxState
 		{
 			NG.core.calls.gateway.ping().send();
 		}, 0);
+		NG.core.calls.app.logView().send();
 		#end
 
 		super.create();

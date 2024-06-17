@@ -18,9 +18,7 @@ class MovingPlatform extends FlxSprite
     }
 	override function draw()
 	{
-		if (PlayState.spriteOnScreen(this))
-		{
-			super.draw();
-		}
+		super.draw();
+
 	}
 }
