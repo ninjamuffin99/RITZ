@@ -1,34 +1,37 @@
 package;
 
-import flixel.addons.tile.FlxTilemapExt;
-import io.newgrounds.NG;
 import flixel.FlxBasic;
-import flixel.addons.text.FlxTypeText;
-import flixel.FlxSprite;
-import flixel.group.FlxGroup;
-import flixel.util.FlxTimer;
-import flixel.tweens.FlxTween;
-import flixel.util.FlxColor;
-import flixel.math.FlxRect;
-import flixel.math.FlxPoint;
-import flixel.path.FlxPath;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.group.FlxSpriteGroup;
-import flixel.text.FlxText;
 import flixel.FlxCamera.FlxCameraFollowStyle;
 import flixel.FlxG;
-import flixel.tile.FlxTilemap;
-import flixel.FlxState;
 import flixel.FlxObject;
+import flixel.FlxSprite;
+import flixel.FlxState;
+import flixel.addons.text.FlxTypeText;
+import flixel.addons.tile.FlxTilemapExt;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxGroup;
+import flixel.group.FlxSpriteGroup;
+import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
+import flixel.path.FlxPath;
+import flixel.text.FlxText;
+import flixel.tile.FlxTilemap;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+import io.newgrounds.NG;
 
-using zero.utilities.OgmoUtils;
-using zero.flixel.utilities.FlxOgmoUtils;
 using StringTools;
+using zero.flixel.utilities.FlxOgmoUtils;
+using zero.utilities.OgmoUtils;
 
 
 class PlayState extends FlxState
 {
 	var level:FlxTilemapExt = new FlxTilemapExt();
+	var levelDecalBG:FlxTilemapExt = new FlxTilemapExt();
+	var decalsGrp:FlxTypedGroup<FlxSprite>;
+
 	var player:Player;
 	var debug:FlxText;
 	private var cheeseNeeded:Int = 32;
@@ -74,11 +77,9 @@ class PlayState extends FlxState
 
 		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, AssetPaths.dumbassLevel__json);
 		level.load_tilemap(ogmo, 'assets/data/');
+		levelDecalBG.load_tilemap(ogmo, 'assets/data/', "decal_tiles");
 
-		var decalGrp:FlxGroup = ogmo.level.get_decal_layer('decalbg').get_decal_group('assets');
-		decalGrp.active = false;
-		add(decalGrp);
-
+		add(levelDecalBG);
 
 		grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
 		add(grpMovingPlatforms);
@@ -93,11 +94,13 @@ class PlayState extends FlxState
 		add(grpMusicTriggers);
 
 		grpSecretTriggers = new FlxTypedGroup<SecretTrigger>();
-		add(grpSecretTriggers);
+		// add(grpSecretTriggers);
 		
 
 		add(level);
-		add(ogmo.level.get_decal_layer('decals').get_decal_group('assets'));
+		decalsGrp = cast ogmo.level.get_decal_layer('decals').get_decal_group('assets');
+		decalsGrp.active = false;
+		add(decalsGrp);
 
 		grpCheese = new FlxTypedGroup<Cheese>();
 		add(grpCheese);
@@ -219,11 +222,16 @@ class PlayState extends FlxState
 
 	// These are stupid awful and confusing names for these variables
 	// One of them is a ticker (cheeseAdding) and the other is to see if its in the state of adding cheese
-	private var cheeseAdding:Int = 0;
+	private var cheeseAdding:Float = 0;
 	private var addingCheese:Bool = false;
 	private var ending:Bool = false;
 	override public function update(elapsed:Float):Void
 	{
+		for (decal in decalsGrp.members)
+			decal.visible = spriteOnScreen(decal);
+		
+
+
 		FlxG.watch.addMouse();
 
 		FlxG.watch.addQuick("daCheeses", cheeseHolding.length + " " + cheeseHolding.length);
@@ -257,7 +265,7 @@ class PlayState extends FlxState
 			}
 
 		});
-		FlxG.collide(level, player);
+		FlxG.collide(player, level);
 
 		if (player.x > level.width && !ending)
 		{
@@ -313,7 +321,10 @@ class PlayState extends FlxState
 	
 		});
 
-		if (FlxG.overlap(grpObstacles, player))
+		for (spike in grpObstacles.members)
+			spike.active = spriteOnScreen(spike);
+
+		if (FlxG.overlap(player, grpObstacles))
 		{
 			if (!player.gettingHurt)
 			{
@@ -386,9 +397,9 @@ class PlayState extends FlxState
 
 		if (addingCheese)
 		{
-			cheeseAdding++;
+			cheeseAdding += elapsed;
 
-			if (cheeseAdding >= 10)
+			if (cheeseAdding >= 10 / 60)
 			{
 				coinCount += 1;
 				cheeseHolding.pop();
@@ -430,6 +441,14 @@ class PlayState extends FlxState
 			
 		});
 
+	}
+
+	public static function spriteOnScreen(s:FlxSprite):Bool
+	{
+		return s.x > FlxG.camera.scroll.x - (s.frameWidth * 2)
+			&& s.x + s.frameWidth < FlxG.camera.scroll.x + FlxG.width + (s.frameWidth * 2)
+			&& s.y > FlxG.camera.scroll.y - (s.frameWidth * 2)
+			&& s.y + s.frameHeight < FlxG.camera.scroll.y + FlxG.height + (s.frameHeight * 2);
 	}
 
 	private function musicHandling():Void

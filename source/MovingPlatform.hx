@@ -1,7 +1,7 @@
 package;
 
-import flixel.path.FlxPath;
 import flixel.FlxSprite;
+import flixel.path.FlxPath;
 
 class MovingPlatform extends FlxSprite
 {  
@@ -16,4 +16,11 @@ class MovingPlatform extends FlxSprite
         path.start(null, 50, LOOP_FORWARD);
         immovable = true;
     }
+	override function draw()
+	{
+		if (PlayState.spriteOnScreen(this))
+		{
+			super.draw();
+		}
+	}
 }

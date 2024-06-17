@@ -1,8 +1,8 @@
 package;
 
 import flixel.FlxG;
-import flixel.util.FlxColor;
 import flixel.FlxSprite;
+import flixel.util.FlxColor;
 
 class Cheese extends FlxSprite
 {

@@ -1,7 +1,7 @@
 package;
 
-import flixel.util.FlxColor;
 import flixel.FlxSprite;
+import flixel.util.FlxColor;
 
 class Obstacle extends FlxSprite
 {
@@ -10,4 +10,11 @@ class Obstacle extends FlxSprite
 
         makeGraphic(32, 16, FlxColor.BLUE);
     }
+	override function draw()
+	{
+		if (PlayState.spriteOnScreen(this))
+		{
+			super.draw();
+		}
+	}
 }

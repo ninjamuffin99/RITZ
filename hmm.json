@@ -11,6 +11,16 @@
       "version": null
     },
     {
+      "name": "flixel-tools",
+      "type": "haxelib",
+      "version": null
+    },
+    {
+      "name": "hscript",
+      "type": "haxelib",
+      "version": null
+    },
+    {
       "name": "lime",
       "type": "haxelib",
       "version": null

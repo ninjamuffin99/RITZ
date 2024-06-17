@@ -1,7 +1,7 @@
 package;
 
-import flixel.util.FlxColor;
 import flixel.FlxSprite;
+import flixel.util.FlxColor;
 
 class Checkpoint extends FlxSprite
 {
@@ -18,6 +18,14 @@ class Checkpoint extends FlxSprite
 
         dialogue = d;
     }
+
+	override function draw()
+	{
+		if (PlayState.spriteOnScreen(this))
+		{
+			super.draw();
+		}
+	}
 
     override function update(elapsed:Float) {
 

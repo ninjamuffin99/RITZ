@@ -1,10 +1,10 @@
 package;
 
-import flixel.util.FlxTimer;
 import flixel.FlxG;
+import flixel.FlxState;
 import flixel.system.FlxSoundGroup;
 import flixel.text.FlxText;
-import flixel.FlxState;
+import flixel.util.FlxTimer;
 
 class BootState extends FlxState
 {
@@ -16,6 +16,7 @@ class BootState extends FlxState
         #end
 
         FlxG.mouse.visible = false;
+		FlxG.fixedTimestep = false;
 
         var daText:FlxText = new FlxText(0, 0, 0, "ninjamuffin99\nMKMaffo\nKawaisprite\nand Digimin\npresent...",16);
         daText.alignment = CENTER;

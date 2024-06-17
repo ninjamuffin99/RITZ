@@ -1,7 +1,7 @@
 package;
 
-import flixel.math.FlxMath;
 import flixel.FlxG;
+import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 
 class SpikeObstacle extends Obstacle
