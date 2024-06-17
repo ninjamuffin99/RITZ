@@ -1,5 +1,6 @@
 package;
 
+import flixel.addons.tile.FlxTilemapExt;
 import io.newgrounds.NG;
 import flixel.FlxBasic;
 import flixel.addons.text.FlxTypeText;
@@ -10,7 +11,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.math.FlxRect;
 import flixel.math.FlxPoint;
-import flixel.util.FlxPath;
+import flixel.path.FlxPath;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.group.FlxSpriteGroup;
 import flixel.text.FlxText;
@@ -27,7 +28,7 @@ using StringTools;
 
 class PlayState extends FlxState
 {
-	var level:FlxTilemap = new FlxTilemap();
+	var level:FlxTilemapExt = new FlxTilemapExt();
 	var player:Player;
 	var debug:FlxText;
 	private var cheeseNeeded:Int = 32;

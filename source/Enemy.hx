@@ -1,5 +1,5 @@
 package;
-import flixel.util.FlxPath;
+import flixel.path.FlxPath;
 import flixel.FlxObject;
 import flixel.util.FlxColor;
 import flixel.FlxSprite;

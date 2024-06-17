@@ -1,6 +1,6 @@
 package;
 
-import flixel.util.FlxPath;
+import flixel.path.FlxPath;
 import flixel.FlxSprite;
 
 class MovingPlatform extends FlxSprite
