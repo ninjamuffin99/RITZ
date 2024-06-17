@@ -20,6 +20,8 @@ class Checkpoint extends FlxSprite
     }
 
     override function update(elapsed:Float) {
+
+
         if (isCurCheckpoint)
             animation.play('play');
         else

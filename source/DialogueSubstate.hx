@@ -30,7 +30,7 @@ class DialogueSubstate extends FlxSubState
         blackBarBottom.y = FlxG.height;
         add(blackBarBottom);
 
-        FlxTween.tween(blackBarTop, {y: 0}, 0.25, {ease:FlxEase.quadIn});
+        FlxTween.tween(blackBarTop, {y: -1}, 0.25, {ease:FlxEase.quadIn});
         FlxTween.tween(blackBarBottom, {y: Std.int(FlxG.height - blackBarBottom.height)}, 0.25, {ease:FlxEase.quadIn});
 
         dialogueText = new TypeTextTwo(0, 0, FlxG.width, d, 16);

@@ -15,6 +15,8 @@ class BootState extends FlxState
             soundEXT = ".ogg";
         #end
 
+        FlxG.mouse.visible = false;
+
         var daText:FlxText = new FlxText(0, 0, 0, "ninjamuffin99\nMKMaffo\nKawaisprite\nand Digimin\npresent...",16);
         daText.alignment = CENTER;
         daText.screenCenter();

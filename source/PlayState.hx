@@ -34,11 +34,19 @@ class PlayState extends FlxState
 	private var cheeseNeeded:Int = 32;
 	private var totalCheese:Int = 0;
 
+	function set_coinCount(v:Int):Int
+	{
+		coinCount = v;
+		debug.text = coinCount + "/" + cheeseNeeded;
+
+		return coinCount;
+	}
+
 	private var grpCheese:FlxTypedGroup<Cheese>;
 	private var grpMovingPlatforms:FlxTypedGroup<MovingPlatform>;
 
 	private var grpObstacles:FlxTypedGroup<Obstacle>;
-	private var coinCount:Int = 0;
+	private var coinCount(default, set):Int = 0;
 	private var curCheckpoint:Checkpoint;
 	private var grpCheckpoint:FlxTypedGroup<Checkpoint>;
 
@@ -60,7 +68,8 @@ class PlayState extends FlxState
 
 		var bg:FlxSprite = new FlxSprite().loadGraphic(AssetPaths.dumbbg__png);
 		bg.scrollFactor.set(0.045, 0.045);
-		bg.alpha = 0.75;
+		bg.active = false;
+		bg.color = 0xFFBFBFBF;
 		add(bg);
 
 		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, AssetPaths.dumbassLevel__json);
@@ -109,8 +118,6 @@ class PlayState extends FlxState
 		FlxG.worldBounds.set(0, 0, level.width, level.height);
 		level.follow(FlxG.camera);
 
-		FlxG.mouse.visible = false;
-
 		var displayCheese:Cheese = new Cheese(10, 10);
 		displayCheese.scrollFactor.set();
 		add(displayCheese);
@@ -123,6 +130,8 @@ class PlayState extends FlxState
 		debug.color = FlxColor.BLACK;
 		debug.setFormat(null, 16, FlxColor.WHITE, null, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(debug);
+
+		coinCount = 0;
 
 		super.create();
 	}
@@ -216,7 +225,6 @@ class PlayState extends FlxState
 	override public function update(elapsed:Float):Void
 	{
 		FlxG.watch.addMouse();
-		debug.text = coinCount + "/" + cheeseNeeded;
 
 		FlxG.watch.addQuick("daCheeses", cheeseHolding.length + " " + cheeseHolding.length);
 			
