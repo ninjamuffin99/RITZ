@@ -65,7 +65,10 @@ class PlayState extends FlxState
 
 		var ogmo = FlxOgmoUtils.get_ogmo_package(AssetPaths.levelProject__ogmo, AssetPaths.dumbassLevel__json);
 		level.load_tilemap(ogmo, 'assets/data/');
-		add(ogmo.level.get_decal_layer('decalbg').get_decal_group('assets'));
+
+		var decalGrp:FlxGroup = ogmo.level.get_decal_layer('decalbg').get_decal_group('assets');
+		decalGrp.active = false;
+		add(decalGrp);
 
 
 		grpMovingPlatforms = new FlxTypedGroup<MovingPlatform>();
