@@ -225,8 +225,9 @@ class Player extends FlxSprite
             if (jump && !apexReached && canJump)
             {
 				jumpBoost += (1 / 60) / FlxG.elapsed;
+				var dipshitMultiplier:Float = FlxG.elapsed / (1 / 60);
 
-				var C = FlxMath.fastCos(5.35 * jumpBoost * FlxG.elapsed);
+				var C = FlxMath.fastCos((10.7 * dipshitMultiplier) * jumpBoost * FlxG.elapsed);
                 FlxG.watch.addQuick('Cos', C);
                 if (C < 0)
                 {
